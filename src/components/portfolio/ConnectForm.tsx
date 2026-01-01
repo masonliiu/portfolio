@@ -22,7 +22,7 @@ export default function ConnectForm() {
       <p className="mt-2 text-sm text-[var(--color-subtext0)]">
         Send a message directly to <span className="text-[var(--color-accent)]">liumasn@gmail.com</span>.
       </p>
-      <form className="mt-4 space-y-3" onSubmit={handleSubmit}>
+      <form className="mt-3 space-y-3" onSubmit={handleSubmit}>
         <label className="block text-xs text-[var(--color-subtext1)]">
           Name
           <input
@@ -46,7 +46,7 @@ export default function ConnectForm() {
         <label className="block text-xs text-[var(--color-subtext1)]">
           Message
           <textarea
-            className="mt-1 min-h-[120px] w-full rounded-md border border-[var(--color-surface1)] bg-transparent px-3 py-2 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none"
+            className="mt-1 min-h-[90px] w-full rounded-md border border-[var(--color-surface1)] bg-transparent px-3 py-2 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none"
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             placeholder="What should I know?"

@@ -142,18 +142,18 @@ export default function GitHubActivity() {
         </a>
       </div>
       {status === "loading" ? (
-        <p className="mt-3 text-xs text-[var(--color-subtext1)]">
+        <p className="mt-2 text-xs text-[var(--color-subtext1)]">
           Loading GitHub activity...
         </p>
       ) : null}
       {status === "error" ? (
-        <p className="mt-3 text-xs text-[var(--color-subtext1)]">
+        <p className="mt-2 text-xs text-[var(--color-subtext1)]">
           GitHub activity unavailable right now.
         </p>
       ) : null}
       {status === "ready" ? (
         <>
-          <ul className="mt-3 space-y-2 text-sm">
+          <ul className="mt-2 space-y-2 text-sm">
             {commits.length === 0 ? (
               <li className="text-xs text-[var(--color-subtext1)]">
                 No recent public commits.
@@ -180,7 +180,7 @@ export default function GitHubActivity() {
             )}
           </ul>
           {languages.length > 0 ? (
-            <div className="mt-4">
+            <div className="mt-3">
               <div className="flex h-2 overflow-hidden rounded bg-[var(--color-surface0)]">
                 {languages.map((lang) => (
                   <div
