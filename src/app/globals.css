@@ -225,8 +225,8 @@ body {
 
 
 .trail-layer {
-  filter: blur(10px);
-  opacity: 0.9;
+  filter: blur(6px);
+  opacity: 1;
 }
 
 html:not(.bg-effect) .trail-layer {
@@ -239,21 +239,22 @@ html:not(.bg-effect) .trail-layer {
   border-radius: 999px;
   background: radial-gradient(
     circle,
-    color-mix(in srgb, var(--color-accent) 60%, transparent) 0%,
-    transparent 70%
+    color-mix(in srgb, var(--color-accent) 75%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 20%, transparent) 45%,
+    transparent 75%
   );
-  animation: trailFade 0.7s ease-out forwards;
+  animation: trailFade 1.1s ease-out forwards;
   pointer-events: none;
-  opacity: 0.8;
+  opacity: 1;
 }
 
 @keyframes trailFade {
   0% {
     transform: translate(-50%, -50%) scale(0.4);
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.6);
+    transform: translate(-50%, -50%) scale(2.4);
     opacity: 0;
   }
 }

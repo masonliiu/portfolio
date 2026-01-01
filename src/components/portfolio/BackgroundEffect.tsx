@@ -9,26 +9,50 @@ export default function BackgroundEffect() {
     const trail = trailRef.current;
     if (!trail) return;
 
+    let isPointerDown = false;
     let lastTime = 0;
-    const handlePointerMove = (event: PointerEvent) => {
-      if (!document.documentElement.classList.contains("bg-effect")) return;
+
+    const spawnTrail = (event: PointerEvent) => {
       const now = Date.now();
-      if (now - lastTime < 30) return;
+      if (now - lastTime < 16) return;
       lastTime = now;
 
       const dot = document.createElement("span");
-      const size = Math.floor(Math.random() * 12) + 10;
+      const size = Math.floor(Math.random() * 36) + 40;
       dot.className = "trail-dot";
       dot.style.left = `${event.clientX}px`;
       dot.style.top = `${event.clientY}px`;
       dot.style.width = `${size}px`;
       dot.style.height = `${size}px`;
       trail.appendChild(dot);
-      setTimeout(() => dot.remove(), 700);
+      setTimeout(() => dot.remove(), 900);
     };
 
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!document.documentElement.classList.contains("bg-effect")) return;
+      isPointerDown = true;
+      spawnTrail(event);
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (!isPointerDown) return;
+      spawnTrail(event);
+    };
+
+    const handlePointerUp = () => {
+      isPointerDown = false;
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown, { passive: true });
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    return () => window.removeEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp, { passive: true });
+    window.addEventListener("pointerleave", handlePointerUp, { passive: true });
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointerleave", handlePointerUp);
+    };
   }, []);
 
   return (
