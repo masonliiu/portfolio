@@ -35,10 +35,10 @@ export default function FeaturedProjects() {
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
-            className="terminal-card hover-panel group overflow-hidden"
+            className="terminal-card hover-panel featured-card group overflow-hidden"
           >
             <div className="terminal-preview">
-              <div className="terminal-window">
+              <div className="terminal-window terminal-preview__inner">
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-[var(--color-red)]" />
                   <span className="h-2 w-2 rounded-full bg-[var(--color-yellow)]" />

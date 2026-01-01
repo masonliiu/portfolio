@@ -60,7 +60,7 @@ export default function ThemePanel() {
   return (
     <section className="terminal-card hover-panel p-4">
       <div className="terminal-title">Theme</div>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-2 flex flex-wrap gap-2">
         {paletteOptions.map((option) => (
           <button
             key={option.id}
@@ -76,7 +76,7 @@ export default function ThemePanel() {
           </button>
         ))}
       </div>
-      <div className="relative mt-3 grid grid-cols-7 gap-2.5">
+      <div className="relative mt-2 grid grid-cols-7 gap-2.5">
         {accentOptions.map((option) => (
           <button
             key={option.id}
@@ -95,17 +95,18 @@ export default function ThemePanel() {
         ))}
         {activeIndex >= 0 ? (
           <div
-            className="pointer-events-none absolute aspect-square min-h-6 min-w-6 rounded-md ring-2 ring-offset-2 ring-offset-[var(--color-base)] transition-all duration-300 ease-out"
+            className="pointer-events-none absolute aspect-square min-h-6 min-w-6 rounded-md ring-4 ring-offset-2 ring-offset-[var(--color-base)] transition-all duration-300 ease-out"
             style={{
-              transform: `translate(calc(${ringColumn} * (100% + 0.625rem)), calc(${ringRow} * (100% + 0.625rem))) scale(1.25)`,
-              width: "calc((100% - 6 * 0.625rem) / 7)",
+              transform: `translate(calc(${ringColumn} * (100% + 0.625rem) - 2px), calc(${ringRow} * (100% + 0.625rem) - 2px))`,
+              width: "calc((100% - 6 * 0.625rem) / 7 + 4px)",
+              height: "calc((100% - 6 * 0.625rem) / 7 + 4px)",
               color: `var(--color-${accent})`,
               boxShadow: "0 0 0 1px currentColor",
             }}
           />
         ) : null}
       </div>
-      <div className="mt-3 flex items-center text-xs text-[var(--color-subtext1)]">
+      <div className="mt-2 flex items-center text-xs text-[var(--color-subtext1)]">
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"

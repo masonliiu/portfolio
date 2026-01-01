@@ -149,18 +149,18 @@ body {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.5rem 3rem;
+  padding: 3.5rem 4.5rem;
 }
 
 @media (min-width: 768px) {
   .page-shell {
-    padding: 3.5rem 4rem;
+    padding: 3.5rem 6rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-shell {
-    padding: 4rem 6rem;
+    padding: 4rem 9rem;
   }
 }
 
@@ -247,6 +247,14 @@ body {
   border-radius: 14px;
   background: color-mix(in srgb, var(--color-surface2) 35%, white 65%);
   padding: 1.5rem;
+}
+
+.terminal-preview__inner {
+  transition: transform 0.2s ease;
+}
+
+.featured-card:hover .terminal-preview__inner {
+  transform: scale(1.02);
 }
 
 .terminal-window {

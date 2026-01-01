@@ -6,7 +6,7 @@ import ConnectForm from "@/components/portfolio/ConnectForm";
 import LocationCard from "@/components/portfolio/LocationCard";
 import ClickCounter from "@/components/portfolio/ClickCounter";
 import GitHubActivity from "@/components/portfolio/GitHubActivity";
-import QuickLinks from "@/components/portfolio/QuickLinks";
+import FocusWidget from "@/components/portfolio/FocusWidget";
 import Footer from "@/components/portfolio/Footer";
 
 export default function Home() {
@@ -28,7 +28,7 @@ export default function Home() {
             <GitHubActivity />
           </div>
           <div className="lg:col-span-2">
-            <QuickLinks />
+            <FocusWidget />
           </div>
         </section>
       </main>
