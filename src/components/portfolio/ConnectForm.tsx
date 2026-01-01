@@ -5,14 +5,11 @@ import { useState } from "react";
 export default function ConnectForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const subject = encodeURIComponent(`Portfolio message from ${name || "Visitor"}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\n\n${message}`
-    );
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}`);
     window.location.href = `mailto:liumasn@gmail.com?subject=${subject}&body=${body}`;
   };
 
@@ -31,6 +28,16 @@ export default function ConnectForm() {
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="Your name"
+          />
+        </label>
+        <label className="block text-xs text-[var(--color-subtext1)]">
+          Email
+          <input
+            className="mt-1 w-full rounded-md border border-[var(--color-surface1)] bg-transparent px-3 py-2 text-sm text-[var(--color-text)] focus:border-[var(--color-accent)] focus:outline-none"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="you@example.com"
           />
         </label>
         <button
