@@ -17,15 +17,19 @@ export default function BackgroundEffect() {
       if (now - lastTime < 16) return;
       lastTime = now;
 
-      const dot = document.createElement("span");
-      const size = Math.floor(Math.random() * 36) + 40;
-      dot.className = "trail-dot";
-      dot.style.left = `${event.clientX}px`;
-      dot.style.top = `${event.clientY}px`;
-      dot.style.width = `${size}px`;
-      dot.style.height = `${size}px`;
-      trail.appendChild(dot);
-      setTimeout(() => dot.remove(), 900);
+      for (let i = 0; i < 2; i += 1) {
+        const dot = document.createElement("span");
+        const size = Math.floor(Math.random() * 50) + 60;
+        const offsetX = (Math.random() - 0.5) * 24;
+        const offsetY = (Math.random() - 0.5) * 24;
+        dot.className = "trail-dot";
+        dot.style.left = `${event.clientX + offsetX}px`;
+        dot.style.top = `${event.clientY + offsetY}px`;
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        trail.appendChild(dot);
+        setTimeout(() => dot.remove(), 1000);
+      }
     };
 
     const handlePointerDown = (event: PointerEvent) => {
