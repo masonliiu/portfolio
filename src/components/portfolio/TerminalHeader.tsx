@@ -16,7 +16,7 @@ export default function TerminalHeader() {
   const segments = buildSegments(pathname);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-base)]/90 backdrop-blur">
+    <header className="sticky top-0 z-30 bg-[var(--color-base)]/85 backdrop-blur shadow-[0_20px_40px_rgba(15,23,42,0.12)]">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <nav aria-label="Breadcrumbs" className="flex items-center gap-2 text-sm">
           <Link className="wiggle text-[var(--color-accent)]" href="/">
