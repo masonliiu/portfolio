@@ -187,3 +187,5 @@ body {
   color: var(--color-subtext1);
   background: color-mix(in srgb, var(--color-surface0) 70%, transparent);
 }
+
+.bg-fade {\n  animation: fadeAway 1400ms forwards;\n}\n\n+.bg-fade.clicked {\n  animation: none;\n  opacity: 1;\n}\n\n@keyframes fadeAway {\n  0% {\n    opacity: 1;\n  }\n  60% {\n    opacity: 0.9;\n  }\n  100% {\n    opacity: 0;\n  }\n}
