@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { accentOptions, paletteClasses, paletteOptions } from "./theme";
 
 export default function ThemePanel() {
@@ -50,15 +50,8 @@ export default function ThemePanel() {
     localStorage.setItem("bgEffect", String(backgroundEffect));
   }, [backgroundEffect]);
 
-  const activeIndex = useMemo(
-    () => accentOptions.findIndex((option) => option.id === accent),
-    [accent]
-  );
-  const ringRow = Math.floor(activeIndex / 7);
-  const ringColumn = activeIndex % 7;
-
   return (
-    <section className="terminal-card hover-panel p-3">
+    <section className="terminal-card p-3">
       <div className="terminal-title">Theme</div>
       <div className="mt-2 flex flex-wrap gap-2">
         {paletteOptions.map((option) => (
@@ -84,7 +77,7 @@ export default function ThemePanel() {
             onClick={() => setAccent(option.id)}
             className={`aspect-square min-h-6 w-full min-w-6 rounded-md shadow-sm transition ${
               accent === option.id
-                ? "scale-105"
+                ? "scale-105 outline outline-4 outline-[var(--color-accent)] outline-offset-2"
                 : "opacity-80 hover:scale-110 hover:opacity-100"
             }`}
             style={{ backgroundColor: `var(--color-${option.id})` }}
@@ -93,18 +86,6 @@ export default function ThemePanel() {
             <span className="sr-only">{option.label}</span>
           </button>
         ))}
-        {activeIndex >= 0 ? (
-          <div
-            className="pointer-events-none absolute aspect-square min-h-6 min-w-6 rounded-md ring-4 ring-offset-2 ring-offset-[var(--color-base)] transition-all duration-300 ease-out"
-            style={{
-              transform: `translate(calc(${ringColumn} * (100% + 0.625rem) - 4px), calc(${ringRow} * (100% + 0.625rem) - 4px))`,
-              width: "calc((100% - 6 * 0.625rem) / 7 + 8px)",
-              height: "calc((100% - 6 * 0.625rem) / 7 + 8px)",
-              color: `var(--color-${accent})`,
-              boxShadow: "0 0 0 2px currentColor",
-            }}
-          />
-        ) : null}
       </div>
       <div className="mt-2 flex items-center text-xs text-[var(--color-subtext1)]">
         <label className="flex cursor-pointer items-center gap-2">

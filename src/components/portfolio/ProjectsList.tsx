@@ -30,7 +30,7 @@ export default function ProjectsList() {
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
-            className="terminal-card hover-panel group flex min-h-[360px] flex-col"
+            className="terminal-card group flex min-h-[360px] flex-col"
           >
             <div className="terminal-preview">
               <div className="terminal-window">

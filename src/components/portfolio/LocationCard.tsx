@@ -1,6 +1,6 @@
 export default function LocationCard() {
   return (
-    <section className="terminal-card hover-panel p-4">
+    <section className="terminal-card p-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Currently Based In</h3>
         <span className="text-xs text-[var(--color-accent)]">●</span>

@@ -129,7 +129,7 @@ export default function GitHubActivity() {
   );
 
   return (
-    <section className="terminal-card hover-panel p-3">
+    <section className="terminal-card p-3">
       <div className="flex items-center justify-between text-sm">
         <h3 className="font-semibold">Recent Commits</h3>
         <a

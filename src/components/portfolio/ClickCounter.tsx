@@ -27,14 +27,14 @@ export default function ClickCounter() {
   }, [showIncrement]);
 
   return (
-    <section className="terminal-card hover-panel flex flex-col items-center justify-center gap-2 p-3 text-center">
+    <section className="terminal-card flex flex-col items-center justify-center gap-2 p-3 text-center">
       <div className="text-2xl font-semibold text-[var(--color-accent)]">
         {count.toLocaleString()}
       </div>
       <button
         type="button"
         onClick={handleClick}
-        className="rounded-md bg-[var(--color-accent)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--color-crust)] transition hover:brightness-110"
+        className="rounded-md bg-[var(--color-accent)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--color-crust)] transition hover:scale-105 hover:brightness-110"
       >
         Click me
       </button>

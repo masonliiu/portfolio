@@ -149,18 +149,18 @@ body {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.5rem 6rem;
+  padding: 3.5rem 7rem;
 }
 
 @media (min-width: 768px) {
   .page-shell {
-    padding: 3.5rem 7rem;
+    padding: 3.5rem 9rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-shell {
-    padding: 4rem 11rem;
+    padding: 4rem 13rem;
   }
 }
 
@@ -257,6 +257,11 @@ body {
   transform: scale(1.02);
 }
 
+.featured-card:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+}
+
 .terminal-window {
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-base) 96%, black 4%);
@@ -296,21 +301,15 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 84px;
-  z-index: 20;
+  height: 64px;
+  z-index: 25;
   pointer-events: none;
-  backdrop-filter: blur(18px);
-  mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+  backdrop-filter: blur(20px);
+  mask-image: linear-gradient(to bottom, black 10%, transparent 100%);
 }
 
 .hover-panel {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.hover-panel:not(.no-lift):hover {
-  transform: translateY(-4px);
-  border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 
