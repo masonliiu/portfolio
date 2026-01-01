@@ -239,8 +239,8 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  background: color-mix(in srgb, var(--tag-color) 20%, transparent);
-  color: var(--tag-color);
+  background: color-mix(in srgb, var(--tag-color) 25%, transparent);
+  color: color-mix(in srgb, var(--tag-color) 70%, white 30%);
 }
 
 .terminal-preview {
