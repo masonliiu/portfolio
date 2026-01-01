@@ -1,7 +1,7 @@
 import BackgroundEffect from "@/components/portfolio/BackgroundEffect";
 import TerminalHeader from "@/components/portfolio/TerminalHeader";
 import Hero from "@/components/portfolio/Hero";
-import Projects from "@/components/portfolio/Projects";
+import ProjectsTeaser from "@/components/portfolio/ProjectsTeaser";
 import ThemePanel from "@/components/portfolio/ThemePanel";
 import ConnectForm from "@/components/portfolio/ConnectForm";
 import LocationCard from "@/components/portfolio/LocationCard";
@@ -17,7 +17,7 @@ export default function Home() {
       <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12 px-6 py-12">
         <Hero />
 
-        <Projects />
+        <ProjectsTeaser />
 
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <ThemePanel />
