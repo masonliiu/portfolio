@@ -129,7 +129,7 @@ export default function GitHubActivity() {
   );
 
   return (
-    <section className="terminal-card hover-panel p-4">
+    <section className="terminal-card hover-panel p-3">
       <div className="flex items-center justify-between text-sm">
         <h3 className="font-semibold">Recent Commits</h3>
         <a
@@ -153,7 +153,7 @@ export default function GitHubActivity() {
       ) : null}
       {status === "ready" ? (
         <>
-          <ul className="mt-2 space-y-2 text-sm">
+          <ul className="mt-2 space-y-1.5 text-sm">
             {commits.length === 0 ? (
               <li className="text-xs text-[var(--color-subtext1)]">
                 No recent public commits.

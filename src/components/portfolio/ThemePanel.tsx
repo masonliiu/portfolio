@@ -58,7 +58,7 @@ export default function ThemePanel() {
   const ringColumn = activeIndex % 7;
 
   return (
-    <section className="terminal-card hover-panel p-4">
+    <section className="terminal-card hover-panel p-3">
       <div className="terminal-title">Theme</div>
       <div className="mt-2 flex flex-wrap gap-2">
         {paletteOptions.map((option) => (
@@ -97,11 +97,11 @@ export default function ThemePanel() {
           <div
             className="pointer-events-none absolute aspect-square min-h-6 min-w-6 rounded-md ring-4 ring-offset-2 ring-offset-[var(--color-base)] transition-all duration-300 ease-out"
             style={{
-              transform: `translate(calc(${ringColumn} * (100% + 0.625rem) - 2px), calc(${ringRow} * (100% + 0.625rem) - 2px))`,
-              width: "calc((100% - 6 * 0.625rem) / 7 + 4px)",
-              height: "calc((100% - 6 * 0.625rem) / 7 + 4px)",
+              transform: `translate(calc(${ringColumn} * (100% + 0.625rem) - 4px), calc(${ringRow} * (100% + 0.625rem) - 4px))`,
+              width: "calc((100% - 6 * 0.625rem) / 7 + 8px)",
+              height: "calc((100% - 6 * 0.625rem) / 7 + 8px)",
               color: `var(--color-${accent})`,
-              boxShadow: "0 0 0 1px currentColor",
+              boxShadow: "0 0 0 2px currentColor",
             }}
           />
         ) : null}

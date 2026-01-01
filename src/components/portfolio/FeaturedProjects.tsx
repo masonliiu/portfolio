@@ -35,7 +35,7 @@ export default function FeaturedProjects() {
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
-            className="terminal-card hover-panel featured-card group overflow-hidden"
+            className="terminal-card hover-panel no-lift featured-card group overflow-hidden"
           >
             <div className="terminal-preview">
               <div className="terminal-window terminal-preview__inner">

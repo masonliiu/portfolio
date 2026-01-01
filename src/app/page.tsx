@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       <BackgroundEffect />
-      <div className="header-blur-layer" />
+      <div className="scroll-blur" />
       <main className="page-shell relative z-10 flex flex-col gap-12">
         <Hero />
 

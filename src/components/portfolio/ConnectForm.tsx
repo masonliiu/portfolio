@@ -19,7 +19,7 @@ export default function ConnectForm() {
       <p className="mt-2 text-sm text-[var(--color-subtext0)]">
         Send a note directly to <span className="text-[var(--color-accent)]">liumasn@gmail.com</span>.
       </p>
-      <form className="mt-3 space-y-2" onSubmit={handleSubmit}>
+      <form className="mt-2 space-y-2" onSubmit={handleSubmit}>
         <label className="block text-xs text-[var(--color-subtext1)]">
           Name
           <input

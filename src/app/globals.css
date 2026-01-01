@@ -149,18 +149,18 @@ body {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.5rem 4.5rem;
+  padding: 3.5rem 6rem;
 }
 
 @media (min-width: 768px) {
   .page-shell {
-    padding: 3.5rem 6rem;
+    padding: 3.5rem 7rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-shell {
-    padding: 4rem 9rem;
+    padding: 4rem 11rem;
   }
 }
 
@@ -291,32 +291,23 @@ body {
   overflow: hidden;
 }
 
-.header-blur {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-base) 90%, transparent),
-    transparent
-  );
-  backdrop-filter: blur(16px);
-  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-}
-
-.header-blur-layer {
-  position: sticky;
+.scroll-blur {
+  position: fixed;
   top: 0;
-  height: 64px;
-  margin-top: -64px;
+  left: 0;
+  right: 0;
+  height: 84px;
   z-index: 20;
   pointer-events: none;
   backdrop-filter: blur(18px);
-  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
 }
 
 .hover-panel {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.hover-panel:hover {
+.hover-panel:not(.no-lift):hover {
   transform: translateY(-4px);
   border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);

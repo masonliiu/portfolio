@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function PhotographyPage() {
   return (
     <div className="page-shell max-w-5xl">
-      <div className="header-blur-layer" />
+      <div className="scroll-blur" />
       <div className="terminal-title">Photography</div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">Photography</h1>
       <p className="mt-4 text-sm text-[var(--color-subtext0)]">

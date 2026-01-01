@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function AboutPage() {
   return (
     <div className="page-shell max-w-5xl">
-      <div className="header-blur-layer" />
+      <div className="scroll-blur" />
       <div className="terminal-title">About</div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">About Me</h1>
 
