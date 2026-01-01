@@ -1,2 +1,2 @@
-# portfolio
-Attempt at creating the 'perfect' portfolio
+# Portfolio
+This is my attempt at creating the 'perfect' portfolio
