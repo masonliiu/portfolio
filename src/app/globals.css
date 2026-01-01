@@ -217,63 +217,37 @@ body {
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
 }
 
-.bg-fade {
-  animation: fadeAway 1400ms forwards;
+
+.trail-layer {
+  filter: blur(10px);
+  opacity: 0.9;
 }
 
-.bg-fade.clicked {
-  animation: none;
-  opacity: 1;
-}
-
-.bg-grid {
-  filter: blur(16px) brightness(0.7);
-}
-
-html:not(.bg-effect) .bg-grid {
+html:not(.bg-effect) .trail-layer {
   opacity: 0;
 }
 
-html:not(.bg-effect) .bg-fade {
-  animation: none;
-  opacity: 0;
-}
-
-.click-ripple {
+.trail-dot {
   position: absolute;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(0.2);
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
   background: radial-gradient(
     circle,
     color-mix(in srgb, var(--color-accent) 60%, transparent) 0%,
     transparent 70%
   );
-  animation: ripple 0.9s ease-out forwards;
+  animation: trailFade 0.7s ease-out forwards;
   pointer-events: none;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
-@keyframes ripple {
+@keyframes trailFade {
   0% {
-    transform: translate(-50%, -50%) scale(0.2);
+    transform: translate(-50%, -50%) scale(0.4);
     opacity: 0.9;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.4);
-    opacity: 0;
-  }
-}
-
-@keyframes fadeAway {
-  0% {
-    opacity: 1;
-  }
-  60% {
-    opacity: 0.9;
-  }
-  100% {
+    transform: translate(-50%, -50%) scale(1.6);
     opacity: 0;
   }
 }
