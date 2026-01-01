@@ -4,20 +4,25 @@ import "./globals.css";
 
 import TerminalHeader from "@/components/portfolio/TerminalHeader";
 
-const nunitoSans = localFont({
+const jetBrainsMono = localFont({
   src: [
     {
-      path: "../../public/fonts/NunitoSans-Regular.ttf",
+      path: "../../public/fonts/JetBrainsMono-Regular.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../public/fonts/NunitoSans-SemiBold.ttf",
+      path: "../../public/fonts/JetBrainsMono-Medium.ttf",
       weight: "600",
       style: "normal",
     },
+    {
+      path: "../../public/fonts/JetBrainsMono-Bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
   ],
-  variable: "--font-nunito-sans",
+  variable: "--font-jetbrains-mono",
   display: "swap",
 });
 
@@ -33,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${nunitoSans.variable} antialiased`}>
+      <body className={`${jetBrainsMono.variable} antialiased`}>
         <TerminalHeader />
         {children}
       </body>

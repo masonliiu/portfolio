@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --font-mono: var(--font-nunito-sans);
+  --font-mono: var(--font-jetbrains-mono);
 
   --color-rosewater: #dc8a78;
   --color-flamingo: #dd7878;
@@ -22,13 +22,13 @@
 }
 
 html {
-  font-family: var(--font-nunito-sans), "Nunito Sans", system-ui, sans-serif;
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
   color-scheme: light;
   font-size: 18px;
 }
 
 body {
-  font-family: var(--font-nunito-sans), "Nunito Sans", system-ui, sans-serif;
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
   line-height: 1.6;
 }
 
