@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --font-mono: var(--font-jetbrains-mono);
+  --font-mono: var(--font-plex-mono);
 
   --color-rosewater: #dc8a78;
   --color-flamingo: #dd7878;
