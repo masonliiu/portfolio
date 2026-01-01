@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function PhotographyPage() {
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
+    <div className="mx-auto w-full max-w-5xl px-8 py-14">
       <div className="terminal-title">Photography</div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">Photography</h1>
       <p className="mt-4 text-sm text-[var(--color-subtext0)]">

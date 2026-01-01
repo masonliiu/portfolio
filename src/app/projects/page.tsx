@@ -2,7 +2,7 @@ import ProjectsList from "@/components/portfolio/ProjectsList";
 
 export default function ProjectsPage() {
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
+    <div className="mx-auto w-full max-w-7xl px-8 py-14">
       <ProjectsList />
     </div>
   );

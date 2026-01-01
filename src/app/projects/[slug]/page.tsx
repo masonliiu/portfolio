@@ -17,7 +17,7 @@ export default function ProjectDetailPage({
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
+    <div className="mx-auto w-full max-w-5xl px-8 py-14">
       <div className="terminal-title">Projects</div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">
         {project.title}
