@@ -1,5 +1,7 @@
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+\"use client\";
+
+import Link from \"next/link\";
+import { usePathname } from \"next/navigation\";
 
 function buildSegments(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
@@ -20,9 +22,7 @@ export default function TerminalHeader() {
           <Link className="wiggle text-[var(--color-accent)]" href="/">
             ~
           </Link>
-          {segments.length > 0 ? (
-            <span className="text-[var(--color-overlay1)]">/</span>
-          ) : null}
+          <span className="text-[var(--color-overlay1)]">/</span>
           {segments.map((segment, index) => (
             <span key={segment.href} className="flex items-center gap-2">
               {index > 0 ? (
@@ -40,18 +40,16 @@ export default function TerminalHeader() {
               )}
             </span>
           ))}
-          {segments.length > 0 ? (
-            <span className="text-[var(--color-overlay1)]">/</span>
-          ) : null}
+          <span className="text-[var(--color-overlay1)]">/</span>
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
         <div className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
           <Link className="hover:text-[var(--text)]" href="/about">
             About
           </Link>
-          <a className="hover:text-[var(--text)]" href="#projects">
+          <Link className="hover:text-[var(--text)]" href="/projects">
             Projects
-          </a>
+          </Link>
           <Link className="hover:text-[var(--text)]" href="/photography">
             Photography
           </Link>
