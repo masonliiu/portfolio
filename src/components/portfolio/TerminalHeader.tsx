@@ -72,7 +72,6 @@ export default function TerminalHeader() {
           Immersive
         </Link>
       </div>
-      <div className="header-blur pointer-events-none absolute inset-x-0 bottom-0 h-10" />
     </header>
   );
 }
