@@ -31,14 +31,14 @@ export default function FeaturedProjects() {
         </Link>
       </div>
 
-      <div className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="mt-5 grid gap-6 md:grid-cols-2">
         {featured.map((project) => (
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
             className="terminal-card hover-panel group overflow-hidden"
           >
-            <div className="bg-[var(--color-surface0)] p-4">
+            <div className="bg-[var(--color-surface0)] p-3">
               <div className="flex items-center gap-2 text-xs text-[var(--color-subtext1)]">
                 <span className="h-2 w-2 rounded-full bg-[var(--color-red)]" />
                 <span className="h-2 w-2 rounded-full bg-[var(--color-yellow)]" />
@@ -47,7 +47,7 @@ export default function FeaturedProjects() {
                   Preview
                 </span>
               </div>
-              <div className="mt-4 rounded-lg bg-[var(--color-base)] px-4 py-5 text-sm text-[var(--color-text)]">
+              <div className="mt-3 rounded-lg bg-[var(--color-base)] px-3 py-4 text-sm text-[var(--color-text)]">
                 <div className="text-[var(--color-accent)]">
                   {project.title}
                 </div>
@@ -56,8 +56,8 @@ export default function FeaturedProjects() {
                 </p>
               </div>
             </div>
-            <div className="space-y-3 p-5">
-              <h3 className="text-lg font-semibold transition group-hover:text-[var(--color-accent)]">
+            <div className="space-y-3 p-4">
+              <h3 className="text-base font-semibold transition group-hover:text-[var(--color-accent)]">
                 {project.title}
               </h3>
               <p className="text-sm text-[var(--color-subtext0)]">

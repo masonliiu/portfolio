@@ -19,7 +19,7 @@ export const projects: Project[] = [
     title: "Mase Labs Collective",
     summary:
       "A professional platform for social media growth with a storefront, Stripe checkout, order tracking, and live status updates.",
-    tags: ["Product", "Payments", "Order Tracking"],
+    tags: ["Product", "Payments", "Web"],
     links: [{ label: "Live", href: "https://maselabs.com" }],
     highlights: [
       "Checkout flow built around Stripe payments.",
@@ -36,7 +36,7 @@ export const projects: Project[] = [
     title: "JVM Custom Memory Arena",
     summary:
       "A Java memory arena built to model JVM-style allocation and deepen understanding of low-level runtime behavior.",
-    tags: ["Java", "Systems"],
+    tags: ["Java", "Systems", "Runtime"],
     links: [
       {
         label: "GitHub",
@@ -58,7 +58,7 @@ export const projects: Project[] = [
     title: "Soundborn",
     summary:
       "A Unity 6.2 iOS turn-based RPG where musical genres become characters; core systems are complete with ongoing content development.",
-    tags: ["Unity 6.2", "C#", "iOS"],
+    tags: ["Unity", "C#", "iOS"],
     links: [
       { label: "GitHub", href: "https://github.com/masonliiu/soundborn" },
     ],
@@ -77,7 +77,7 @@ export const projects: Project[] = [
     title: "Bionic Reading Extension",
     summary:
       "A Chrome extension that toggles bionic reading on any webpage to improve scanning and focus.",
-    tags: ["Chrome", "Extension"],
+    tags: ["Chrome", "JavaScript", "Extension"],
     links: [
       {
         label: "GitHub",
