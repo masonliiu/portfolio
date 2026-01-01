@@ -25,12 +25,12 @@ export default function ProjectsList() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {projects.map((project) => (
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
-            className="terminal-card hover-panel group"
+            className="terminal-card hover-panel group flex min-h-[360px] flex-col"
           >
             <div className="terminal-preview">
               <div className="terminal-window">
