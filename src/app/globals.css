@@ -22,8 +22,14 @@
 }
 
 html {
-  font-family: var(--font-nunito-sans);
+  font-family: var(--font-nunito-sans), "Nunito Sans", system-ui, sans-serif;
   color-scheme: light;
+  font-size: 18px;
+}
+
+body {
+  font-family: var(--font-nunito-sans), "Nunito Sans", system-ui, sans-serif;
+  line-height: 1.6;
 }
 
 html.latte {
