@@ -58,7 +58,7 @@ export default function ThemePanel() {
   const ringColumn = activeIndex % 7;
 
   return (
-    <section className="terminal-card p-6">
+    <section className="terminal-card hover-panel p-6">
       <div className="terminal-title">Theme</div>
       <div className="mt-4 flex flex-wrap gap-2">
         {paletteOptions.map((option) => (

@@ -19,7 +19,7 @@ export default function ClickCounter() {
   };
 
   return (
-    <section className="terminal-card flex flex-col items-center justify-center gap-3 p-4 text-center">
+    <section className="terminal-card hover-panel flex flex-col items-center justify-center gap-3 p-4 text-center">
       <div className="text-3xl font-semibold text-[var(--color-accent)]">
         {count.toLocaleString()}
       </div>

@@ -44,17 +44,17 @@ export default function TerminalHeader() {
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
         <div className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
-          <Link className="hover:text-[var(--text)]" href="/about">
+          <Link className="nav-link hover:text-[var(--text)]" href="/about">
             About
           </Link>
-          <Link className="hover:text-[var(--text)]" href="/projects">
+          <Link className="nav-link hover:text-[var(--text)]" href="/projects">
             Projects
           </Link>
-          <Link className="hover:text-[var(--text)]" href="/photography">
+          <Link className="nav-link hover:text-[var(--text)]" href="/photography">
             Photography
           </Link>
           <a
-            className="hover:text-[var(--text)]"
+            className="nav-link hover:text-[var(--text)]"
             href="/resume.pdf"
             target="_blank"
             rel="noreferrer"

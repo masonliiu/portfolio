@@ -17,7 +17,7 @@ export default function ConnectForm() {
   };
 
   return (
-    <section className="terminal-card p-4">
+    <section className="terminal-card hover-panel p-4">
       <h3 className="text-sm font-semibold">Let&apos;s Connect</h3>
       <p className="mt-2 text-sm text-[var(--color-subtext0)]">
         Send a message directly to <span className="text-[var(--color-accent)]">liumasn@gmail.com</span>.

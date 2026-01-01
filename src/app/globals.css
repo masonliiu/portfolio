@@ -120,6 +120,25 @@ body {
   color: var(--color-accent);
 }
 
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width 0.2s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
 .terminal-card {
   background: var(--color-base);
   border: 1px solid color-mix(in srgb, var(--color-surface0) 70%, transparent);
@@ -188,6 +207,16 @@ body {
   background: color-mix(in srgb, var(--color-surface0) 70%, transparent);
 }
 
+.hover-panel {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.hover-panel:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.18);
+}
+
 .bg-fade {
   animation: fadeAway 1400ms forwards;
 }
@@ -208,6 +237,33 @@ html:not(.bg-effect) .bg-grid {
 html:not(.bg-effect) .bg-fade {
   animation: none;
   opacity: 0;
+}
+
+.click-ripple {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.2);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-accent) 60%, transparent) 0%,
+    transparent 70%
+  );
+  animation: ripple 0.9s ease-out forwards;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+@keyframes ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.4);
+    opacity: 0;
+  }
 }
 
 @keyframes fadeAway {

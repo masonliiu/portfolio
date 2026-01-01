@@ -8,6 +8,7 @@ const columns = 5;
 
 export default function BackgroundEffect() {
   const gridRef = useRef<HTMLDivElement | null>(null);
+  const rippleRef = useRef<HTMLDivElement | null>(null);
   const cells = useMemo(() => Array.from({ length: rows * columns }), []);
 
   useEffect(() => {
@@ -66,6 +67,16 @@ export default function BackgroundEffect() {
       isMouseDown = false;
       render(event);
     };
+    const handleClickRipple = (event: MouseEvent) => {
+      if (!rippleRef.current) return;
+      if (!document.documentElement.classList.contains("bg-effect")) return;
+      const ripple = document.createElement("span");
+      ripple.className = "click-ripple";
+      ripple.style.left = `${event.clientX}px`;
+      ripple.style.top = `${event.clientY}px`;
+      rippleRef.current.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 900);
+    };
 
     document.addEventListener("mousemove", handleMouseMove, {
       capture: true,
@@ -80,12 +91,14 @@ export default function BackgroundEffect() {
       capture: true,
       passive: true,
     });
+    document.addEventListener("click", handleClickRipple, { passive: true });
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove, { capture: true });
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mousedown", handleMouseDown, { capture: true });
       document.removeEventListener("mouseup", handleMouseUp, { capture: true });
+      document.removeEventListener("click", handleClickRipple);
     };
   }, []);
 
@@ -102,6 +115,7 @@ export default function BackgroundEffect() {
           className="bg-fade bg-[var(--color-base)] opacity-0 transition-[background,opacity] duration-150 ease-linear"
         />
       ))}
+      <div ref={rippleRef} className="pointer-events-none absolute inset-0" />
     </div>
   );
 }
