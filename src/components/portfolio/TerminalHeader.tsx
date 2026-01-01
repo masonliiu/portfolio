@@ -5,9 +5,9 @@ export default function TerminalHeader() {
     <header className="sticky top-0 z-30 border-b border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-base)]/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <nav aria-label="Breadcrumbs" className="flex items-center gap-2 text-sm">
-          <a className="wiggle text-[var(--color-accent)]" href="/">
+          <Link className="wiggle text-[var(--color-accent)]" href="/">
             ~
-          </a>
+          </Link>
           <span className="text-[var(--color-overlay1)]">/</span>
           <span className="cursor-blink" aria-hidden="true" />
         </nav>

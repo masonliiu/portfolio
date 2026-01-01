@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function ClickCounter() {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
+  const [count, setCount] = useState(() => {
+    if (typeof window === "undefined") return 0;
     const stored = localStorage.getItem("click-count");
-    if (stored) {
-      const parsed = Number(stored);
-      if (!Number.isNaN(parsed)) {
-        setCount(parsed);
-      }
-    }
-  }, []);
+    const parsed = stored ? Number(stored) : 0;
+    return Number.isNaN(parsed) ? 0 : parsed;
+  });
 
   const handleClick = () => {
     setCount((value) => {
