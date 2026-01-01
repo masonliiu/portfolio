@@ -1,58 +1,98 @@
 const projects = [
   {
-    name: "Studio Atlas",
-    description: "A modular portfolio platform with motion-driven case studies.",
-    stack: ["Next.js", "Tailwind", "Framer Motion"],
+    name: "Mase Labs Collective",
+    description:
+      "A professional platform for social media growth with a clean storefront, Stripe-powered checkout, order tracking by ID/email, and real-time status updates.",
+    links: [
+      { label: "maselabs.com", href: "https://maselabs.com" },
+    ],
+    tags: ["Shop", "Payments", "Order tracking"],
   },
   {
-    name: "Signal Rooms",
-    description: "An interactive 3D campaign microsite for product launches.",
-    stack: ["React Three Fiber", "GSAP", "Vercel"],
+    name: "JVM Custom Memory Arena",
+    description:
+      "A Java memory arena built to model JVM-style allocation and deepen understanding of low-level runtime behavior.",
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/masonliiu/jvm-custom-memory-arena",
+      },
+    ],
+    tags: ["Java", "Systems"],
   },
   {
-    name: "Northwind OS",
-    description: "Design system and dashboard templates for B2B teams.",
-    stack: ["TypeScript", "Storybook", "Figma"],
+    name: "Soundborn",
+    description:
+      "A Unity 6.2 iOS turn-based RPG where musical genres become characters; core systems are complete, including gacha collection, multi-enemy combat, status effects, and persistent progression.",
+    links: [
+      { label: "GitHub", href: "https://github.com/masonliiu/soundborn" },
+    ],
+    tags: ["Unity 6.2", "C#", "iOS"],
+  },
+  {
+    name: "Bionic Reading Extension",
+    description:
+      "A Chrome extension that toggles bionic reading on any webpage to improve scanning and focus.",
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/masonliiu/bionic-reading-extension",
+      },
+    ],
+    tags: ["Chrome", "Extension"],
+  },
+  {
+    name: "South Park View Counter",
+    description:
+      "A South Park-themed GitHub profile view counter with a drag-and-drop builder, real-time counts, dark mode support, and Redis-backed persistence.",
+    links: [
+      {
+        label: "Live",
+        href: "https://southpark-view-counter.vercel.app/",
+      },
+      {
+        label: "GitHub",
+        href: "https://github.com/masonliiu/south-park-view-counter",
+      },
+    ],
+    tags: ["Node.js", "Redis", "Vercel"],
   },
 ];
 
 export default function Projects() {
   return (
     <section id="projects" className="scroll-mt-24">
-      <div className="flex items-end justify-between gap-6">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-            Projects
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold text-slate-900">
-            Selected work
-          </h2>
-        </div>
-        <a
-          className="text-sm font-semibold text-slate-600 hover:text-slate-900"
-          href="mailto:mason@example.com"
-        >
-          Request full case studies
-        </a>
-      </div>
-      <div className="mt-8 grid gap-6 md:grid-cols-3">
+      <div className="terminal-title">Projects</div>
+      <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+        Selected builds
+      </h2>
+      <div className="mt-6 grid gap-5 lg:grid-cols-2">
         {projects.map((project) => (
-          <article
-            key={project.name}
-            className="flex h-full flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-          >
-            <h3 className="text-xl font-semibold text-slate-900">
-              {project.name}
-            </h3>
-            <p className="text-sm text-slate-600">{project.description}</p>
-            <div className="mt-auto flex flex-wrap gap-2">
-              {project.stack.map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600"
+          <article key={project.name} className="terminal-card p-6">
+            <div className="flex items-start justify-between gap-4">
+              <h3 className="text-lg font-semibold">{project.name}</h3>
+              <div className="flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[var(--muted)]">
+                {project.tags.map((tag) => (
+                  <span key={tag} className="badge">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <p className="mt-3 text-sm text-[var(--muted)]">
+              {project.description}
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-4 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">
+              {project.links.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-[var(--accent)]"
                 >
-                  {item}
-                </span>
+                  {link.label}
+                </a>
               ))}
             </div>
           </article>

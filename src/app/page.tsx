@@ -1,53 +1,60 @@
-import Link from "next/link";
+import TerminalHeader from "@/components/portfolio/TerminalHeader";
 import Hero from "@/components/portfolio/Hero";
 import Projects from "@/components/portfolio/Projects";
-import Skills from "@/components/portfolio/Skills";
-import Experience from "@/components/portfolio/Experience";
 import Contact from "@/components/portfolio/Contact";
+import ThemePanel from "@/components/portfolio/ThemePanel";
+import SessionStats from "@/components/portfolio/SessionStats";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200/70 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
-            Mason Liu
+    <div className="relative min-h-screen">
+      <TerminalHeader />
+      <main className="relative z-10 mx-auto flex max-w-6xl flex-col gap-12 px-6 py-12">
+        <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+          <Hero />
+          <div className="flex flex-col gap-6">
+            <ThemePanel />
+            <SessionStats />
+            <div className="terminal-card p-6 text-xs text-[var(--muted)]">
+              <div className="terminal-title">Quick Links</div>
+              <div className="mt-4 space-y-3 text-[11px] uppercase tracking-[0.3em]">
+                <a
+                  className="flex items-center justify-between rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)] transition hover:border-[var(--accent)]"
+                  href="mailto:liumasn@gmail.com"
+                >
+                  <span>Email</span>
+                  <span className="text-[var(--muted)]">liumasn@gmail.com</span>
+                </a>
+                <a
+                  className="flex items-center justify-between rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)] transition hover:border-[var(--accent)]"
+                  href="https://github.com/masonliiu"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>GitHub</span>
+                  <span className="text-[var(--muted)]">@masonliiu</span>
+                </a>
+                <a
+                  className="flex items-center justify-between rounded-lg border border-[var(--border)] px-3 py-2 text-[var(--text)] transition hover:border-[var(--accent)]"
+                  href="https://www.linkedin.com/in/masonliiu/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <span>LinkedIn</span>
+                  <span className="text-[var(--muted)]">/masonliiu</span>
+                </a>
+              </div>
+            </div>
           </div>
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a className="hover:text-slate-900" href="#projects">
-              Projects
-            </a>
-            <a className="hover:text-slate-900" href="#skills">
-              Skills
-            </a>
-            <a className="hover:text-slate-900" href="#experience">
-              Experience
-            </a>
-            <a className="hover:text-slate-900" href="#contact">
-              Contact
-            </a>
-          </nav>
-          <Link
-            className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-800"
-            href="/immersive"
-          >
-            Enter Immersive Mode
-          </Link>
-        </div>
-      </header>
+        </section>
 
-      <main className="mx-auto flex max-w-6xl flex-col gap-20 px-6 py-16">
-        <Hero />
         <Projects />
-        <Skills />
-        <Experience />
         <Contact />
       </main>
-
-      <footer className="border-t border-slate-200/70 bg-white/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6 text-sm text-slate-500">
-          <span>© 2024 Mason Liu. All rights reserved.</span>
-          <a className="font-medium text-slate-700 hover:text-slate-900" href="#hero">
+      <footer className="border-t border-[var(--border)] px-6 py-6 text-xs text-[var(--muted)]">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
+          <span>© {new Date().getFullYear()} Mason Liu</span>
+          <a className="hover:text-[var(--accent)]" href="#hero">
             Back to top
           </a>
         </div>
