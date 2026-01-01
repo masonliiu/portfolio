@@ -16,7 +16,7 @@ export default function TerminalHeader() {
   const segments = buildSegments(pathname);
 
   return (
-    <header className="sticky top-0 z-30 bg-[var(--color-base)]/85 backdrop-blur shadow-[0_20px_40px_rgba(15,23,42,0.12)]">
+    <header className="sticky top-0 z-30 bg-[var(--color-base)]/85 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <nav aria-label="Breadcrumbs" className="flex items-center gap-2 text-sm">
           <Link className="wiggle text-[var(--color-accent)]" href="/">
@@ -72,6 +72,7 @@ export default function TerminalHeader() {
           Immersive
         </Link>
       </div>
+      <div className="header-blur pointer-events-none absolute inset-x-0 bottom-0 h-10" />
     </header>
   );
 }

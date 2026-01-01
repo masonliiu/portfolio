@@ -100,7 +100,7 @@ html.latte,
 html.frappe,
 html.macchiato,
 html.mocha {
-  --color-accent: var(--current-accent-color);
+  --color-accent: color-mix(in srgb, var(--current-accent-color) 70%, white 30%);
 }
 
 body {
@@ -143,6 +143,25 @@ body {
 
 .nav-link:hover::after {
   width: 100%;
+}
+
+.page-shell {
+  width: 100%;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 3.5rem 2rem;
+}
+
+@media (min-width: 768px) {
+  .page-shell {
+    padding: 3.5rem 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-shell {
+    padding: 4rem 4.5rem;
+  }
 }
 
 .terminal-card {
@@ -211,6 +230,66 @@ body {
   font-size: 0.7rem;
   color: var(--color-subtext1);
   background: color-mix(in srgb, var(--color-surface0) 70%, transparent);
+}
+
+.tag-pill {
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  background: color-mix(in srgb, var(--tag-color) 20%, transparent);
+  color: var(--tag-color);
+}
+
+.terminal-preview {
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-surface2) 20%, transparent);
+  padding: 1rem;
+}
+
+.terminal-window {
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-base) 92%, black 8%);
+  padding: 0.9rem 1rem;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-surface1) 70%, transparent);
+}
+
+.terminal-window__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-subtext1);
+}
+
+.terminal-window__desc {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--color-subtext0);
+}
+
+.terminal-window__footer {
+  margin-top: 0.7rem;
+  font-size: 0.7rem;
+  color: var(--color-overlay1);
+  display: flex;
+  justify-content: space-between;
+}
+
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.header-blur {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--color-base) 65%, transparent)
+  );
+  backdrop-filter: blur(12px);
 }
 
 .hover-panel {

@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen">
       <BackgroundEffect />
-      <main className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-12 px-8 py-14">
+      <main className="page-shell relative z-10 flex flex-col gap-12">
         <Hero />
 
         <FeaturedProjects />

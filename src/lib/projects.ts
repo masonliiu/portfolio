@@ -6,6 +6,10 @@ export type ProjectLink = {
 export type Project = {
   slug: string;
   title: string;
+  repo: string;
+  stars: number | null;
+  contributors: string[];
+  createdAt: string;
   summary: string;
   tags: string[];
   links: ProjectLink[];
@@ -17,6 +21,10 @@ export const projects: Project[] = [
   {
     slug: "mase-labs",
     title: "Mase Labs Collective",
+    repo: "masonliiu/maselabs",
+    stars: null,
+    contributors: ["masonliiu"],
+    createdAt: "—",
     summary:
       "A professional platform for social media growth with a storefront, Stripe checkout, order tracking, and live status updates.",
     tags: ["Product", "Payments", "Web"],
@@ -34,6 +42,10 @@ export const projects: Project[] = [
   {
     slug: "jvm-custom-memory-arena",
     title: "JVM Custom Memory Arena",
+    repo: "masonliiu/jvm-custom-memory-arena",
+    stars: null,
+    contributors: ["masonliiu"],
+    createdAt: "—",
     summary:
       "A Java memory arena built to model JVM-style allocation and deepen understanding of low-level runtime behavior.",
     tags: ["Java", "Systems", "Runtime"],
@@ -56,6 +68,10 @@ export const projects: Project[] = [
   {
     slug: "soundborn",
     title: "Soundborn",
+    repo: "masonliiu/soundborn",
+    stars: null,
+    contributors: ["masonliiu"],
+    createdAt: "—",
     summary:
       "A Unity 6.2 iOS turn-based RPG where musical genres become characters; core systems are complete with ongoing content development.",
     tags: ["Unity", "C#", "iOS"],
@@ -75,6 +91,10 @@ export const projects: Project[] = [
   {
     slug: "bionic-reading-extension",
     title: "Bionic Reading Extension",
+    repo: "masonliiu/bionic-reading-extension",
+    stars: null,
+    contributors: ["masonliiu"],
+    createdAt: "—",
     summary:
       "A Chrome extension that toggles bionic reading on any webpage to improve scanning and focus.",
     tags: ["Chrome", "JavaScript", "Extension"],
@@ -97,6 +117,10 @@ export const projects: Project[] = [
   {
     slug: "south-park-view-counter",
     title: "South Park View Counter",
+    repo: "masonliiu/south-park-view-counter",
+    stars: null,
+    contributors: ["masonliiu"],
+    createdAt: "—",
     summary:
       "A South Park-themed GitHub profile view counter with a drag-and-drop builder, real-time counts, and Redis-backed persistence.",
     tags: ["Node.js", "Redis", "Vercel"],

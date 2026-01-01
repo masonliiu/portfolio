@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto w-full max-w-5xl px-8 py-14">
+    <div className="page-shell max-w-5xl">
       <div className="terminal-title">About</div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">About Me</h1>
 

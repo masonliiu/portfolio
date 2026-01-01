@@ -17,7 +17,7 @@ export default function ProjectDetailPage({
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-8 py-14">
+    <div className="page-shell max-w-5xl">
       <div className="terminal-title">Projects</div>
       <h1 className="mt-3 text-3xl font-semibold tracking-tight">
         {project.title}
@@ -30,7 +30,10 @@ export default function ProjectDetailPage({
         {project.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full border border-[var(--color-surface1)] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-subtext1)]"
+            className="tag-pill"
+            style={{
+              ["--tag-color" as string]: "var(--color-sapphire)",
+            }}
           >
             {tag}
           </span>
