@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --font-mono: var(--font-plex-mono);
+  --font-mono: var(--font-nunito-sans);
 
   --color-rosewater: #dc8a78;
   --color-flamingo: #dd7878;
@@ -22,7 +22,7 @@
 }
 
 html {
-  font-family: var(--font-mono);
+  font-family: var(--font-nunito-sans);
   color-scheme: light;
 }
 

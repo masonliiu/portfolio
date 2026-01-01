@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "600"],
+import TerminalHeader from "@/components/portfolio/TerminalHeader";
+
+const nunitoSans = localFont({
+  src: [
+    {
+      path: "../../public/fonts/NunitoSans-Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/NunitoSans-SemiBold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-nunito-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +33,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${plexMono.variable} antialiased`}>
+      <body className={`${nunitoSans.variable} antialiased`}>
+        <TerminalHeader />
         {children}
       </body>
     </html>
