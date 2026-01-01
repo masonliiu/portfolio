@@ -1,163 +1,189 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f6f5f4;
-  --surface: #ffffff;
-  --surface-muted: #f3f4f6;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --accent: #f97316;
-  --accent-soft: #ffedd5;
   --font-mono: var(--font-jetbrains-mono);
+
+  --color-rosewater: #dc8a78;
+  --color-flamingo: #dd7878;
+  --color-pink: #ea76cb;
+  --color-mauve: #8839ef;
+  --color-red: #d20f39;
+  --color-maroon: #e64553;
+  --color-peach: #fe640b;
+  --color-yellow: #df8e1d;
+  --color-green: #40a02b;
+  --color-teal: #179299;
+  --color-sky: #04a5e5;
+  --color-sapphire: #209fb5;
+  --color-blue: #1e66f5;
+  --color-lavender: #7287fd;
+
+  --current-accent-color: var(--color-peach);
 }
 
 html {
+  font-family: var(--font-mono);
   color-scheme: light;
 }
 
 html.latte {
-  --bg: #f6f5f4;
-  --surface: #ffffff;
-  --surface-muted: #f3f4f6;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --border: #e5e7eb;
+  --color-base: #eff1f5;
+  --color-mantle: #e6e9ef;
+  --color-crust: #dce0e8;
+  --color-surface0: #ccd0da;
+  --color-surface1: #bcc0cc;
+  --color-surface2: #acb0be;
+  --color-text: #4c4f69;
+  --color-subtext1: #5c5f77;
+  --color-subtext0: #6c6f85;
+  --color-overlay2: #7c7f93;
+  --color-overlay1: #8c8fa1;
+  --color-overlay0: #9ca0b0;
 }
 
 html.frappe {
-  --bg: #e9eef3;
-  --surface: #fdfdfd;
-  --surface-muted: #eef2f7;
-  --text: #1f2937;
-  --muted: #64748b;
-  --border: #dbe4ee;
+  --color-base: #303446;
+  --color-mantle: #292c3c;
+  --color-crust: #232634;
+  --color-surface0: #414559;
+  --color-surface1: #51576d;
+  --color-surface2: #626880;
+  --color-text: #c6d0f5;
+  --color-subtext1: #b5bfe2;
+  --color-subtext0: #a5adce;
+  --color-overlay2: #949cbb;
+  --color-overlay1: #838ba7;
+  --color-overlay0: #737994;
+  color-scheme: dark;
 }
 
 html.macchiato {
-  --bg: #0f172a;
-  --surface: #111827;
-  --surface-muted: #0b1120;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --border: #1f2937;
+  --color-base: #24273a;
+  --color-mantle: #1e2030;
+  --color-crust: #181926;
+  --color-surface0: #363a4f;
+  --color-surface1: #494d64;
+  --color-surface2: #5b6078;
+  --color-text: #cad3f5;
+  --color-subtext1: #b8c0e0;
+  --color-subtext0: #a5adcb;
+  --color-overlay2: #939ab7;
+  --color-overlay1: #8087a2;
+  --color-overlay0: #6e738d;
   color-scheme: dark;
 }
 
 html.mocha {
-  --bg: #0b0f1a;
-  --surface: #0f1629;
-  --surface-muted: #0b1120;
-  --text: #f8fafc;
-  --muted: #94a3b8;
-  --border: #1f2a44;
+  --color-base: #1e1e2e;
+  --color-mantle: #181825;
+  --color-crust: #11111b;
+  --color-surface0: #313244;
+  --color-surface1: #45475a;
+  --color-surface2: #585b70;
+  --color-text: #cdd6f4;
+  --color-subtext1: #bac2de;
+  --color-subtext0: #a6adc8;
+  --color-overlay2: #9399b2;
+  --color-overlay1: #7f849c;
+  --color-overlay0: #6c7086;
   color-scheme: dark;
 }
 
-html.bg-effect body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 28px,
-      rgba(255, 255, 255, 0.035) 29px
-    );
-  pointer-events: none;
-  mix-blend-mode: screen;
-  opacity: 0.3;
-  z-index: 0;
-}
-
-html.bg-effect.macchiato body::before,
-html.bg-effect.mocha body::before {
-  background:
-    linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.1) 50%, transparent 100%),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 28px,
-      rgba(148, 163, 184, 0.08) 29px
-    );
-  opacity: 0.4;
+:root,
+html.latte,
+html.frappe,
+html.macchiato,
+html.mocha {
+  --color-accent: var(--current-accent-color);
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-mono);
-  position: relative;
+  background: var(--color-base);
+  color: var(--color-text);
   min-height: 100vh;
 }
 
 ::selection {
-  background: var(--accent-soft);
-  color: var(--text);
+  background: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  color: var(--color-accent);
 }
 
-a {
-  color: inherit;
+.link {
+  color: color-mix(in srgb, var(--color-accent) 85%, transparent);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-underline-offset: 4px;
+  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: var(--color-accent);
 }
 
 .terminal-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+  background: var(--color-base);
+  border: 1px solid color-mix(in srgb, var(--color-surface0) 70%, transparent);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .terminal-card-muted {
-  background: var(--surface-muted);
-  border: 1px dashed var(--border);
-  border-radius: 16px;
+  background: var(--color-surface0);
+  border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
+  border-radius: 14px;
 }
 
 .terminal-title {
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
   font-size: 0.7rem;
-  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-subtext1);
 }
 
 .terminal-title::before {
   content: "// ";
-  color: var(--accent);
+  color: var(--color-accent);
 }
 
 .cursor-blink {
   width: 10px;
   height: 16px;
-  background: var(--accent);
+  background: var(--color-accent);
   display: inline-block;
-  animation: blink 1.1s steps(1) infinite;
+  animation: blink 3s cubic-bezier(0.2, 1, 0.8, 1) infinite;
 }
 
 @keyframes blink {
-  50% {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  20% {
     opacity: 0;
   }
 }
 
-.glow-accent {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 60%, transparent);
+.wiggle {
+  display: inline-block;
+  animation: wiggle 1s ease-in-out infinite;
 }
 
-.text-accent {
-  color: var(--accent);
-}
-
-.border-accent {
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
 }
 
 .badge {
   border-radius: 999px;
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
   padding: 4px 10px;
   font-size: 0.7rem;
-  color: var(--muted);
-  background: var(--surface-muted);
+  color: var(--color-subtext1);
+  background: color-mix(in srgb, var(--color-surface0) 70%, transparent);
 }
