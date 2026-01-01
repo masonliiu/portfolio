@@ -188,4 +188,36 @@ body {
   background: color-mix(in srgb, var(--color-surface0) 70%, transparent);
 }
 
-.bg-fade {\n  animation: fadeAway 1400ms forwards;\n}\n\n+.bg-fade.clicked {\n  animation: none;\n  opacity: 1;\n}\n\n@keyframes fadeAway {\n  0% {\n    opacity: 1;\n  }\n  60% {\n    opacity: 0.9;\n  }\n  100% {\n    opacity: 0;\n  }\n}
+.bg-fade {
+  animation: fadeAway 1400ms forwards;
+}
+
+.bg-fade.clicked {
+  animation: none;
+  opacity: 1;
+}
+
+.bg-grid {
+  filter: blur(16px) brightness(0.7);
+}
+
+html:not(.bg-effect) .bg-grid {
+  opacity: 0;
+}
+
+html:not(.bg-effect) .bg-fade {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes fadeAway {
+  0% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}

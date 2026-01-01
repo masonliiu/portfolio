@@ -92,7 +92,7 @@ export default function BackgroundEffect() {
   return (
     <div
       ref={gridRef}
-      className="pointer-events-none fixed inset-0 -z-10 grid scale-[1.05] blur-2xl"
+      className="bg-grid pointer-events-none fixed inset-0 -z-10 grid scale-[1.05] blur-2xl"
       style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
       aria-hidden="true"
     >

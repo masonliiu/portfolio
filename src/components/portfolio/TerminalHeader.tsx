@@ -15,7 +15,12 @@ export default function TerminalHeader() {
           <a className="hover:text-[var(--text)]" href="#projects">
             Projects
           </a>
-          <a className="hover:text-[var(--text)]" href="/resume.pdf">
+          <a
+            className="hover:text-[var(--text)]"
+            href="/resume.pdf"
+            target="_blank"
+            rel="noreferrer"
+          >
             Resume
           </a>
           <a className="hover:text-[var(--text)]" href="#contact">
