@@ -6,12 +6,14 @@ import ConnectForm from "@/components/portfolio/ConnectForm";
 import LocationCard from "@/components/portfolio/LocationCard";
 import ClickCounter from "@/components/portfolio/ClickCounter";
 import GitHubActivity from "@/components/portfolio/GitHubActivity";
+import QuickLinks from "@/components/portfolio/QuickLinks";
 import Footer from "@/components/portfolio/Footer";
 
 export default function Home() {
   return (
     <div className="relative min-h-screen">
       <BackgroundEffect />
+      <div className="header-blur-layer" />
       <main className="page-shell relative z-10 flex flex-col gap-12">
         <Hero />
 
@@ -22,7 +24,12 @@ export default function Home() {
           <ConnectForm />
           <LocationCard />
           <ClickCounter />
-          <GitHubActivity />
+          <div className="lg:col-span-2">
+            <GitHubActivity />
+          </div>
+          <div className="lg:col-span-2">
+            <QuickLinks />
+          </div>
         </section>
       </main>
       <Footer />

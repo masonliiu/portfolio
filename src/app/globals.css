@@ -149,18 +149,18 @@ body {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.5rem 2rem;
+  padding: 3.5rem 3rem;
 }
 
 @media (min-width: 768px) {
   .page-shell {
-    padding: 3.5rem 3rem;
+    padding: 3.5rem 4rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-shell {
-    padding: 4rem 4.5rem;
+    padding: 4rem 6rem;
   }
 }
 
@@ -245,14 +245,14 @@ body {
 
 .terminal-preview {
   border-radius: 14px;
-  background: color-mix(in srgb, var(--color-surface2) 20%, transparent);
-  padding: 1rem;
+  background: color-mix(in srgb, var(--color-surface2) 35%, white 65%);
+  padding: 1.5rem;
 }
 
 .terminal-window {
   border-radius: 12px;
-  background: color-mix(in srgb, var(--color-base) 92%, black 8%);
-  padding: 0.9rem 1rem;
+  background: color-mix(in srgb, var(--color-base) 96%, black 4%);
+  padding: 1rem 1.1rem;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-surface1) 70%, transparent);
 }
 
@@ -286,10 +286,22 @@ body {
 .header-blur {
   background: linear-gradient(
     to bottom,
-    transparent,
-    color-mix(in srgb, var(--color-base) 65%, transparent)
+    color-mix(in srgb, var(--color-base) 90%, transparent),
+    transparent
   );
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+}
+
+.header-blur-layer {
+  position: sticky;
+  top: 0;
+  height: 64px;
+  margin-top: -64px;
+  z-index: 20;
+  pointer-events: none;
+  backdrop-filter: blur(18px);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
 }
 
 .hover-panel {
