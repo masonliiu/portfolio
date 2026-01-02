@@ -16,7 +16,7 @@ export default function TerminalHeader() {
   const segments = buildSegments(pathname);
 
   return (
-    <header className="sticky top-0 z-30 bg-[var(--color-base)] header-mask">
+    <header className="sticky top-0 z-30 bg-transparent backdrop-blur header-mask">
       <div className="relative mx-auto flex max-w-7xl items-center px-8 py-4">
         <nav
           aria-label="Breadcrumbs"
@@ -42,7 +42,7 @@ export default function TerminalHeader() {
           ))}
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
-        <div className="ml-auto hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
+        <div className="ml-auto hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
           <TransitionLink className="header-link nav-link" href="/about">
             About
           </TransitionLink>

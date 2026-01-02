@@ -451,11 +451,11 @@ header,
   top: 0;
   left: 0;
   right: 0;
-  height: 56px;
+  height: 100px;
   z-index: 25;
   pointer-events: none;
-  backdrop-filter: blur(20px);
-  mask-image: linear-gradient(to bottom, transparent 0%, transparent 70%, black 100%);
+  backdrop-filter: blur(10px);
+  mask-image: linear-gradient(black, black, transparent);
 }
 
 .hover-panel {
@@ -482,7 +482,7 @@ html:not(.bg-effect) .bg-glow {
 }
 
 ::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--color-mantle) 60%, transparent);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
