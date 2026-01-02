@@ -56,7 +56,7 @@ export default function ThemePanel() {
   const activeCol = activeIndex % columns;
 
   return (
-    <section className="terminal-card p-3">
+    <section className="terminal-card p-4">
       <div className="terminal-title">Theme</div>
       <div className="mt-1 flex flex-wrap gap-2">
         {paletteOptions.map((option) => (
@@ -78,8 +78,8 @@ export default function ThemePanel() {
         className="swatch-grid mt-2"
         style={
           {
-            "--swatch-size": "1.1rem",
-            "--swatch-gap": "0.6rem",
+            "--swatch-size": "1.2rem",
+            "--swatch-gap": "0.7rem",
             "--swatch-offset": "-4px",
             "--swatch-col": String(activeCol),
             "--swatch-row": String(activeRow),

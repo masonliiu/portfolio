@@ -64,9 +64,9 @@ export default function ContributionGraph() {
   };
 
   return (
-    <section className="terminal-card p-3">
+    <section className="terminal-card p-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Github</h3>
+        <h3 className="text-base font-semibold">Github</h3>
         <a
           className="text-xs text-[var(--color-subtext1)]"
           href="https://github.com/masonliiu"
@@ -77,22 +77,22 @@ export default function ContributionGraph() {
         </a>
       </div>
       {status === "loading" ? (
-        <p className="mt-2 text-xs text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
           Loading contributions...
         </p>
       ) : null}
       {status === "error" ? (
-        <p className="mt-2 text-xs text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
           Contributions unavailable right now.
         </p>
       ) : null}
       {status === "ready" ? (
-        <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(12px,1fr))] gap-1">
+        <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(16px,1fr))] gap-1.5">
           {days.map((day) => (
             <button
               key={day.date}
               type="button"
-              className="h-3 w-3 rounded-sm border border-[var(--color-surface1)]"
+              className="h-4 w-4 rounded-sm border border-[var(--color-surface1)]"
               style={{ backgroundColor: getColor(day.count) }}
               title={`${day.count} contributions on ${day.date}`}
               aria-label={`${day.count} contributions on ${day.date}`}

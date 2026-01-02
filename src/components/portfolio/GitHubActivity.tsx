@@ -129,8 +129,8 @@ export default function GitHubActivity() {
   );
 
   return (
-    <section className="terminal-card p-3">
-      <div className="flex items-center justify-between text-sm">
+    <section className="terminal-card p-4">
+      <div className="flex items-center justify-between text-base">
         <h3 className="font-semibold">Recent Commits</h3>
         <a
           href="https://github.com/masonliiu"
@@ -142,20 +142,20 @@ export default function GitHubActivity() {
         </a>
       </div>
       {status === "loading" ? (
-        <p className="mt-2 text-xs text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
           Loading GitHub activity...
         </p>
       ) : null}
       {status === "error" ? (
-        <p className="mt-2 text-xs text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
           GitHub activity unavailable right now.
         </p>
       ) : null}
       {status === "ready" ? (
         <>
-          <ul className="mt-2 space-y-1.5 text-sm">
+          <ul className="mt-3 space-y-1.5 text-base">
             {commits.length === 0 ? (
-              <li className="text-xs text-[var(--color-subtext1)]">
+              <li className="text-sm text-[var(--color-subtext1)]">
                 No recent public commits.
               </li>
             ) : (
@@ -181,7 +181,7 @@ export default function GitHubActivity() {
           </ul>
           {languages.length > 0 ? (
             <div className="mt-3">
-              <div className="flex h-2 overflow-hidden rounded bg-[var(--color-surface0)]">
+              <div className="flex h-2.5 overflow-hidden rounded bg-[var(--color-surface0)]">
                 {languages.map((lang) => (
                   <div
                     key={lang.name}
