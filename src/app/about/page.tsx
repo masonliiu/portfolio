@@ -5,9 +5,9 @@ export default function AboutPage() {
     <div className="page-shell max-w-5xl">
       <div className="scroll-blur" />
       <div className="terminal-title">About</div>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">About Me</h1>
+      <h1 className="mt-3 text-3xl font-extrabold tracking-tight">About Me</h1>
 
-      <section className="mt-6 space-y-4 text-sm text-[var(--color-subtext0)]">
+      <section className="mt-6 space-y-4 text-base text-[var(--color-subtext0)]">
         <p>
           Hey! I&apos;m Mason Liu — a CS student at UTD focused on full-stack
           development and game development. I like building systems that feel
@@ -27,12 +27,11 @@ export default function AboutPage() {
       </section>
 
       <div className="mt-6 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]">
-        <a className="hover:text-[var(--color-accent)]" href="mailto:liumasn@gmail.com">
+        <a href="mailto:liumasn@gmail.com">
           Email
         </a>
         <span className="text-[var(--color-surface1)]">|</span>
         <a
-          className="hover:text-[var(--color-accent)]"
           href="https://github.com/masonliiu"
           target="_blank"
           rel="noreferrer"
@@ -41,7 +40,6 @@ export default function AboutPage() {
         </a>
         <span className="text-[var(--color-surface1)]">|</span>
         <a
-          className="hover:text-[var(--color-accent)]"
           href="https://www.linkedin.com/in/masonliiu/"
           target="_blank"
           rel="noreferrer"
@@ -51,7 +49,7 @@ export default function AboutPage() {
       </div>
 
       <Link
-        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] hover:text-[var(--color-accent)]"
+        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
         href="/"
       >
         Back home

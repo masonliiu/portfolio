@@ -5,8 +5,8 @@ export default function PhotographyPage() {
     <div className="page-shell max-w-5xl">
       <div className="scroll-blur" />
       <div className="terminal-title">Photography</div>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">Photography</h1>
-      <p className="mt-4 text-sm text-[var(--color-subtext0)]">
+      <h1 className="mt-3 text-3xl font-extrabold tracking-tight">Photography</h1>
+      <p className="mt-4 text-base text-[var(--color-subtext0)]">
         This gallery is in progress. I&apos;m curating a set of photos to share
         here soon.
       </p>
@@ -16,7 +16,7 @@ export default function PhotographyPage() {
       </div>
 
       <Link
-        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] hover:text-[var(--color-accent)]"
+        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
         href="/"
       >
         Back home

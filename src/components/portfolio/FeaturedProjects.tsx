@@ -18,12 +18,12 @@ export default function FeaturedProjects() {
   return (
     <section>
       <div className="flex items-center justify-between">
-        <h2 className="flex items-center gap-3 text-2xl font-semibold">
+        <h2 className="flex items-center gap-3 text-2xl font-extrabold">
           <span className="text-[var(--color-accent)]">★</span>
           Featured Projects
         </h2>
         <Link
-          className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] hover:text-[var(--color-accent)]"
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
           href="/projects"
         >
           View all →
@@ -63,7 +63,7 @@ export default function FeaturedProjects() {
             </div>
             <div className="space-y-3 p-4">
               <div className="flex items-center justify-between gap-4 text-sm">
-                <h3 className="text-base font-semibold transition group-hover:text-[var(--color-accent)]">
+                <h3 className="text-base font-semibold">
                   {project.title}
                 </h3>
                 <span className="text-xs text-[var(--color-subtext1)]">

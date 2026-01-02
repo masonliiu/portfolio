@@ -38,7 +38,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="mx-auto mb-6 mt-10 flex max-w-6xl flex-col gap-3 rounded-lg border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-crust)] px-6 py-4 text-xs text-[var(--color-subtext0)] md:flex-row md:items-center md:justify-between">
+    <footer className="mx-auto mb-6 mt-10 flex max-w-7xl flex-col gap-3 rounded-lg border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-crust)] px-10 py-4 text-xs text-[var(--color-subtext0)] md:flex-row md:items-center md:justify-between">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span>© {new Date().getFullYear()} Mason Liu</span>
       </div>
@@ -50,7 +50,6 @@ export default function Footer() {
         <span className="hidden text-[var(--color-surface0)] md:inline">-</span>
         <a
           href="mailto:liumasn@gmail.com"
-          className="hover:text-[var(--color-accent)]"
         >
           Email
         </a>
@@ -59,7 +58,6 @@ export default function Footer() {
           href="https://github.com/masonliiu"
           target="_blank"
           rel="noreferrer"
-          className="hover:text-[var(--color-accent)]"
         >
           GitHub
         </a>
@@ -68,7 +66,6 @@ export default function Footer() {
           href="https://www.linkedin.com/in/masonliiu/"
           target="_blank"
           rel="noreferrer"
-          className="hover:text-[var(--color-accent)]"
         >
           LinkedIn
         </a>

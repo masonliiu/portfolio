@@ -17,20 +17,20 @@ export default function ProjectsList() {
     <section className="space-y-6">
       <div>
         <div className="terminal-title">Projects</div>
-        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+        <h1 className="mt-3 text-3xl font-extrabold tracking-tight">
           Project catalog
         </h1>
-        <p className="mt-3 max-w-2xl text-sm text-[var(--color-subtext0)]">
+        <p className="mt-3 max-w-2xl text-base text-[var(--color-subtext0)]">
           Explore every build with a preview, highlights, and quick links.
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
           <Link
             key={project.slug}
             href={`/projects/${project.slug}`}
-            className="terminal-card group flex min-h-[360px] flex-col"
+            className="terminal-card flex min-h-[420px] flex-col"
           >
             <div className="terminal-preview">
               <div className="terminal-window">
@@ -58,7 +58,7 @@ export default function ProjectsList() {
             </div>
             <div className="space-y-3 p-4">
               <div className="flex items-center justify-between gap-4 text-sm">
-                <h2 className="text-base font-semibold transition group-hover:text-[var(--color-accent)]">
+                <h2 className="text-base font-semibold">
                   {project.title}
                 </h2>
                 <span className="text-xs text-[var(--color-subtext1)]">

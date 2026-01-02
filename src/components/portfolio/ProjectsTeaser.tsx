@@ -12,7 +12,7 @@ export default function ProjectsTeaser() {
         links.
       </p>
       <Link
-        className="mt-4 inline-flex items-center gap-2 rounded-md border border-[var(--color-surface1)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]"
+        className="mt-4 inline-flex items-center gap-2 rounded-md border border-[var(--color-surface1)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
         href="/projects"
       >
         View projects

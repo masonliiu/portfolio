@@ -28,7 +28,7 @@
 html {
   font-family: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
   color-scheme: light;
-  font-size: 18px;
+  font-size: 19px;
 }
 
 body {
@@ -123,11 +123,6 @@ body {
   text-decoration: underline;
   text-decoration-style: dashed;
   text-underline-offset: 4px;
-  transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-}
-
-.link:hover {
-  color: var(--color-accent);
 }
 
 .nav-link {
@@ -135,36 +130,25 @@ body {
 }
 
 .nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -6px;
-  width: 0;
-  height: 2px;
-  background: var(--color-accent);
-  transition: width 0.2s ease;
-}
-
-.nav-link:hover::after {
-  width: 100%;
+  content: none;
 }
 
 .page-shell {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.5rem 7rem;
+  padding: 4rem 8.5rem;
 }
 
 @media (min-width: 768px) {
   .page-shell {
-    padding: 3.5rem 9rem;
+    padding: 4rem 11rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-shell {
-    padding: 4rem 13rem;
+    padding: 4.5rem 15rem;
   }
 }
 
@@ -179,6 +163,20 @@ body {
   background: var(--color-surface0);
   border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
   border-radius: 14px;
+}
+
+body,
+header,
+.terminal-card,
+.terminal-card-muted,
+.terminal-preview,
+.terminal-window,
+.tag-pill,
+.badge {
+  transition:
+    background-color 0.45s ease,
+    color 0.45s ease,
+    border-color 0.45s ease;
 }
 
 .terminal-title {
@@ -273,8 +271,8 @@ body {
 
 .terminal-preview {
   border-radius: 14px;
-  background: color-mix(in srgb, var(--color-surface2) 35%, white 65%);
-  padding: 1.5rem;
+  background: color-mix(in srgb, var(--color-surface2) 20%, white 80%);
+  padding: 1.8rem;
 }
 
 .terminal-preview__inner {
@@ -333,7 +331,7 @@ body {
   z-index: 25;
   pointer-events: none;
   backdrop-filter: blur(20px);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, transparent 70%, black 100%);
 }
 
 .hover-panel {
@@ -343,8 +341,8 @@ body {
 .bg-glow {
   background:
     radial-gradient(
-      520px circle at var(--bg-x) var(--bg-y),
-      color-mix(in srgb, var(--color-accent) 24%, transparent),
+      640px circle at var(--bg-x) var(--bg-y),
+      color-mix(in srgb, var(--color-accent) 32%, transparent),
       transparent 70%
     );
   opacity: var(--bg-opacity);
@@ -353,4 +351,22 @@ body {
 
 html:not(.bg-effect) .bg-glow {
   opacity: 0;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--color-mantle) 60%, transparent);
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-accent) 70%, transparent);
+  border-radius: 999px;
+  border: 2px solid color-mix(in srgb, var(--color-mantle) 70%, transparent);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-accent) 90%, transparent);
 }

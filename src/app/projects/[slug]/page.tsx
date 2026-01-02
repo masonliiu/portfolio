@@ -20,10 +20,10 @@ export default function ProjectDetailPage({
     <div className="page-shell max-w-5xl">
       <div className="scroll-blur" />
       <div className="terminal-title">Projects</div>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+      <h1 className="mt-3 text-3xl font-extrabold tracking-tight">
         {project.title}
       </h1>
-      <p className="mt-3 text-sm text-[var(--color-subtext0)]">
+      <p className="mt-3 text-base text-[var(--color-subtext0)]">
         {project.summary}
       </p>
 
@@ -48,7 +48,6 @@ export default function ProjectDetailPage({
             href={link.href}
             target="_blank"
             rel="noreferrer"
-            className="hover:text-[var(--color-accent)]"
           >
             {link.label}
           </a>
@@ -58,7 +57,7 @@ export default function ProjectDetailPage({
       <section className="mt-10 space-y-6">
         <div>
           <div className="terminal-title">Overview</div>
-          <div className="mt-4 space-y-4 text-sm text-[var(--color-subtext0)]">
+          <div className="mt-4 space-y-4 text-base text-[var(--color-subtext0)]">
             {project.details.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -66,7 +65,7 @@ export default function ProjectDetailPage({
         </div>
         <div>
           <div className="terminal-title">Highlights</div>
-          <ul className="mt-4 space-y-2 text-sm text-[var(--color-subtext0)]">
+          <ul className="mt-4 space-y-2 text-base text-[var(--color-subtext0)]">
             {project.highlights.map((highlight) => (
               <li key={highlight}>• {highlight}</li>
             ))}
@@ -75,7 +74,7 @@ export default function ProjectDetailPage({
       </section>
 
       <Link
-        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] hover:text-[var(--color-accent)]"
+        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
         href="/projects"
       >
         Back to projects
