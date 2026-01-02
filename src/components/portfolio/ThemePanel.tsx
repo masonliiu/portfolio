@@ -50,6 +50,11 @@ export default function ThemePanel() {
     localStorage.setItem("bgEffect", String(backgroundEffect));
   }, [backgroundEffect]);
 
+  const activeIndex = accentOptions.findIndex((option) => option.id === accent);
+  const columns = 7;
+  const activeRow = Math.floor(activeIndex / columns);
+  const activeCol = activeIndex % columns;
+
   return (
     <section className="terminal-card p-3">
       <div className="terminal-title">Theme</div>
@@ -69,16 +74,26 @@ export default function ThemePanel() {
           </button>
         ))}
       </div>
-      <div className="relative mt-2 grid grid-cols-7 gap-2.5">
+      <div
+        className="swatch-grid mt-2"
+        style={
+          {
+            "--swatch-size": "1.1rem",
+            "--swatch-gap": "0.6rem",
+            "--swatch-offset": "-4px",
+            "--swatch-col": String(activeCol),
+            "--swatch-row": String(activeRow),
+          } as React.CSSProperties
+        }
+      >
+        <span className="swatch-indicator" aria-hidden="true" />
         {accentOptions.map((option) => (
           <button
             key={option.id}
             type="button"
             onClick={() => setAccent(option.id)}
-            className={`aspect-square min-h-6 w-full min-w-6 rounded-md shadow-sm transition ${
-              accent === option.id
-                ? "scale-105 outline outline-4 outline-[var(--color-accent)] outline-offset-2"
-                : "opacity-80 hover:scale-110 hover:opacity-100"
+            className={`aspect-square w-full rounded-[6px] shadow-sm ${
+              accent === option.id ? "opacity-100" : "opacity-90"
             }`}
             style={{ backgroundColor: `var(--color-${option.id})` }}
             aria-label={`Select ${option.label} accent color`}

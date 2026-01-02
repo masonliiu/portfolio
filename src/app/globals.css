@@ -236,6 +236,30 @@ body {
   background: color-mix(in srgb, var(--color-surface0) 70%, transparent);
 }
 
+.swatch-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, var(--swatch-size));
+  gap: var(--swatch-gap);
+  --swatch-step: calc(var(--swatch-size) + var(--swatch-gap));
+}
+
+.swatch-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--swatch-size) + 8px);
+  height: calc(var(--swatch-size) + 8px);
+  border: 2px solid var(--color-accent);
+  border-radius: 8px;
+  transform: translate(
+    calc(var(--swatch-step) * var(--swatch-col) + var(--swatch-offset)),
+    calc(var(--swatch-step) * var(--swatch-row) + var(--swatch-offset))
+  );
+  transition: transform 0.25s ease, border-color 0.3s ease;
+  pointer-events: none;
+}
+
 .tag-pill {
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
