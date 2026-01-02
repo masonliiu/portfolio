@@ -127,6 +127,11 @@ body {
 
 .nav-link {
   position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-accent);
 }
 
 .nav-link::after {

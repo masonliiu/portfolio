@@ -18,16 +18,13 @@ export default function TerminalHeader() {
   return (
     <header className="sticky top-0 z-30 bg-[var(--color-base)]/85 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4">
-        <nav aria-label="Breadcrumbs" className="flex items-center gap-2 text-sm">
+        <nav aria-label="Breadcrumbs" className="flex items-center gap-1 text-sm">
           <Link className="wiggle text-[var(--color-accent)]" href="/">
             ~
           </Link>
           <span className="text-[var(--color-overlay1)]">/</span>
           {segments.map((segment, index) => (
-            <span key={segment.href} className="flex items-center gap-2">
-              {index > 0 ? (
-                <span className="text-[var(--color-overlay1)]">/</span>
-              ) : null}
+            <span key={segment.href} className="flex items-center gap-1">
               {index === segments.length - 1 ? (
                 <span className="text-[var(--color-text)]">{segment.label}</span>
               ) : (
@@ -35,9 +32,9 @@ export default function TerminalHeader() {
                   {segment.label}
                 </Link>
               )}
+              {index < 0 ? null : (<span className="text-[var(--color-overlay1)]">/</span>)}
             </span>
           ))}
-          <span className="text-[var(--color-overlay1)]">/</span>
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
         <div className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
