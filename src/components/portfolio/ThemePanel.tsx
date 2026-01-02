@@ -58,7 +58,7 @@ export default function ThemePanel() {
   return (
     <section className="terminal-card p-3">
       <div className="terminal-title">Theme</div>
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className="mt-1 flex flex-wrap gap-2">
         {paletteOptions.map((option) => (
           <button
             key={option.id}
@@ -67,7 +67,7 @@ export default function ThemePanel() {
             className={`rounded-[6px] border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] transition ${
               palette === option.id
                 ? "border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] text-[var(--color-text)] shadow-sm"
-                : "border-transparent text-[var(--color-subtext1)] hover:text-[var(--color-text)]"
+                : "border-transparent text-[var(--color-subtext1)]"
             }`}
           >
             {option.label}
@@ -102,7 +102,7 @@ export default function ThemePanel() {
           </button>
         ))}
       </div>
-      <div className="mt-2 flex items-center text-xs text-[var(--color-subtext1)]">
+      <div className="mt-1 flex items-center text-[10px] text-[var(--color-subtext1)]">
         <label className="flex cursor-pointer items-center gap-2">
           <input
             type="checkbox"
@@ -112,7 +112,7 @@ export default function ThemePanel() {
             aria-label="Toggle background effect"
           />
           <span>
-            Background effect:{" "}
+            Background effect{" "}
             <span className="text-[var(--color-accent)]">
               {backgroundEffect ? "on" : "off"}
             </span>

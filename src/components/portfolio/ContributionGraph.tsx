@@ -64,11 +64,11 @@ export default function ContributionGraph() {
   };
 
   return (
-    <section className="terminal-card p-4">
+    <section className="terminal-card p-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Github</h3>
         <a
-          className="text-xs text-[var(--color-subtext1)] hover:text-[var(--color-accent)]"
+          className="text-xs text-[var(--color-subtext1)]"
           href="https://github.com/masonliiu"
           target="_blank"
           rel="noreferrer"

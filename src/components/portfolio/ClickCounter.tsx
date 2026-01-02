@@ -27,9 +27,17 @@ export default function ClickCounter() {
   }, [showIncrement]);
 
   return (
-    <section className="terminal-card flex flex-col items-center justify-center gap-2 p-3 text-center">
-      <div className="text-2xl font-semibold text-[var(--color-accent)]">
-        {count.toLocaleString()}
+    <section className="terminal-card flex items-center justify-between gap-3 p-3">
+      <div>
+        <div className="text-2xl font-semibold text-[var(--color-accent)]">
+          {count.toLocaleString()}
+        </div>
+        <p className="text-xs text-[var(--color-subtext1)]">
+          You&apos;ve clicked {count} times{" "}
+          {showIncrement ? (
+            <span className="text-[var(--color-accent)]">+1</span>
+          ) : null}
+        </p>
       </div>
       <button
         type="button"
@@ -38,12 +46,6 @@ export default function ClickCounter() {
       >
         Click me
       </button>
-      <p className="text-xs text-[var(--color-subtext1)]">
-        You&apos;ve clicked {count} times{" "}
-        {showIncrement ? (
-          <span className="text-[var(--color-accent)]">+1</span>
-        ) : null}
-      </p>
     </section>
   );
 }

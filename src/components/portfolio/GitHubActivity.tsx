@@ -136,7 +136,7 @@ export default function GitHubActivity() {
           href="https://github.com/masonliiu"
           target="_blank"
           rel="noreferrer"
-          className="text-xs text-[var(--color-accent)] hover:underline"
+          className="text-xs text-[var(--color-accent)]"
         >
           View on GitHub
         </a>
@@ -162,7 +162,7 @@ export default function GitHubActivity() {
               commits.map((commit) => (
                 <li key={`${commit.repo}-${commit.message}`}>
                   <a
-                    className="flex min-w-0 items-center gap-2 text-[var(--color-subtext0)] hover:text-[var(--color-accent)]"
+                    className="flex min-w-0 items-center gap-2 text-[var(--color-subtext0)]"
                     href={commit.url}
                     target="_blank"
                     rel="noreferrer"
@@ -185,16 +185,12 @@ export default function GitHubActivity() {
                 {languages.map((lang) => (
                   <div
                     key={lang.name}
-                    className="group relative h-full"
+                    className="relative h-full"
                     style={{
                       width: `${(lang.count / totalLanguages) * 100}%`,
                       backgroundColor: lang.color,
                     }}
-                  >
-                    <span className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 rounded border border-[var(--color-surface1)] bg-[var(--color-mantle)] px-2 py-0.5 text-[10px] text-[var(--color-subtext0)] opacity-0 transition group-hover:opacity-100">
-                      {lang.name}
-                    </span>
-                  </div>
+                  />
                 ))}
               </div>
             </div>

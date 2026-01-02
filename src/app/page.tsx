@@ -19,11 +19,19 @@ export default function Home() {
 
         <FeaturedProjects />
 
-        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <ThemePanel />
-          <ConnectForm />
-          <LocationCard />
-          <ClickCounter />
+        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-6">
+          <div className="lg:col-span-2">
+            <ThemePanel />
+          </div>
+          <div className="lg:col-span-2">
+            <ConnectForm />
+          </div>
+          <div className="lg:col-span-2">
+            <LocationCard />
+          </div>
+          <div className="lg:col-span-2">
+            <ClickCounter />
+          </div>
           <div className="lg:col-span-2">
             <GitHubActivity />
           </div>
