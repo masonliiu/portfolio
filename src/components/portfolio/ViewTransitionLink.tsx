@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import type { AnchorHTMLAttributes, MouseEvent } from "react";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -43,11 +44,15 @@ export default function ViewTransitionLink({
       }
     ).startViewTransition;
     if (startTransition) {
-      startTransition(() => router.push(href));
-    } else {
-      router.push(href);
+      try {
+        startTransition(() => router.push(href));
+        return;
+      } catch {
+        // fall through
+      }
     }
+    router.push(href);
   };
 
-  return <a href={href} onClick={handleClick} {...props} />;
+  return <Link href={href} onClick={handleClick} {...props} />;
 }
