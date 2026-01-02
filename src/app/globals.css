@@ -24,8 +24,8 @@
   --bg-y: 25%;
   --bg-opacity: 0;
 
-  --page-pad-y: 3.5rem;
-  --page-pad-x: 5.5rem;
+  --page-pad-y: 2.25rem;
+  --page-pad-x: 5rem;
   --tilde-offset: 0.9rem;
 }
 
@@ -33,6 +33,12 @@ html {
   font-family: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
   color-scheme: light;
   font-size: 19px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -201,15 +207,15 @@ a:hover {
 
 @media (min-width: 768px) {
   :root {
-    --page-pad-y: 3.75rem;
-    --page-pad-x: 7rem;
+    --page-pad-y: 2.6rem;
+    --page-pad-x: 5.75rem;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
-    --page-pad-y: 4.25rem;
-    --page-pad-x: 9.5rem;
+    --page-pad-y: 2.9rem;
+    --page-pad-x: 6.75rem;
   }
 }
 
@@ -498,6 +504,8 @@ html:not(.bg-effect) .bg-glow {
 .header-shell {
   padding-left: var(--page-pad-x);
   padding-right: var(--page-pad-x);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
 }
 
 .header-tilde {
@@ -505,9 +513,13 @@ html:not(.bg-effect) .bg-glow {
 }
 
 .footer-bar {
-  border-radius: 999px;
+  border-radius: 21px;
   border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
   background: color-mix(in srgb, var(--color-crust) 90%, transparent);
-  padding: 0.9rem 1.6rem;
+  padding: 0.9rem 1.8rem;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+  max-width: 68rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }

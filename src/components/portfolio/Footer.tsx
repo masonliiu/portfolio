@@ -38,32 +38,36 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="page-shell footer-bar mb-6 mt-10 text-xs text-[var(--color-subtext0)]">
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-        <span>© {new Date().getFullYear()} Mason Liu</span>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[var(--color-subtext1)]">
-          <div className="flex items-center gap-2">
-            <span>Time on site</span>
-            <span className="text-[var(--color-accent)]">{timeOnSite}</span>
+    <footer className="mb-6 mt-10 text-xs text-[var(--color-subtext0)]">
+      <div className="page-shell">
+        <div className="footer-bar">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <span>© {new Date().getFullYear()} Mason Liu</span>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[var(--color-subtext1)]">
+              <div className="flex items-center gap-2">
+                <span>Time on site</span>
+                <span className="text-[var(--color-accent)]">{timeOnSite}</span>
+              </div>
+              <span className="hidden md:inline">·</span>
+              <a href="mailto:liumasn@gmail.com">Email</a>
+              <span className="hidden md:inline">·</span>
+              <a
+                href="https://github.com/masonliiu"
+                target="_blank"
+                rel="noreferrer"
+              >
+                GitHub
+              </a>
+              <span className="hidden md:inline">·</span>
+              <a
+                href="https://www.linkedin.com/in/masonliiu/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                LinkedIn
+              </a>
+            </div>
           </div>
-          <span className="hidden md:inline">·</span>
-          <a href="mailto:liumasn@gmail.com">Email</a>
-          <span className="hidden md:inline">·</span>
-          <a
-            href="https://github.com/masonliiu"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
-          <span className="hidden md:inline">·</span>
-          <a
-            href="https://www.linkedin.com/in/masonliiu/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            LinkedIn
-          </a>
         </div>
       </div>
     </footer>

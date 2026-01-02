@@ -17,7 +17,7 @@ export default function TerminalHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-transparent backdrop-blur header-mask">
-      <div className="page-shell header-shell flex items-center justify-between py-3">
+      <div className="page-shell header-shell flex items-center justify-between">
         <nav aria-label="Breadcrumbs" className="flex items-center gap-1 text-sm">
           <TransitionLink
             className="wiggle header-tilde text-[var(--color-accent)]"
