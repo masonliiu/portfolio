@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 import TerminalHeader from "@/components/portfolio/TerminalHeader";
+import ThemeInitializer from "@/components/portfolio/ThemeInitializer";
 
 const jetBrainsMono = localFont({
   src: [
@@ -44,6 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${jetBrainsMono.variable} antialiased`}>
+        <ThemeInitializer />
         <TerminalHeader />
         {children}
       </body>
