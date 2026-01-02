@@ -28,6 +28,10 @@
   --page-pad-x: 5rem;
 }
 
+@view-transition {
+  navigation: auto;
+}
+
 html {
   font-family: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
   color-scheme: light;
@@ -119,6 +123,11 @@ body {
 ::selection {
   background: color-mix(in srgb, var(--color-accent) 30%, transparent);
   color: var(--color-accent);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
 }
 
 .link {
