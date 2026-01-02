@@ -38,7 +38,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="page-shell footer-shell footer-bar mb-6 mt-10 text-xs text-[var(--color-subtext0)]">
+    <footer className="page-shell footer-bar mb-6 mt-10 text-xs text-[var(--color-subtext0)]">
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <span>© {new Date().getFullYear()} Mason Liu</span>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[var(--color-subtext1)]">

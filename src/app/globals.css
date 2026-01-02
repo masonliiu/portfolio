@@ -504,14 +504,6 @@ html:not(.bg-effect) .bg-glow {
   margin-left: calc(var(--tilde-offset) * -1.2);
 }
 
-.footer-shell {
-  padding-left: calc(var(--page-pad-x) + var(--tilde-offset));
-  padding-right: var(--page-pad-x);
-  margin-left: calc(var(--tilde-offset) * -1);
-  max-width: calc(80rem + var(--tilde-offset));
-  margin-right: auto;
-}
-
 .footer-bar {
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
