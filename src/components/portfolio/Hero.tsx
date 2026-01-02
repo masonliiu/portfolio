@@ -1,20 +1,25 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 export default function Hero() {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <section
       id="hero"
-      className="relative flex lg:flex-row lg:items-center lg:justify-between"
+      className="relative z-10 flex flex-col gap-6 py-6 lg:flex-row lg:items-center lg:justify-between"
     >
       <div>
-        <h1 className="font-extrabold tracking-tight md:text-4xl">
+        <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl">
           Hey! I&apos;m{" "}
-          <span className="text-[var(--color-accent)] 40%,transparent)]">
+          <span className="text-[var(--color-accent)] underline decoration-dashed decoration-[color-mix(in srgb,var(--color-accent) 40%,transparent)] underline-offset-4">
             Mason Liu
           </span>
         </h1>
-        <p className="mt-4 w-140 text-lg text-[var(--color-subtext0)]">
-          I'm currently studying as a CS student @ UTD. I specialize in full-stack development and
+        <p className="mt-4 max-w-2xl text-lg text-[var(--color-subtext0)]">
+          Mason Liu is a CS student at UTD focused on full-stack development and
           game development.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--color-subtext1)]">
@@ -34,31 +39,39 @@ export default function Hero() {
             LinkedIn
           </a>
           <span className="text-[var(--color-surface1)]">|</span>
-          <a href=
-          "mailto:liumasn@gmail.com"
-          target="_blank"
-          rel="noreferrer"
-          >
-            Email
-          </a>
-          <span className="text-[var(--color-surface1)]">|</span>
-          <a
-            href="/about"
-          >
-            More about me →
-          </a>
+          <a href="mailto:liumasn@gmail.com">Email</a>
         </div>
       </div>
-      <div className="flex justify-center lg:justify-center">
-        <div style={{ width: '60%'}}>
-          <Image
-            src="/po2.jpg"
-            alt="Mason Liu portrait"
-            width={800}
-            height={800}
-            className="h-full w-full object-cover"
-            priority
-          />
+      <div className="flex justify-start lg:justify-end">
+        <div className="relative flex items-start gap-6">
+          <div className="lamp">
+            <span className="lamp-stand" />
+            <span className="lamp-arm" />
+            <span className="lamp-beam" />
+          </div>
+          <div
+            className="portrait-card"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            <span className={`portrait-flash ${isHovered ? "is-active" : ""}`} />
+            <Image
+              src="/portrait.jpg"
+              alt="Mason Liu portrait"
+              width={320}
+              height={320}
+              className={`portrait-img portrait-base ${isHovered ? "is-hidden" : ""}`}
+              priority
+            />
+            <Image
+              src="/po1.jpg"
+              alt="Mason Liu alternate portrait"
+              width={320}
+              height={320}
+              className={`portrait-img portrait-alt ${isHovered ? "is-visible" : ""}`}
+              priority
+            />
+          </div>
         </div>
       </div>
     </section>

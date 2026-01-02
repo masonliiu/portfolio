@@ -125,6 +125,15 @@ body {
   text-underline-offset: 4px;
 }
 
+a {
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
 .nav-link {
   position: relative;
   transition: color 0.2s ease;
@@ -146,22 +155,36 @@ body {
   color: var(--color-accent);
 }
 
+.more-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.more-link__arrow {
+  transition: transform 0.2s ease;
+}
+
+.more-link:hover .more-link__arrow {
+  transform: translateX(4px);
+}
+
 .page-shell {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.5rem 6rem;
+  padding: 3.25rem 5rem;
 }
 
 @media (min-width: 768px) {
   .page-shell {
-    padding: 3.5rem 7.5rem;
+    padding: 3.5rem 6.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .page-shell {
-    padding: 4rem 10rem;
+    padding: 4rem 8.5rem;
   }
 }
 
@@ -176,6 +199,99 @@ body {
   background: var(--color-surface0);
   border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
   border-radius: 14px;
+}
+
+.portrait-card {
+  position: relative;
+  width: 10.5rem;
+  height: 10.5rem;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
+  background: var(--color-mantle);
+}
+
+.portrait-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.portrait-base {
+  opacity: 1;
+}
+
+.portrait-alt {
+  opacity: 0;
+}
+
+.portrait-base.is-hidden {
+  opacity: 0;
+}
+
+.portrait-alt.is-visible {
+  opacity: 1;
+}
+
+.portrait-flash {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-accent) 30%, white 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.portrait-flash.is-active {
+  opacity: 0.35;
+}
+
+.lamp {
+  position: relative;
+  width: 5rem;
+  height: 9rem;
+}
+
+.lamp-stand {
+  position: absolute;
+  bottom: 0;
+  left: 0.6rem;
+  width: 0.4rem;
+  height: 7.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-surface1) 70%, transparent);
+}
+
+.lamp-arm {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  width: 3.5rem;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-surface1) 70%, transparent);
+}
+
+.lamp-beam {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.7rem;
+  width: 6.5rem;
+  height: 7rem;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-accent) 25%, transparent),
+    transparent 70%
+  );
+  clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+  filter: blur(6px);
+  opacity: 0.8;
+  pointer-events: none;
 }
 
 body,
