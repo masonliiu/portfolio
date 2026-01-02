@@ -1,12 +1,7 @@
-"use client";
-
 import Image from "next/image";
+import { Link } from "next-view-transitions";
 
-type HeroProps = {
-  onMoreAbout: () => void;
-};
-
-export default function Hero({ onMoreAbout }: HeroProps) {
+export default function Hero() {
   return (
     <section
       id="hero"
@@ -50,14 +45,10 @@ export default function Hero({ onMoreAbout }: HeroProps) {
             Instagram
           </a>
           <span className="text-[var(--color-surface1)]">|</span>
-          <button
-            type="button"
-            className="more-link clickable border-0 bg-transparent p-0"
-            onClick={onMoreAbout}
-          >
+          <Link className="more-link clickable" href="/about">
             More about me
             <span className="more-link__arrow"> →</span>
-          </button>
+          </Link>
         </div>
       </div>
       <div className="flex justify-start lg:justify-end">

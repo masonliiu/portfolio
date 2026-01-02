@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import ViewTransitionLink from "./ViewTransitionLink";
+import { Link as TransitionLink } from "next-view-transitions";
 import { usePathname } from "next/navigation";
 
 function buildSegments(pathname: string) {
@@ -23,37 +22,39 @@ export default function TerminalHeader() {
           aria-label="Breadcrumbs"
           className="absolute left-0 flex items-center gap-1 text-sm"
         >
-          <Link className="wiggle text-[var(--color-accent)]" href="/">
+          <TransitionLink className="wiggle text-[var(--color-accent)]" href="/">
             ~
-          </Link>
+          </TransitionLink>
           <span className="text-[var(--color-overlay1)]">/</span>
           {segments.map((segment, index) => (
             <span key={segment.href} className="flex items-center gap-1">
               {index === segments.length - 1 ? (
                 <span className="text-[var(--color-text)]">{segment.label}</span>
               ) : (
-                <ViewTransitionLink className="header-link" href={segment.href}>
+                <TransitionLink className="header-link" href={segment.href}>
                   {segment.label}
-                </ViewTransitionLink>
+                </TransitionLink>
               )}
-              {index < 0 ? null : (<span className="text-[var(--color-overlay1)]">/</span>)}
+              {index < segments.length - 1 ? (
+                <span className="text-[var(--color-overlay1)]">/</span>
+              ) : null}
             </span>
           ))}
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
         <div className="ml-auto hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
-          <ViewTransitionLink className="header-link nav-link" href="/about">
+          <TransitionLink className="header-link nav-link" href="/about">
             About
-          </ViewTransitionLink>
-          <ViewTransitionLink className="header-link nav-link" href="/projects">
+          </TransitionLink>
+          <TransitionLink className="header-link nav-link" href="/projects">
             Projects
-          </ViewTransitionLink>
-          <ViewTransitionLink
+          </TransitionLink>
+          <TransitionLink
             className="header-link nav-link"
             href="/photography"
           >
             Photography
-          </ViewTransitionLink>
+          </TransitionLink>
           <a
             className="header-link nav-link"
             href="/resume.pdf"
@@ -66,12 +67,12 @@ export default function TerminalHeader() {
             Contact
           </a>
         </div>
-        <Link
+        <TransitionLink
           className="header-link ml-6 rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
           href="/immersive"
         >
           Immersive
-        </Link>
+        </TransitionLink>
       </div>
     </header>
   );

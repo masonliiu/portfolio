@@ -4,6 +4,7 @@ import "./globals.css";
 
 import TerminalHeader from "@/components/portfolio/TerminalHeader";
 import ThemeInitializer from "@/components/portfolio/ThemeInitializer";
+import { ViewTransitions } from "next-view-transitions";
 
 const jetBrainsMono = localFont({
   src: [
@@ -47,7 +48,7 @@ export default function RootLayout({
       <body className={`${jetBrainsMono.variable} antialiased`}>
         <ThemeInitializer />
         <TerminalHeader />
-        {children}
+        <ViewTransitions>{children}</ViewTransitions>
       </body>
     </html>
   );

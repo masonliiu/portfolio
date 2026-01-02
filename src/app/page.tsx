@@ -1,7 +1,3 @@
-"use client";
-
-import { useMemo } from "react";
-import { useRouter } from "next/navigation";
 import BackgroundEffect from "@/components/portfolio/BackgroundEffect";
 import Hero from "@/components/portfolio/Hero";
 import FeaturedProjects from "@/components/portfolio/FeaturedProjects";
@@ -14,60 +10,12 @@ import ContributionGraph from "@/components/portfolio/ContributionGraph";
 import Footer from "@/components/portfolio/Footer";
 
 export default function Home() {
-  const router = useRouter();
-
-  const prefersReducedMotion = useMemo(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }, []);
-
-  const scrollToTopSmooth = () =>
-    new Promise<void>((resolve) => {
-      if (typeof window === "undefined") {
-        resolve();
-        return;
-      }
-      if (window.scrollY <= 1) {
-        resolve();
-        return;
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      const start = performance.now();
-      const tick = () => {
-        if (window.scrollY <= 1 || performance.now() - start > 900) {
-          resolve();
-          return;
-        }
-        requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    });
-
-  const handleMoreAbout = async () => {
-    if (prefersReducedMotion) {
-      router.push("/about");
-      return;
-    }
-    await scrollToTopSmooth();
-    const startTransition = (document as unknown as { startViewTransition?: (callback: () => void) => void })
-      .startViewTransition;
-    if (startTransition) {
-      try {
-        startTransition(() => router.push("/about"));
-        return;
-      } catch {
-        // fall through
-      }
-    }
-    router.push("/about");
-  };
-
   return (
     <div className="relative min-h-screen">
       <BackgroundEffect />
       <div className="scroll-blur" />
       <main className="page-shell relative z-10 flex flex-col gap-12">
-        <Hero onMoreAbout={handleMoreAbout} />
+        <Hero />
 
         <FeaturedProjects />
 
