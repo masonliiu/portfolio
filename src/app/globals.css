@@ -167,6 +167,13 @@ a:hover {
   color: var(--color-accent);
 }
 
+.header-mask {
+  mask-image: linear-gradient(black, black, transparent);
+  -webkit-mask-image: linear-gradient(black, black, transparent);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
 .more-link {
   display: inline-flex;
   align-items: center;
