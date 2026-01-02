@@ -47,8 +47,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${jetBrainsMono.variable} antialiased`}>
         <ThemeInitializer />
-        <TerminalHeader />
-        <ViewTransitions>{children}</ViewTransitions>
+        <ViewTransitions>
+          <TerminalHeader />
+          {children}
+        </ViewTransitions>
       </body>
     </html>
   );
