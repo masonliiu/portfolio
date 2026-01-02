@@ -38,8 +38,8 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="mb-6 mt-10 text-xs text-[var(--color-subtext0)]">
-      <div className="page-shell">
+    <footer className="text-xs text-[var(--color-subtext0)]">
+      <div className="page-shell" style={{ paddingTop: "0px"}}>
         <div className="footer-bar">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <span>© {new Date().getFullYear()} Mason Liu</span>
