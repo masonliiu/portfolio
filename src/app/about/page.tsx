@@ -20,10 +20,14 @@ export default function AboutPage() {
     const startTransition = (document as unknown as { startViewTransition?: (callback: () => void) => void })
       .startViewTransition;
     if (startTransition) {
-      startTransition(() => router.push("/"));
-    } else {
-      router.push("/");
+      try {
+        startTransition(() => router.push("/"));
+        return;
+      } catch {
+        // fall through
+      }
     }
+    router.push("/");
   };
 
   return (

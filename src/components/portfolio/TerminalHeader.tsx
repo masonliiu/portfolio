@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import ViewTransitionLink from "./ViewTransitionLink";
 import { usePathname } from "next/navigation";
 
 function buildSegments(pathname: string) {
@@ -31,9 +32,9 @@ export default function TerminalHeader() {
               {index === segments.length - 1 ? (
                 <span className="text-[var(--color-text)]">{segment.label}</span>
               ) : (
-                <Link className="header-link" href={segment.href}>
+                <ViewTransitionLink className="header-link" href={segment.href}>
                   {segment.label}
-                </Link>
+                </ViewTransitionLink>
               )}
               {index < 0 ? null : (<span className="text-[var(--color-overlay1)]">/</span>)}
             </span>
@@ -41,15 +42,18 @@ export default function TerminalHeader() {
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
         <div className="ml-auto hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
-          <Link className="header-link nav-link" href="/about">
+          <ViewTransitionLink className="header-link nav-link" href="/about">
             About
-          </Link>
-          <Link className="header-link nav-link" href="/projects">
+          </ViewTransitionLink>
+          <ViewTransitionLink className="header-link nav-link" href="/projects">
             Projects
-          </Link>
-          <Link className="header-link nav-link" href="/photography">
+          </ViewTransitionLink>
+          <ViewTransitionLink
+            className="header-link nav-link"
+            href="/photography"
+          >
             Photography
-          </Link>
+          </ViewTransitionLink>
           <a
             className="header-link nav-link"
             href="/resume.pdf"

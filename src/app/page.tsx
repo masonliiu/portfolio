@@ -52,10 +52,14 @@ export default function Home() {
     const startTransition = (document as unknown as { startViewTransition?: (callback: () => void) => void })
       .startViewTransition;
     if (startTransition) {
-      startTransition(() => router.push("/about"));
-    } else {
-      router.push("/about");
+      try {
+        startTransition(() => router.push("/about"));
+        return;
+      } catch {
+        // fall through
+      }
     }
+    router.push("/about");
   };
 
   return (
@@ -67,7 +71,7 @@ export default function Home() {
 
         <FeaturedProjects />
 
-        <section className="grid gap-8 md:grid-cols-4 lg:grid-cols-6">
+        <section className="grid gap-6 md:grid-cols-4 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <ThemePanel />
           </div>

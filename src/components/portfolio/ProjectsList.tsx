@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { projects } from "@/lib/projects";
+import ViewTransitionLink from "./ViewTransitionLink";
 
 const tagColors = [
   "peach",
@@ -27,10 +27,11 @@ export default function ProjectsList() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {projects.map((project) => (
-          <Link
+          <ViewTransitionLink
             key={project.slug}
             href={`/projects/${project.slug}`}
             className="terminal-card flex min-h-[420px] flex-col"
+            style={{ viewTransitionName: `project-${project.slug}` }}
           >
             <div className="terminal-preview">
               <div className="terminal-window">
@@ -82,7 +83,7 @@ export default function ProjectsList() {
                 ))}
               </div>
             </div>
-          </Link>
+          </ViewTransitionLink>
         ))}
       </div>
     </section>
