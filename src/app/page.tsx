@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import BackgroundEffect from "@/components/portfolio/BackgroundEffect";
@@ -13,17 +13,13 @@ import ClickCounter from "@/components/portfolio/ClickCounter";
 import GitHubActivity from "@/components/portfolio/GitHubActivity";
 import ContributionGraph from "@/components/portfolio/ContributionGraph";
 import Footer from "@/components/portfolio/Footer";
+import AboutContent from "@/components/portfolio/AboutContent";
 
 export default function Home() {
   const router = useRouter();
   const portraitRef = useRef<HTMLDivElement>(null);
-  const [slideStage, setSlideStage] = useState<"idle" | "enter-from" | "enter">(
-    "idle"
-  );
+  const [isOverlayActive, setIsOverlayActive] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
-  const [portraitPhase, setPortraitPhase] = useState<
-    "idle" | "to-about" | "from-about-prep" | "from-about"
-  >("idle");
   const [portraitStyle, setPortraitStyle] = useState<CSSProperties>();
   const [isPortraitFixed, setIsPortraitFixed] = useState(false);
 
@@ -66,50 +62,21 @@ export default function Home() {
     setIsPortraitFixed(true);
   };
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const fromAbout = sessionStorage.getItem("transition-from-about");
-    if (!fromAbout) return;
-    sessionStorage.removeItem("transition-from-about");
-    lockPortrait();
-    setPortraitPhase("from-about-prep");
-    setSlideStage("enter-from");
-    requestAnimationFrame(() => {
-      setSlideStage("enter");
-      setPortraitPhase("from-about");
-    });
-    const timeout = setTimeout(() => {
-      setSlideStage("idle");
-      setPortraitPhase("idle");
-      setIsPortraitFixed(false);
-    }, 700);
-    return () => clearTimeout(timeout);
-  }, []);
-
   const handleMoreAbout = async () => {
     if (prefersReducedMotion) {
-      sessionStorage.setItem("transition-from-home", "1");
       router.push("/about");
       return;
     }
     await scrollToTopSmooth();
     lockPortrait();
-    setPortraitPhase("to-about");
     setIsLeaving(true);
-    sessionStorage.setItem("transition-from-home", "1");
+    setIsOverlayActive(true);
     setTimeout(() => {
       router.push("/about");
     }, 700);
   };
 
-  const slideClass =
-    slideStage === "enter-from"
-      ? "home-slide enter-from-bottom"
-      : slideStage === "enter"
-        ? "home-slide enter-active"
-        : isLeaving
-          ? "home-slide leave-to-bottom"
-          : "home-slide";
+  const slideClass = isLeaving ? "home-slide leave-to-bottom" : "home-slide";
 
   return (
     <div className="relative min-h-screen">
@@ -122,7 +89,6 @@ export default function Home() {
             portraitRef={portraitRef}
             portraitStyle={portraitStyle}
             isPortraitFixed={isPortraitFixed}
-            portraitPhase={portraitPhase}
           />
 
           <FeaturedProjects />
@@ -147,6 +113,11 @@ export default function Home() {
               <ContributionGraph />
             </div>
           </section>
+        </div>
+        <div className={`about-overlay ${isOverlayActive ? "is-active" : ""}`}>
+          <div className="about-overlay__inner">
+            <AboutContent />
+          </div>
         </div>
       </main>
       <Footer />

@@ -8,7 +8,6 @@ type HeroProps = {
   portraitRef: RefObject<HTMLDivElement>;
   portraitStyle?: CSSProperties;
   isPortraitFixed?: boolean;
-  portraitPhase: "idle" | "to-about" | "from-about-prep" | "from-about";
 };
 
 export default function Hero({
@@ -16,7 +15,6 @@ export default function Hero({
   portraitRef,
   portraitStyle,
   isPortraitFixed = false,
-  portraitPhase,
 }: HeroProps) {
   return (
     <section
@@ -75,7 +73,7 @@ export default function Hero({
         <div className="portrait-slot">
           <div
             ref={portraitRef}
-            className={`portrait-card portrait-frame ${isPortraitFixed ? "is-fixed" : ""} ${portraitPhase === "to-about" ? "is-to-about" : ""} ${portraitPhase === "from-about-prep" ? "is-from-about-prep" : ""} ${portraitPhase === "from-about" ? "is-from-about" : ""}`}
+            className={`portrait-card ${isPortraitFixed ? "is-fixed" : ""}`}
             style={isPortraitFixed ? portraitStyle : undefined}
           >
             <Image
@@ -83,15 +81,7 @@ export default function Hero({
               alt="Mason Liu portrait"
               width={1200}
               height={1200}
-              className="portrait-img portrait-base"
-              priority
-            />
-            <Image
-              src="/en3.png"
-              alt="Mason Liu alternate portrait"
-              width={1200}
-              height={1200}
-              className="portrait-img portrait-alt"
+              className="portrait-img"
               priority
             />
           </div>

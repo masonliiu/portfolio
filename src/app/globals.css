@@ -23,6 +23,9 @@
   --bg-x: 50%;
   --bg-y: 25%;
   --bg-opacity: 0;
+
+  --page-pad-y: 3.25rem;
+  --page-pad-x: 5rem;
 }
 
 html {
@@ -178,18 +181,20 @@ a:hover {
   width: 100%;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 3.25rem 5rem;
+  padding: var(--page-pad-y) var(--page-pad-x);
 }
 
 @media (min-width: 768px) {
-  .page-shell {
-    padding: 3.5rem 6.5rem;
+  :root {
+    --page-pad-y: 3.5rem;
+    --page-pad-x: 6.5rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .page-shell {
-    padding: 4rem 8.5rem;
+  :root {
+    --page-pad-y: 4rem;
+    --page-pad-x: 8.5rem;
   }
 }
 
@@ -259,39 +264,27 @@ a:hover {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.about-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-base);
+  z-index: 15;
+  transform: translateY(-100%);
   transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+  padding: var(--page-pad-y) var(--page-pad-x);
+  display: flex;
+  justify-content: center;
 }
 
-.portrait-base {
+.about-overlay.is-active {
   transform: translateY(0);
 }
 
-.portrait-alt {
-  transform: translateY(-100%);
-}
-
-.portrait-frame.is-to-about .portrait-base {
-  transform: translateY(100%);
-}
-
-.portrait-frame.is-to-about .portrait-alt {
-  transform: translateY(0);
-}
-
-.portrait-frame.is-from-about-prep .portrait-base {
-  transform: translateY(-100%);
-}
-
-.portrait-frame.is-from-about-prep .portrait-alt {
-  transform: translateY(0);
-}
-
-.portrait-frame.is-from-about .portrait-base {
-  transform: translateY(0);
-}
-
-.portrait-frame.is-from-about .portrait-alt {
-  transform: translateY(100%);
+.about-overlay__inner {
+  width: 100%;
+  max-width: 64rem;
 }
 
 .lamp {
