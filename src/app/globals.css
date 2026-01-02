@@ -203,17 +203,15 @@ a:hover {
 
 .portrait-card {
   position: relative;
-  width: 10.5rem;
-  height: 10.5rem;
+  width: 20rem;
+  height: 20rem;
   overflow: hidden;
   border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
-  background: var(--color-mantle);
 }
 
 .portrait-img {
   position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -235,20 +233,6 @@ a:hover {
 
 .portrait-alt.is-visible {
   opacity: 1;
-}
-
-.portrait-flash {
-  position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--color-accent) 30%, white 70%);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.portrait-flash.is-active {
-  opacity: 0.35;
 }
 
 .lamp {

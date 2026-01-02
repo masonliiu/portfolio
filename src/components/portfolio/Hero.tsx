@@ -57,28 +57,24 @@ export default function Hero() {
       </div>
       <div className="flex justify-start lg:justify-end">
         <div className="relative flex items-start gap-6">
-          <div className="lamp">
-            <span className="lamp-stand" />
-            <span className="lamp-arm" />
-            <span className="lamp-beam" />
-          </div>
           <div
             className="portrait-card"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
             <Image
-              src="/po1.jpg"
+              src="/en1.png"
               alt="Mason Liu portrait"
-              width={320}
-              height={320}
+              width={39000}
+              height={39000}
+              className={`portrait-img portrait-alt ${isHovered ? "" : "is-visible" }`}
               priority
             />
             <Image
-              src="/po2.jpg"
+              src="/en3.png"
               alt="Mason Liu alternate portrait"
-              width={320}
-              height={320}
+              width={39000}
+              height={39000}
               className={`portrait-img portrait-alt ${isHovered ? "is-visible" : ""}`}
               priority
             />
