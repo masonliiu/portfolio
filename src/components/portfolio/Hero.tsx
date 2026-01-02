@@ -1,12 +1,23 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import Link from "next/link";
+import type { CSSProperties, RefObject } from "react";
 
-export default function Hero() {
-  const [isHovered, setIsHovered] = useState(false);
+type HeroProps = {
+  onMoreAbout: () => void;
+  portraitRef: RefObject<HTMLDivElement>;
+  portraitStyle?: CSSProperties;
+  isPortraitFixed?: boolean;
+  portraitPhase: "idle" | "to-about" | "from-about-prep" | "from-about";
+};
 
+export default function Hero({
+  onMoreAbout,
+  portraitRef,
+  portraitStyle,
+  isPortraitFixed = false,
+  portraitPhase,
+}: HeroProps) {
   return (
     <section
       id="hero"
@@ -42,40 +53,45 @@ export default function Hero() {
           <span className="text-[var(--color-surface1)]">|</span>
           <a href="mailto:liumasn@gmail.com">Email</a>
           <span className="text-[var(--color-surface1)]">|</span>
-          <a href="https://instagram.com/mason_liuu" target="_blank" rel="noreferrer">
-              Instagram
+          <a
+            href="https://instagram.com/mason_liuu"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Instagram
           </a>
-            <span className="text-[var(--color-surface1)]">|</span>
-          <Link
-            className="more-link"
-            href="/about"
+          <span className="text-[var(--color-surface1)]">|</span>
+          <button
+            type="button"
+            className="more-link clickable border-0 bg-transparent p-0"
+            onClick={onMoreAbout}
           >
             More about me
             <span className="more-link__arrow"> →</span>
-          </Link>
+          </button>
         </div>
       </div>
       <div className="flex justify-start lg:justify-end">
-        <div className="relative flex items-start gap-6">
+        <div className="portrait-slot">
           <div
-            className="portrait-card"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            ref={portraitRef}
+            className={`portrait-card portrait-frame ${isPortraitFixed ? "is-fixed" : ""} ${portraitPhase === "to-about" ? "is-to-about" : ""} ${portraitPhase === "from-about-prep" ? "is-from-about-prep" : ""} ${portraitPhase === "from-about" ? "is-from-about" : ""}`}
+            style={isPortraitFixed ? portraitStyle : undefined}
           >
             <Image
               src="/en1.png"
               alt="Mason Liu portrait"
-              width={39000}
-              height={39000}
-              className={`portrait-img portrait-alt ${isHovered ? "" : "is-visible" }`}
+              width={1200}
+              height={1200}
+              className="portrait-img portrait-base"
               priority
             />
             <Image
               src="/en3.png"
               alt="Mason Liu alternate portrait"
-              width={39000}
-              height={39000}
-              className={`portrait-img portrait-alt ${isHovered ? "is-visible" : ""}`}
+              width={1200}
+              height={1200}
+              className="portrait-img portrait-alt"
               priority
             />
           </div>
