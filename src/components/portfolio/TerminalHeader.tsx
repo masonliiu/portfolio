@@ -17,8 +17,11 @@ export default function TerminalHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-[var(--color-base)]/85 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4">
-        <nav aria-label="Breadcrumbs" className="flex items-center gap-1 text-sm">
+      <div className="relative mx-auto flex max-w-7xl items-center px-8 py-4">
+        <nav
+          aria-label="Breadcrumbs"
+          className="absolute left-0 flex items-center gap-1 text-sm"
+        >
           <Link className="wiggle text-[var(--color-accent)]" href="/">
             ~
           </Link>
@@ -32,12 +35,14 @@ export default function TerminalHeader() {
                   {segment.label}
                 </Link>
               )}
-              {index < 0 ? null : (<span className="text-[var(--color-overlay1)]">/</span>)}
+              {index < segments.length - 1 ? (
+                <span className="text-[var(--color-overlay1)]">/</span>
+              ) : null}
             </span>
           ))}
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
-        <div className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
+        <div className="ml-auto hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
           <Link className="header-link nav-link" href="/about">
             About
           </Link>
@@ -60,7 +65,7 @@ export default function TerminalHeader() {
           </a>
         </div>
         <Link
-          className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
+          className="header-link ml-6 rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
           href="/immersive"
         >
           Immersive
