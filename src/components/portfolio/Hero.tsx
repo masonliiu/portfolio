@@ -1,21 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import type { CSSProperties, RefObject } from "react";
 
 type HeroProps = {
   onMoreAbout: () => void;
-  portraitRef: RefObject<HTMLDivElement>;
-  portraitStyle?: CSSProperties;
-  isPortraitFixed?: boolean;
 };
 
-export default function Hero({
-  onMoreAbout,
-  portraitRef,
-  portraitStyle,
-  isPortraitFixed = false,
-}: HeroProps) {
+export default function Hero({ onMoreAbout }: HeroProps) {
   return (
     <section
       id="hero"
@@ -72,9 +63,7 @@ export default function Hero({
       <div className="flex justify-start lg:justify-end">
         <div className="portrait-slot">
           <div
-            ref={portraitRef}
-            className={`portrait-card ${isPortraitFixed ? "is-fixed" : ""}`}
-            style={isPortraitFixed ? portraitStyle : undefined}
+            className="portrait-card"
           >
             <Image
               src="/en1.png"

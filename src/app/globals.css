@@ -211,35 +211,6 @@ a:hover {
   border-radius: 14px;
 }
 
-.home-slide,
-.page-slide {
-  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.home-slide.enter-from-bottom {
-  transform: translateY(100%);
-}
-
-.home-slide.enter-active {
-  transform: translateY(0);
-}
-
-.home-slide.leave-to-bottom {
-  transform: translateY(100%);
-}
-
-.page-slide.enter-from-top {
-  transform: translateY(-100%);
-}
-
-.page-slide.enter-active {
-  transform: translateY(0);
-}
-
-.page-slide.leave-to-top {
-  transform: translateY(-100%);
-}
-
 .portrait-slot {
   width: 20rem;
   height: 20rem;
@@ -254,37 +225,11 @@ a:hover {
   border: 1px solid color-mix(in srgb, var(--color-surface1) 70%, transparent);
 }
 
-.portrait-card.is-fixed {
-  position: fixed;
-  z-index: 20;
-}
-
 .portrait-img {
   position: absolute;
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.about-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--color-base);
-  z-index: 15;
-  transform: translateY(-100%);
-  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
-  padding: var(--page-pad-y) var(--page-pad-x);
-  display: flex;
-  justify-content: center;
-}
-
-.about-overlay.is-active {
-  transform: translateY(0);
-}
-
-.about-overlay__inner {
-  width: 100%;
-  max-width: 64rem;
 }
 
 .lamp {
