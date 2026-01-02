@@ -17,12 +17,12 @@ export default function TerminalHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-transparent backdrop-blur header-mask">
-      <div className="relative mx-auto flex max-w-7xl items-center px-8 py-4">
-        <nav
-          aria-label="Breadcrumbs"
-          className="absolute left-0 flex items-center gap-1 text-sm"
-        >
-          <TransitionLink className="wiggle text-[var(--color-accent)]" href="/">
+      <div className="page-shell header-shell flex items-center justify-between py-4">
+        <nav aria-label="Breadcrumbs" className="flex items-center gap-1 text-sm">
+          <TransitionLink
+            className="wiggle header-tilde text-[var(--color-accent)]"
+            href="/"
+          >
             ~
           </TransitionLink>
           <span className="text-[var(--color-overlay1)]">/</span>
@@ -42,7 +42,7 @@ export default function TerminalHeader() {
           ))}
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
-        <div className="ml-auto hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
+        <div className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
           <TransitionLink className="header-link nav-link" href="/about">
             About
           </TransitionLink>
@@ -68,7 +68,7 @@ export default function TerminalHeader() {
           </a>
         </div>
         <TransitionLink
-          className="header-link ml-6 rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
+          className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
           href="/immersive"
         >
           Immersive

@@ -24,8 +24,9 @@
   --bg-y: 25%;
   --bg-opacity: 0;
 
-  --page-pad-y: 3.25rem;
-  --page-pad-x: 5rem;
+  --page-pad-y: 3.5rem;
+  --page-pad-x: 5.5rem;
+  --tilde-offset: 0.9rem;
 }
 
 html {
@@ -200,15 +201,15 @@ a:hover {
 
 @media (min-width: 768px) {
   :root {
-    --page-pad-y: 3.5rem;
-    --page-pad-x: 6.5rem;
+    --page-pad-y: 3.75rem;
+    --page-pad-x: 7rem;
   }
 }
 
 @media (min-width: 1024px) {
   :root {
-    --page-pad-y: 4rem;
-    --page-pad-x: 8.5rem;
+    --page-pad-y: 4.25rem;
+    --page-pad-x: 9.5rem;
   }
 }
 
@@ -493,4 +494,19 @@ html:not(.bg-effect) .bg-glow {
 
 ::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--color-accent) 90%, transparent);
+}
+.header-shell {
+  padding-left: var(--page-pad-x);
+  padding-right: var(--page-pad-x);
+}
+
+.header-tilde {
+  margin-left: calc(var(--tilde-offset) * -1);
+}
+
+.footer-shell {
+  padding-left: calc(var(--page-pad-x) + var(--tilde-offset));
+  padding-right: var(--page-pad-x);
+  margin-left: calc(var(--tilde-offset) * -1);
+  max-width: calc(80rem + var(--tilde-offset));
 }

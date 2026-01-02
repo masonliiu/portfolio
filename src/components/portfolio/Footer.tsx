@@ -38,7 +38,7 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="mx-auto mb-6 mt-10 flex max-w-7xl flex-col gap-3 rounded-lg border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-crust)] px-8 py-4 text-xs text-[var(--color-subtext0)] md:flex-row md:items-center md:justify-between">
+    <footer className="page-shell footer-shell mb-6 mt-10 flex flex-col gap-3 rounded-lg border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-crust)] py-4 text-xs text-[var(--color-subtext0)] md:flex-row md:items-center md:justify-between">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span>© {new Date().getFullYear()} Mason Liu</span>
       </div>
