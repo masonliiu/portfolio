@@ -35,9 +35,7 @@ export default function TerminalHeader() {
                   {segment.label}
                 </Link>
               )}
-              {index < segments.length - 1 ? (
-                <span className="text-[var(--color-overlay1)]">/</span>
-              ) : null}
+              {index < 0 ? null : (<span className="text-[var(--color-overlay1)]">/</span>)}
             </span>
           ))}
           <span className="cursor-blink" aria-hidden="true" />

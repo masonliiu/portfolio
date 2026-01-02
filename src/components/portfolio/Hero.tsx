@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Hero() {
   const [isHovered, setIsHovered] = useState(false);
@@ -12,9 +13,9 @@ export default function Hero() {
       className="relative z-10 flex flex-col gap-6 py-6 lg:flex-row lg:items-center lg:justify-between"
     >
       <div>
-        <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl">
+        <h1 className="text-4xl font-extrabold tracking-tight md:text-4xl">
           Hey! I&apos;m{" "}
-          <span className="text-[var(--color-accent)] underline decoration-dashed decoration-[color-mix(in srgb,var(--color-accent) 40%,transparent)] underline-offset-4">
+          <span className="text-[var(--color-accent)] decoration-[color-mix(in srgb,var(--color-accent) 40%,transparent)]">
             Mason Liu
           </span>
         </h1>
@@ -40,6 +41,18 @@ export default function Hero() {
           </a>
           <span className="text-[var(--color-surface1)]">|</span>
           <a href="mailto:liumasn@gmail.com">Email</a>
+          <span className="text-[var(--color-surface1)]">|</span>
+          <a href="https://instagram.com/mason_liuu" target="_blank" rel="noreferrer">
+              Instagram
+          </a>
+            <span className="text-[var(--color-surface1)]">|</span>
+          <Link
+            className="more-link"
+            href="/about"
+          >
+            More about me
+            <span className="more-link__arrow"> →</span>
+          </Link>
         </div>
       </div>
       <div className="flex justify-start lg:justify-end">
@@ -54,17 +67,15 @@ export default function Hero() {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <span className={`portrait-flash ${isHovered ? "is-active" : ""}`} />
             <Image
-              src="/portrait.jpg"
+              src="/po1.jpg"
               alt="Mason Liu portrait"
               width={320}
               height={320}
-              className={`portrait-img portrait-base ${isHovered ? "is-hidden" : ""}`}
               priority
             />
             <Image
-              src="/po1.jpg"
+              src="/po2.jpg"
               alt="Mason Liu alternate portrait"
               width={320}
               height={320}

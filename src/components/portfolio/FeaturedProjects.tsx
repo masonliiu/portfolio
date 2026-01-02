@@ -23,10 +23,11 @@ export default function FeaturedProjects() {
           Featured Projects
         </h2>
         <Link
-          className="text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
+          className=" more-link"
           href="/projects"
         >
-          View all →
+          View all
+          <span className="more-link__arrow">→</span>
         </Link>
       </div>
 
