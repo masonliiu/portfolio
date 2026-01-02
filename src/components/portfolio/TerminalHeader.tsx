@@ -16,7 +16,7 @@ export default function TerminalHeader() {
   const segments = buildSegments(pathname);
 
   return (
-    <header className="sticky top-0 z-30 bg-[var(--color-base)]/85 backdrop-blur header-mask">
+    <header className="sticky top-0 z-30 bg-[var(--color-base)] header-mask">
       <div className="relative mx-auto flex max-w-7xl items-center px-8 py-4">
         <nav
           aria-label="Breadcrumbs"
