@@ -501,7 +501,7 @@ html:not(.bg-effect) .bg-glow {
 }
 
 .header-tilde {
-  margin-left: calc(var(--tilde-offset) * -1);
+  margin-left: calc(var(--tilde-offset) * -1.2);
 }
 
 .footer-shell {
@@ -509,4 +509,13 @@ html:not(.bg-effect) .bg-glow {
   padding-right: var(--page-pad-x);
   margin-left: calc(var(--tilde-offset) * -1);
   max-width: calc(80rem + var(--tilde-offset));
+  margin-right: auto;
+}
+
+.footer-bar {
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
+  background: color-mix(in srgb, var(--color-crust) 90%, transparent);
+  padding: 0.9rem 1.6rem;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
 }

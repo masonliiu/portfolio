@@ -38,37 +38,33 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="page-shell footer-shell mb-6 mt-10 flex flex-col gap-3 rounded-lg border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] bg-[var(--color-crust)] py-4 text-xs text-[var(--color-subtext0)] md:flex-row md:items-center md:justify-between">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+    <footer className="page-shell footer-shell footer-bar mb-6 mt-10 text-xs text-[var(--color-subtext0)]">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <span>© {new Date().getFullYear()} Mason Liu</span>
-      </div>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <div className="flex items-center gap-2">
-          <span className="text-[var(--color-subtext1)]">Time on site</span>
-          <span className="text-[var(--color-accent)]">{timeOnSite}</span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[var(--color-subtext1)]">
+          <div className="flex items-center gap-2">
+            <span>Time on site</span>
+            <span className="text-[var(--color-accent)]">{timeOnSite}</span>
+          </div>
+          <span className="hidden md:inline">·</span>
+          <a href="mailto:liumasn@gmail.com">Email</a>
+          <span className="hidden md:inline">·</span>
+          <a
+            href="https://github.com/masonliiu"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
+          <span className="hidden md:inline">·</span>
+          <a
+            href="https://www.linkedin.com/in/masonliiu/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
+          </a>
         </div>
-        <span className="hidden text-[var(--color-surface0)] md:inline">-</span>
-        <a
-          href="mailto:liumasn@gmail.com"
-        >
-          Email
-        </a>
-        <span className="hidden text-[var(--color-surface0)] md:inline">-</span>
-        <a
-          href="https://github.com/masonliiu"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
-        <span className="hidden text-[var(--color-surface0)] md:inline">-</span>
-        <a
-          href="https://www.linkedin.com/in/masonliiu/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          LinkedIn
-        </a>
       </div>
     </footer>
   );
