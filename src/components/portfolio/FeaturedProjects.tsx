@@ -1,5 +1,4 @@
 import { projects } from "@/lib/projects";
-import { Link } from "next-view-transitions";
 
 const tagColors = [
   "peach",
@@ -22,15 +21,15 @@ export default function FeaturedProjects() {
           <span className="text-[var(--color-accent)]">★</span>
           Featured Projects
         </h2>
-        <Link className="arrow-link more-link" href="/projects">
+        <a className="arrow-link more-link" href="/projects">
           View all
           <span className="more-link__arrow">→</span>
-        </Link>
+        </a>
       </div>
 
       <div className="mt-6 grid gap-8 md:grid-cols-2">
         {featured.map((project) => (
-          <Link
+          <a
             key={project.slug}
             href={`/projects/${project.slug}`}
             className="terminal-card hover-panel no-lift featured-card group overflow-hidden"
@@ -86,7 +85,7 @@ export default function FeaturedProjects() {
                 ))}
               </div>
             </div>
-          </Link>
+          </a>
         ))}
       </div>
     </section>
