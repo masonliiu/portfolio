@@ -75,8 +75,10 @@ export default function RootLayout({
     } else {
       root.classList.add("bg-effect");
     }
+    root.classList.remove("ready");
   } catch (err) {}
   try {
+    const root = document.documentElement;
     const saved = sessionStorage.getItem("scrollY");
     if (saved) {
       history.scrollRestoration = "manual";
@@ -84,6 +86,17 @@ export default function RootLayout({
     }
     window.addEventListener("beforeunload", () => {
       sessionStorage.setItem("scrollY", String(window.scrollY || 0));
+    });
+    window.addEventListener("pageshow", () => {
+      const nextSaved = sessionStorage.getItem("scrollY");
+      if (nextSaved) {
+        window.scrollTo(0, Number(nextSaved) || 0);
+      }
+    });
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        root.classList.add("ready");
+      });
     });
   } catch (err) {}
 })();`,

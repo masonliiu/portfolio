@@ -4,26 +4,32 @@ import { useEffect, useState } from "react";
 import { accentOptions, paletteClasses, paletteOptions } from "./theme";
 
 export default function ThemePanel() {
-  const [palette, setPalette] = useState(() => {
-    if (typeof window === "undefined") return "mocha";
-    const stored = localStorage.getItem("palette");
-    if (stored && paletteClasses.includes(stored)) return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "mocha"
-      : "latte";
-  });
-  const [accent, setAccent] = useState(() => {
-    if (typeof window === "undefined") return "peach";
-    const stored = localStorage.getItem("accent");
-    return stored && accentOptions.some((option) => option.id === stored)
-      ? stored
-      : "peach";
-  });
-  const [backgroundEffect, setBackgroundEffect] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const stored = localStorage.getItem("bgEffect");
-    return stored ? stored === "true" : true;
-  });
+  const [palette, setPalette] = useState("mocha");
+  const [accent, setAccent] = useState("peach");
+  const [backgroundEffect, setBackgroundEffect] = useState(true);
+
+  useEffect(() => {
+    const html = document.documentElement;
+    const storedPalette = localStorage.getItem("palette");
+    const resolvedPalette =
+      storedPalette && paletteClasses.includes(storedPalette)
+        ? storedPalette
+        : paletteClasses.find((name) => html.classList.contains(name)) ??
+          (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "mocha"
+            : "latte");
+    const storedAccent = localStorage.getItem("accent");
+    const resolvedAccent =
+      storedAccent && accentOptions.some((option) => option.id === storedAccent)
+        ? storedAccent
+        : "peach";
+    const storedBg = localStorage.getItem("bgEffect");
+    const resolvedBg = storedBg ? storedBg === "true" : true;
+
+    setPalette(resolvedPalette);
+    setAccent(resolvedAccent);
+    setBackgroundEffect(resolvedBg);
+  }, []);
 
   useEffect(() => {
     const html = document.documentElement;

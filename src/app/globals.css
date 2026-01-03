@@ -137,6 +137,10 @@ body {
   min-height: 100vh;
 }
 
+html:not(.ready) body {
+  visibility: hidden;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--color-accent) 30%, transparent);
   color: var(--color-accent);

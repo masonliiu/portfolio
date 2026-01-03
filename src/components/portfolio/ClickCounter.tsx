@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 
 export default function ClickCounter() {
-  const [count, setCount] = useState(() => {
-    if (typeof window === "undefined") return 0;
+  const [count, setCount] = useState(0);
+  const [showIncrement, setShowIncrement] = useState(false);
+
+  useEffect(() => {
     const stored = localStorage.getItem("click-count");
     const parsed = stored ? Number(stored) : 0;
-    return Number.isNaN(parsed) ? 0 : parsed;
-  });
-  const [showIncrement, setShowIncrement] = useState(false);
+    setCount(Number.isNaN(parsed) ? 0 : parsed);
+  }, []);
 
   const handleClick = () => {
     setCount((value) => {
