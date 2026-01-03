@@ -20,12 +20,13 @@ export function generateStaticParams() {
 
 export const dynamicParams = true;
 
-export default function ProjectDetailPage({
+export default async function ProjectDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const project = getProject(decodeURIComponent(params.slug));
+  const resolved = await params;
+  const project = getProject(decodeURIComponent(resolved.slug));
   if (!project) {
     notFound();
   }
