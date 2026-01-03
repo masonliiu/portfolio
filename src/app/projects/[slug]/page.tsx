@@ -18,6 +18,8 @@ export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
 }
 
+export const dynamicParams = true;
+
 export default function ProjectDetailPage({
   params,
 }: {

@@ -303,7 +303,24 @@ export const projects: Project[] = [
   },
 ];
 
+function normalizeSlug(value: string) {
+  return value.toLowerCase().trim().replace(/\/+$/, "");
+}
+
+function slugFromTitle(value: string) {
+  return normalizeSlug(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
 export function getProject(slug: string) {
-  const normalized = slug.toLowerCase().trim();
-  return projects.find((project) => project.slug === normalized);
+  const normalized = normalizeSlug(slug);
+  return projects.find((project) => {
+    const repoSlug = project.repo.split("/")[1];
+    return (
+      project.slug === normalized ||
+      repoSlug === normalized ||
+      slugFromTitle(project.title) === normalized
+    );
+  });
 }
