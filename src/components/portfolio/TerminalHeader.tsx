@@ -17,8 +17,11 @@ export default function TerminalHeader() {
 
   return (
     <header className="sticky top-0 z-30 bg-transparent backdrop-blur header-mask">
-      <div className="page-shell header-shell flex items-center justify-between">
-        <nav aria-label="Breadcrumbs" className="flex items-center gap-1 text-sm">
+      <div className="page-shell header-shell relative flex items-center">
+        <nav
+          aria-label="Breadcrumbs"
+          className="header-breadcrumbs flex items-center gap-1 text-sm"
+        >
           <TransitionLink
             className="wiggle header-tilde text-[var(--color-accent)]"
             href="/"
@@ -42,37 +45,39 @@ export default function TerminalHeader() {
           ))}
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
-        <div className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
-          <TransitionLink className="header-link nav-link" href="/about">
-            About
-          </TransitionLink>
-          <TransitionLink className="header-link nav-link" href="/projects">
-            Projects
-          </TransitionLink>
+        <div className="ml-auto flex items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)]">
+          <div className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
+            <TransitionLink className="header-link nav-link" href="/about">
+              About
+            </TransitionLink>
+            <TransitionLink className="header-link nav-link" href="/projects">
+              Projects
+            </TransitionLink>
+            <TransitionLink
+              className="header-link nav-link"
+              href="/photography"
+            >
+              Photography
+            </TransitionLink>
+            <a
+              className="header-link nav-link"
+              href="/resume.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Resume
+            </a>
+            <a className="header-link" href="#contact">
+              Contact
+            </a>
+          </div>
           <TransitionLink
-            className="header-link nav-link"
-            href="/photography"
+            className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
+            href="/immersive"
           >
-            Photography
+            Immersive
           </TransitionLink>
-          <a
-            className="header-link nav-link"
-            href="/resume.pdf"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Resume
-          </a>
-          <a className="header-link" href="#contact">
-            Contact
-          </a>
         </div>
-        <TransitionLink
-          className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
-          href="/immersive"
-        >
-          Immersive
-        </TransitionLink>
       </div>
     </header>
   );

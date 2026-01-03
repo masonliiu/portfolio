@@ -581,8 +581,13 @@ html:not(.bg-effect) .bg-glow {
   padding-bottom: 0.35rem;
 }
 
+.header-breadcrumbs {
+  position: absolute;
+  left: calc(var(--page-pad-x) * -0.45);
+}
+
 .header-tilde {
-  margin-left: calc(var(--tilde-offset) * -1.2);
+  margin-left: calc(var(--tilde-offset) * -5);
 }
 
 .footer-bar {
