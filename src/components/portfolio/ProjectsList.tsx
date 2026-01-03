@@ -39,18 +39,20 @@ export default function ProjectsList() {
               style={{ viewTransitionName: `project-${project.slug}` }}
             >
               <div className="terminal-window">
-                <div className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[var(--color-red)]" />
-                  <span className="h-2 w-2 rounded-full bg-[var(--color-yellow)]" />
-                  <span className="h-2 w-2 rounded-full bg-[var(--color-green)]" />
-                  <div className="terminal-window__title ml-2 flex-1">
-                    {project.repo}
-                  </div>
-                  <span className="text-xs text-[var(--color-subtext1)]">
+                <div className="terminal-window__controls">
+                  <span className="terminal-dot terminal-dot--red" />
+                  <span className="terminal-dot terminal-dot--yellow" />
+                  <span className="terminal-dot terminal-dot--green" />
+                </div>
+                <div className="terminal-window__repo">
+                  <span className="truncate">{project.repo}</span>
+                  <span className="terminal-window__stars">
                     ★ {project.stars ?? "—"}
                   </span>
                 </div>
-                <p className="terminal-window__desc">{project.summary}</p>
+                <p className="terminal-window__desc clamp-3">
+                  {project.summary}
+                </p>
                 <div className="terminal-window__footer">
                   <span />
                   <span>

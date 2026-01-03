@@ -449,20 +449,56 @@ header,
 }
 
 .terminal-window {
+  position: relative;
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-base) 96%, black 4%);
-  padding: 1rem 1.1rem;
+  padding: 0.9rem 1.1rem 1.1rem;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-surface1) 70%, transparent);
 }
 
-.terminal-window__title {
-  font-size: 0.8rem;
+.terminal-window__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.terminal-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+}
+
+.terminal-dot--red {
+  background: var(--color-red);
+}
+
+.terminal-dot--yellow {
+  background: var(--color-yellow);
+}
+
+.terminal-dot--green {
+  background: var(--color-green);
+}
+
+.terminal-window__repo {
+  margin-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-subtext1);
 }
 
+.terminal-window__stars {
+  font-size: 0.7rem;
+  color: var(--color-subtext1);
+  white-space: nowrap;
+}
+
 .terminal-window__desc {
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
   font-size: 0.9rem;
   color: var(--color-subtext0);
 }
