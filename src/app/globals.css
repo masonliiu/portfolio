@@ -3,6 +3,19 @@
 :root {
   --font-mono: var(--font-jetbrains-mono);
 
+  --color-base: #1e1e2e;
+  --color-mantle: #181825;
+  --color-crust: #11111b;
+  --color-surface0: #313244;
+  --color-surface1: #45475a;
+  --color-surface2: #585b70;
+  --color-text: #cdd6f4;
+  --color-subtext1: #bac2de;
+  --color-subtext0: #a6adc8;
+  --color-overlay2: #9399b2;
+  --color-overlay1: #7f849c;
+  --color-overlay0: #6c7086;
+
   --color-rosewater: #dc8a78;
   --color-flamingo: #dd7878;
   --color-pink: #ea76cb;
@@ -31,8 +44,9 @@
 
 html {
   font-family: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
-  color-scheme: light;
+  color-scheme: dark;
   font-size: 19px;
+  background: var(--color-base);
 }
 
 *,
