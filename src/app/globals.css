@@ -47,6 +47,7 @@ html {
   color-scheme: dark;
   font-size: 19px;
   background: var(--color-base);
+  scrollbar-gutter: stable;
 }
 
 *,
