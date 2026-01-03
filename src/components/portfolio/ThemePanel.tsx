@@ -75,7 +75,7 @@ export default function ThemePanel() {
             key={option.id}
             type="button"
             onClick={() => setPalette(option.id)}
-            className={`rounded-[6px] border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] transition ${
+            className={`rounded-[6px] border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] transition hover:border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] hover:text-[var(--color-accent)] hover:shadow-[0_0_10px_rgba(255,255,255,0.12)] ${
               palette === option.id
                 ? "border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] text-[var(--color-text)] shadow-sm"
                 : "border-transparent text-[var(--color-subtext1)]"
@@ -91,7 +91,7 @@ export default function ThemePanel() {
           {
             "--swatch-size": "1.2rem",
             "--swatch-gap": "0.7rem",
-            "--swatch-offset": "-4px",
+            "--swatch-offset": "-5px",
             "--swatch-col": String(activeCol),
             "--swatch-row": String(activeRow),
           } as React.CSSProperties
@@ -103,7 +103,7 @@ export default function ThemePanel() {
             key={option.id}
             type="button"
             onClick={() => setAccent(option.id)}
-            className={`aspect-square w-full rounded-[6px] shadow-sm ${
+            className={`swatch-button aspect-square w-full rounded-[6px] shadow-sm ${
               accent === option.id ? "opacity-100" : "opacity-90"
             }`}
             style={{ backgroundColor: `var(--color-${option.id})` }}
@@ -122,7 +122,7 @@ export default function ThemePanel() {
             className="h-4 w-4 rounded border border-[var(--color-surface1)] text-[var(--color-accent)]"
             aria-label="Toggle background effect"
           />
-          <span>
+          <span className="font-semibold uppercase tracking-[0.3em]">
             Background effect{" "}
             <span className="text-[var(--color-accent)]">
               {backgroundEffect ? "on" : "off"}

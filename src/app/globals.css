@@ -412,8 +412,8 @@ header,
   position: absolute;
   top: 0;
   left: 0;
-  width: calc(var(--swatch-size) + 8px);
-  height: calc(var(--swatch-size) + 8px);
+  width: calc(var(--swatch-size) + 10px);
+  height: calc(var(--swatch-size) + 10px);
   border: 2px solid var(--color-accent);
   border-radius: 8px;
   transform: translate(
@@ -422,6 +422,31 @@ header,
   );
   transition: transform 0.25s ease, border-color 0.3s ease;
   pointer-events: none;
+}
+
+.swatch-button {
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+}
+
+.swatch-button:hover {
+  transform: scale(1.08);
+  filter: brightness(1.15);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+.terminal-card button,
+.terminal-card a {
+  cursor: pointer;
+}
+
+.terminal-preview--detail {
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+}
+
+.terminal-preview--detail .terminal-window {
+  width: 100%;
 }
 
 .tag-pill {

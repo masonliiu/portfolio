@@ -43,7 +43,7 @@ export default function ClickCounter() {
       <button
         type="button"
         onClick={handleClick}
-        className="rounded-md bg-[var(--color-accent)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-crust)] transition hover:scale-105 hover:brightness-110"
+        className="rounded-md bg-[var(--color-accent)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-crust)] transition hover:scale-110 hover:brightness-125 hover:shadow-[0_0_18px_rgba(255,255,255,0.15)]"
       >
         Click me
       </button>
