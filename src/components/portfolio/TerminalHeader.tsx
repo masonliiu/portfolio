@@ -38,15 +38,16 @@ export default function TerminalHeader() {
                   {segment.label}
                 </TransitionLink>
               )}
-              {index < segments.length - 1 ? (
+
+              {index >= 0 ? (
                 <span className="text-[var(--color-overlay1)]">/</span>
               ) : null}
             </span>
           ))}
           <span className="cursor-blink" aria-hidden="true" />
         </nav>
-        <div className="ml-auto flex items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)]">
-          <div className="hidden items-center gap-6 text-xs font-bold uppercase tracking-[0.3em] text-[var(--color-subtext1)] md:flex">
+        <div className="header-nav ml-auto flex items-center gap-6 text-[var(--color-subtext1)]">
+          <div className="hidden items-center gap-6 md:flex">
             <TransitionLink className="header-link nav-link" href="/about">
               About
             </TransitionLink>
