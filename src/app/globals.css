@@ -137,6 +137,11 @@ body {
   min-height: 100vh;
 }
 
+html:not(.ready),
+html:not(.ready) body {
+  overflow: hidden !important;
+}
+
 html:not(.ready) body {
   visibility: hidden;
 }

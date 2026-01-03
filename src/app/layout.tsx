@@ -86,17 +86,25 @@ export default function RootLayout({
       const saved = sessionStorage.getItem("scrollY");
       if (saved) {
         history.scrollRestoration = "manual";
-        window.scrollTo(0, Number(saved) || 0);
+        const target = Number(saved) || 0;
+        window.scrollTo(0, target);
+        return target;
       }
+      return null;
     };
-    const markReady = () => {
+    const markReady = (targetScroll) => {
       if (readySet) return;
       readySet = true;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          root.style.overflowY = "";
-          root.classList.add("ready");
-          root.style.scrollBehavior = "";
+          if (typeof targetScroll === "number" && window.scrollY !== targetScroll) {
+            window.scrollTo(0, targetScroll);
+          }
+          setTimeout(() => {
+            root.style.overflowY = "";
+            root.classList.add("ready");
+            root.style.scrollBehavior = "";
+          }, 0);
         });
       });
     };
@@ -115,12 +123,12 @@ export default function RootLayout({
       restoreScroll();
     });
     window.addEventListener("load", () => {
-      restoreScroll();
-      markReady();
+      const target = restoreScroll();
+      markReady(target ?? undefined);
     });
     window.addEventListener("pageshow", () => {
-      restoreScroll();
-      markReady();
+      const target = restoreScroll();
+      markReady(target ?? undefined);
     });
   } catch (err) {}
 })();`,
