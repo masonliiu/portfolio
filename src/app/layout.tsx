@@ -55,6 +55,7 @@ export default function RootLayout({
   try {
     const root = document.documentElement;
     root.style.scrollBehavior = "auto";
+    root.style.overflowY = "hidden";
     const palettes = ["latte", "frappe", "macchiato", "mocha"];
     const accents = ["rosewater", "flamingo", "pink", "mauve", "red", "maroon", "peach", "yellow", "green", "teal", "sky", "sapphire", "blue", "lavender"];
     const storedPalette = localStorage.getItem("palette");
@@ -93,14 +94,23 @@ export default function RootLayout({
       readySet = true;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
+          root.style.overflowY = "";
           root.classList.add("ready");
           root.style.scrollBehavior = "";
         });
       });
     };
-    window.addEventListener("pagehide", () => {
-      sessionStorage.setItem("scrollY", String(window.scrollY || 0));
-    });
+    let ticking = false;
+    const storeScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        sessionStorage.setItem("scrollY", String(window.scrollY || 0));
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", storeScroll, { passive: true });
+    window.addEventListener("pagehide", storeScroll);
     window.addEventListener("DOMContentLoaded", () => {
       restoreScroll();
     });
