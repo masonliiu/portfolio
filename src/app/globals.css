@@ -470,6 +470,7 @@ header,
 }
 
 .terminal-dot {
+  display: inline-block;
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 999px;
@@ -492,6 +493,9 @@ header,
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-subtext1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .terminal-window__stars {
