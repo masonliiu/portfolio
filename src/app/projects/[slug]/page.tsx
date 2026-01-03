@@ -23,7 +23,7 @@ export default function ProjectDetailPage({
 }: {
   params: { slug: string };
 }) {
-  const project = getProject(params.slug);
+  const project = getProject(decodeURIComponent(params.slug));
   if (!project) {
     notFound();
   }
