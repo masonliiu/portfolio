@@ -8,8 +8,8 @@ export default function ProjectsTeaser() {
         Project catalog
       </h2>
       <p className="mt-3 text-sm text-[var(--color-subtext0)]">
-        Browse the full project list with detailed previews, highlights, and
-        links.
+        Browse the full project list with detailed previews, deep dives, and
+        architecture notes.
       </p>
       <Link
         className="mt-4 inline-flex items-center gap-2 rounded-md border border-[var(--color-surface1)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
