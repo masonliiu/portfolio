@@ -128,10 +128,10 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      <section className="mx-auto mt-10 max-w-3xl space-y-8 text-left">
+      <section className="mx-auto mt-10 max-w-3xl space-y-6 text-left">
         {project.sections.map((section) => (
-          <div key={section.title} className="space-y-3">
-            <div className="terminal-title">{section.title}</div>
+          <div key={section.title} className="project-section space-y-4">
+            <div className="project-section__title">{section.title}</div>
             {section.body ? (
               <div className="space-y-3 text-base text-[var(--color-subtext0)]">
                 {section.body.map((paragraph) => (

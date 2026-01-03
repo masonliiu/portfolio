@@ -423,12 +423,13 @@ header,
 .tag-pill {
   border-radius: 999px;
   padding: 0.2rem 0.55rem;
-  font-size: 0.65rem;
-  font-weight: 600;
+  font-size: 0.6rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
-  background: color-mix(in srgb, var(--tag-color) 25%, transparent);
-  color: color-mix(in srgb, var(--tag-color) 70%, white 30%);
+  letter-spacing: 0.14em;
+  border: 1px solid color-mix(in srgb, var(--tag-color) 55%, transparent);
+  background: transparent;
+  color: var(--tag-color);
 }
 
 .terminal-preview {
@@ -513,6 +514,22 @@ header,
   color: var(--color-subtext0);
 }
 
+.project-section {
+  padding: 1.4rem 1.6rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
+  background: color-mix(in srgb, var(--color-mantle) 70%, transparent);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+}
+
+.project-section__title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
 .terminal-window__footer {
   margin-top: 0.7rem;
   font-size: 0.75rem;
@@ -578,14 +595,14 @@ html:not(.bg-effect) .bg-glow {
 }
 .header-shell {
   padding-left: var(--page-pad-x);
-  padding-right: var(--page-pad-x);
+  padding-right: calc(var(--page-pad-x) - 8.2rem);
   padding-top: 1rem;
   padding-bottom: 0.35rem;
 }
 
 .header-breadcrumbs {
   position: absolute;
-  left: calc(var(--page-pad-x) * -0.45);
+  left: calc(var(--page-pad-x) - 2.7rem);
 }
 
 .header-tilde {
@@ -596,6 +613,6 @@ html:not(.bg-effect) .bg-glow {
   border-radius: 21px;
   border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
   background: color-mix(in srgb, var(--color-crust) 90%, transparent);
-  padding: 0.9rem 1.8rem;
+  padding: 0.9rem 1.4rem;
   box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
 }
