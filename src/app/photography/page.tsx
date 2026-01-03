@@ -1,8 +1,8 @@
-import Link from "next/link";
+import { Link } from "next-view-transitions";
 
 export default function PhotographyPage() {
   return (
-    <div className="page-shell max-w-5xl">
+    <div className="page-shell">
       <div className="scroll-blur" />
       <div className="terminal-title">Photography</div>
       <h1 className="mt-3 text-3xl font-extrabold tracking-tight">Photography</h1>

@@ -3,7 +3,7 @@ import { Link } from "next-view-transitions";
 
 export default function AboutPage() {
   return (
-    <div className="page-shell max-w-5xl">
+    <div className="page-shell">
       <div className="scroll-blur" />
       <AboutContent />
       <Link
