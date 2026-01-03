@@ -80,7 +80,8 @@ export default function ThemePanel() {
         Theme
       </div>
       <div className="theme-panel__body mt-3 flex flex-col items-center gap-3 text-center">
-        <div className="theme-panel__palettes flex flex-wrap justify-center gap-2">
+        <div className="theme-panel__palettes">
+          <div className="theme-panel__palette-grid">
           {paletteOptions.map((option) => (
             <button
               key={option.id}
@@ -95,6 +96,7 @@ export default function ThemePanel() {
               {option.label}
             </button>
           ))}
+          </div>
         </div>
         <div
           className="swatch-grid"

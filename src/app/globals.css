@@ -493,10 +493,14 @@ header,
 }
 
 .terminal-preview-wrap {
-  padding: 0.8rem;
+  padding: 1rem;
 }
 
 .featured-card:hover .featured-title {
+  color: var(--color-accent);
+}
+
+.featured-card:hover {
   color: var(--color-accent);
 }
 
@@ -506,6 +510,13 @@ header,
   border-radius: 12px;
   border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
   background: color-mix(in srgb, var(--color-mantle) 70%, transparent);
+}
+
+.theme-panel__palette-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
 }
 .terminal-preview__inner {
   transition: transform 0.2s ease;
