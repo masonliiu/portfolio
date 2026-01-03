@@ -118,8 +118,8 @@ html.mocha {
 }
 
 body {
-  background: var(--color-base);
-  color: var(--color-text);
+  background: var(--color-base, #1e1e2e);
+  color: var(--color-text, #cdd6f4);
   min-height: 100vh;
 }
 

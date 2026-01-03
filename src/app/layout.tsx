@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 
 import TerminalHeader from "@/components/portfolio/TerminalHeader";
@@ -44,7 +45,51 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const root = document.documentElement;
+    const palettes = ["latte", "frappe", "macchiato", "mocha"];
+    const accents = ["rosewater", "flamingo", "pink", "mauve", "red", "maroon", "peach", "yellow", "green", "teal", "sky", "sapphire", "blue", "lavender"];
+    const storedPalette = localStorage.getItem("palette");
+    const palette = storedPalette && palettes.includes(storedPalette)
+      ? storedPalette
+      : window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "mocha"
+        : "latte";
+    root.classList.remove(...palettes);
+    root.classList.add(palette);
+    const storedAccent = localStorage.getItem("accent");
+    const accent = storedAccent && accents.includes(storedAccent)
+      ? storedAccent
+      : "peach";
+    root.style.setProperty("--current-accent-color", \`var(--color-\${accent})\`);
+    const bgEffect = localStorage.getItem("bgEffect");
+    if (bgEffect === "false") {
+      root.classList.remove("bg-effect");
+    } else {
+      root.classList.add("bg-effect");
+    }
+  } catch (err) {}
+  try {
+    const saved = sessionStorage.getItem("scrollY");
+    if (saved) {
+      history.scrollRestoration = "manual";
+      window.scrollTo(0, Number(saved) || 0);
+    }
+    window.addEventListener("beforeunload", () => {
+      sessionStorage.setItem("scrollY", String(window.scrollY || 0));
+    });
+  } catch (err) {}
+})();`,
+          }}
+        />
+      </head>
       <body className={`${jetBrainsMono.variable} antialiased`}>
         <ThemeInitializer />
         <ViewTransitions>
