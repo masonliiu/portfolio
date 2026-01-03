@@ -38,16 +38,18 @@ export default function ProjectDetailPage({
           style={{ viewTransitionName: `project-${project.slug}` }}
         >
         <div className="terminal-window">
-            <div className="terminal-window__controls">
-              <span className="terminal-dot terminal-dot--red" />
-              <span className="terminal-dot terminal-dot--yellow" />
-              <span className="terminal-dot terminal-dot--green" />
-            </div>
-            <div className="terminal-window__repo">
-              <span className="truncate">{project.repo}</span>
+            <div className="terminal-window__top">
+              <div className="terminal-window__controls">
+                <span className="terminal-dot terminal-dot--red" />
+                <span className="terminal-dot terminal-dot--yellow" />
+                <span className="terminal-dot terminal-dot--green" />
+              </div>
               <span className="terminal-window__stars">
                 ★ {project.stars ?? "—"}
               </span>
+            </div>
+            <div className="terminal-window__repo truncate">
+              {project.repo}
             </div>
             <p className="terminal-window__desc clamp-3">
               {project.summary}
