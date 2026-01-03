@@ -39,7 +39,6 @@ export const projects: Project[] = [
       "Neon",
       "Postgres",
       "SQLite",
-      "Cron",
       "GitHub API",
     ],
     links: [
