@@ -7,6 +7,7 @@ export default function ThemePanel() {
   const [palette, setPalette] = useState("mocha");
   const [accent, setAccent] = useState("peach");
   const [backgroundEffect, setBackgroundEffect] = useState(true);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -29,24 +30,28 @@ export default function ThemePanel() {
     setPalette(resolvedPalette);
     setAccent(resolvedAccent);
     setBackgroundEffect(resolvedBg);
+    setIsReady(true);
   }, []);
 
   useEffect(() => {
+    if (!isReady) return;
     const html = document.documentElement;
     html.classList.remove(...paletteClasses);
     html.classList.add(palette);
     localStorage.setItem("palette", palette);
-  }, [palette]);
+  }, [palette, isReady]);
 
   useEffect(() => {
+    if (!isReady) return;
     document.documentElement.style.setProperty(
       "--current-accent-color",
       `var(--color-${accent})`
     );
     localStorage.setItem("accent", accent);
-  }, [accent]);
+  }, [accent, isReady]);
 
   useEffect(() => {
+    if (!isReady) return;
     const html = document.documentElement;
     if (backgroundEffect) {
       html.classList.add("bg-effect");
@@ -54,7 +59,7 @@ export default function ThemePanel() {
       html.classList.remove("bg-effect");
     }
     localStorage.setItem("bgEffect", String(backgroundEffect));
-  }, [backgroundEffect]);
+  }, [backgroundEffect, isReady]);
 
   const activeIndex = accentOptions.findIndex((option) => option.id === accent);
   const columns = 7;
