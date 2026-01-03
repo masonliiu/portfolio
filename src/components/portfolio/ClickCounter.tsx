@@ -28,25 +28,27 @@ export default function ClickCounter() {
   }, [showIncrement]);
 
   return (
-    <section className="terminal-card flex items-center justify-between gap-4 p-4">
-      <div>
-        <div className="text-3xl font-semibold text-[var(--color-accent)]">
+    <section className="terminal-card click-card flex flex-col justify-between p-4">
+      <div className="text-center">
+        <div className="text-4xl font-bold text-[var(--color-accent)] py-5 tracking-[3px]">
           {count.toLocaleString()}
         </div>
-        <p className="text-sm text-[var(--color-subtext1)]">
+        <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={handleClick}
+          className="rounded-xl bg-[var(--color-accent)] px-3 py-3 text-sm font-bold uppercase tracking-[0.2em] text-[var(--color-crust)] transition hover:scale-102 hover:brightness-125 hover:shadow-[0_0_18px_rgba(255,255,255,0.15)]"
+        >
+          Click me
+        </button>
+      </div>
+      </div>
+      <p className="text-sm text-[var(--color-subtext1)] text-center py-5">
           You&apos;ve clicked {count} times{" "}
           {showIncrement ? (
             <span className="text-[var(--color-accent)]">+1</span>
           ) : null}
-        </p>
-      </div>
-      <button
-        type="button"
-        onClick={handleClick}
-        className="rounded-md bg-[var(--color-accent)] px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-crust)] transition hover:scale-110 hover:brightness-125 hover:shadow-[0_0_18px_rgba(255,255,255,0.15)]"
-      >
-        Click me
-      </button>
+      </p>
     </section>
   );
 }

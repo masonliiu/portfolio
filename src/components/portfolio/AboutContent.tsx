@@ -1,8 +1,9 @@
 export default function AboutContent() {
   return (
     <>
-      <div className="terminal-title">About</div>
-      <h1 className="mt-3 text-3xl font-extrabold tracking-tight">About Me</h1>
+      <div className="terminal-title">
+        <span className="mt-3 text-3xl font-extrabold tracking-tight">About me</span>
+      </div>
 
       <section className="mt-6 space-y-4 text-base text-[var(--color-subtext0)]">
         <p>

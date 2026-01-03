@@ -3,7 +3,9 @@ import Link from "next/link";
 export default function ProjectsTeaser() {
   return (
     <section className="terminal-card hover-panel p-6">
-      <div className="terminal-title">Projects</div>
+      <div className="terminal-title">
+        <span className="mt-3 text-3xl font-extrabold tracking-tight">projects</span>
+      </div>
       <h2 className="mt-3 text-2xl font-semibold tracking-tight">
         Project catalog
       </h2>

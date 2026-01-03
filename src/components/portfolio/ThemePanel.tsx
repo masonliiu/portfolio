@@ -13,7 +13,7 @@ export default function ThemePanel() {
     const html = document.documentElement;
     const storedPalette = localStorage.getItem("palette");
     const resolvedPalette =
-      storedPalette && paletteClasses.includes(storedPalette)
+      storedPalette
         ? storedPalette
         : paletteClasses.find((name) => html.classList.contains(name)) ??
           (window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -67,15 +67,26 @@ export default function ThemePanel() {
   const activeCol = activeIndex % columns;
 
   return (
-    <section className="terminal-card p-4">
-      <div className="terminal-title">Theme</div>
-      <div className="mt-1 flex flex-wrap gap-2">
+    <section className="terminal-card theme-panel p-4">
+      <div className="flex items-center gap-2 text-base font-semibold">
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          className="h-4 w-4 text-[var(--color-accent)]"
+          fill="currentColor"
+        >
+          <path d="M12 3a9 9 0 0 0-9 9c0 4.42 3.58 8 8 8h1v-3h-1a5 5 0 0 1 0-10h1V3h-1zm5.76 4.18a1 1 0 0 0-1.4.12l-5.38 6.52-2.34-2.34a1 1 0 1 0-1.42 1.42l3.12 3.12a1 1 0 0 0 1.5-.1l6.1-7.4a1 1 0 0 0-.18-1.34z" />
+        </svg>
+        Theme
+      </div>
+      <div className="theme-panel__body mt-3 flex flex-col items-center gap-3 text-center">
+        <div className="flex flex-wrap justify-center gap-2">
         {paletteOptions.map((option) => (
           <button
             key={option.id}
             type="button"
             onClick={() => setPalette(option.id)}
-            className={`rounded-[6px] border px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] transition hover:border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] hover:text-[var(--color-accent)] hover:shadow-[0_0_10px_rgba(255,255,255,0.12)] ${
+            className={`rounded-[6px] border px-3 py-1 text-[13px] font-semibold lowercase tracking-[0.3em] transition hover:text-[var(--color-accent)] hover:border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] ${
               palette === option.id
                 ? "border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] text-[var(--color-text)] shadow-sm"
                 : "border-transparent text-[var(--color-subtext1)]"
@@ -84,37 +95,36 @@ export default function ThemePanel() {
             {option.label}
           </button>
         ))}
-      </div>
-      <div
-        className="swatch-grid mt-2"
-        style={
-          {
-            "--swatch-size": "1.2rem",
-            "--swatch-gap": "0.7rem",
-            "--swatch-offset": "-5px",
-            "--swatch-col": String(activeCol),
-            "--swatch-row": String(activeRow),
-          } as React.CSSProperties
-        }
-      >
-        <span className="swatch-indicator" aria-hidden="true" />
-        {accentOptions.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => setAccent(option.id)}
-            className={`swatch-button aspect-square w-full rounded-[6px] shadow-sm ${
-              accent === option.id ? "opacity-100" : "opacity-90"
-            }`}
-            style={{ backgroundColor: `var(--color-${option.id})` }}
-            aria-label={`Select ${option.label} accent color`}
-          >
-            <span className="sr-only">{option.label}</span>
-          </button>
-        ))}
-      </div>
-      <div className="mt-1 flex items-center text-[10px] text-[var(--color-subtext1)]">
-        <label className="flex cursor-pointer items-center gap-2">
+        </div>
+        <div
+          className="swatch-grid"
+          style={
+            {
+              "--swatch-size": "1.5rem",
+              "--swatch-gap": "0.45rem",
+              "--swatch-offset": "-5px",
+              "--swatch-col": String(activeCol),
+              "--swatch-row": String(activeRow),
+            } as React.CSSProperties
+          }
+        >
+          <span className="swatch-indicator" aria-hidden="true" />
+          {accentOptions.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => setAccent(option.id)}
+              className={`swatch-button aspect-square w-full rounded-[7px] shadow-sm ${
+                accent === option.id ? "opacity-100" : "opacity-90"
+              }`}
+              style={{ backgroundColor: `var(--color-${option.id})` }}
+              aria-label={`Select ${option.label} accent color`}
+            >
+              <span className="sr-only">{option.label}</span>
+            </button>
+          ))}
+        </div>
+        <label className="bg-effect-toggle flex cursor-pointer items-center gap-2 text-[10px] text-[var(--color-subtext1)]">
           <input
             type="checkbox"
             checked={backgroundEffect}
@@ -122,8 +132,8 @@ export default function ThemePanel() {
             className="h-4 w-4 rounded border border-[var(--color-surface1)] text-[var(--color-accent)]"
             aria-label="Toggle background effect"
           />
-          <span className="font-semibold uppercase tracking-[0.3em]">
-            Background effect{" "}
+          <span className="font-semibold text-[14px] lowercase tracking-[0.1em]">
+            Background effect{": "}
             <span className="text-[var(--color-accent)]">
               {backgroundEffect ? "on" : "off"}
             </span>

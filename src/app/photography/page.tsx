@@ -4,8 +4,9 @@ export default function PhotographyPage() {
   return (
     <div className="page-shell">
       <div className="scroll-blur" />
-      <div className="terminal-title">Photography</div>
-      <h1 className="mt-3 text-3xl font-extrabold tracking-tight">Photography</h1>
+      <div className="terminal-title">
+        <span className="mt-3 text-3xl font-extrabold tracking-tight">photography</span>
+      </div>
       <p className="mt-4 text-base text-[var(--color-subtext0)]">
         This gallery is in progress. I&apos;m curating a set of photos to share
         here soon.

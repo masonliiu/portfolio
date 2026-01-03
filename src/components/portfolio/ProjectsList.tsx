@@ -17,14 +17,9 @@ export default function ProjectsList() {
   return (
     <section className="space-y-6">
       <div>
-        <div className="terminal-title">Projects</div>
-        <h1 className="mt-3 text-3xl font-extrabold tracking-tight">
-          Project catalog
-        </h1>
-        <p className="mt-3 max-w-2xl text-base text-[var(--color-subtext0)]">
-          Explore every build with deep dives, architecture notes, and live
-          demos.
-        </p>
+        <div className="terminal-title">
+          <span className="mt-3 text-3xl font-extrabold tracking-tight">projects</span>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

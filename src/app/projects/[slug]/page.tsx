@@ -34,7 +34,9 @@ export default async function ProjectDetailPage({
   return (
     <div className="page-shell max-w-6xl">
       <div className="scroll-blur" />
-      <div className="terminal-title">Projects</div>
+      <div className="terminal-title">
+        <span className="mt-3 text-3xl font-extrabold tracking-tight">projects</span>
+      </div>
       <div className="mt-6 flex flex-col items-center gap-6 text-center">
         <div
           className="terminal-preview terminal-preview--detail w-full max-w-2xl"

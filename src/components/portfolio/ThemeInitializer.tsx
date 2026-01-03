@@ -11,7 +11,7 @@ export default function ThemeInitializer() {
     const html = document.documentElement;
     const storedPalette = localStorage.getItem("palette");
     const palette =
-      storedPalette && paletteClasses.includes(storedPalette)
+      storedPalette
         ? storedPalette
         : window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "mocha"

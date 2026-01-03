@@ -2,7 +2,6 @@ import BackgroundEffect from "@/components/portfolio/BackgroundEffect";
 import Hero from "@/components/portfolio/Hero";
 import FeaturedProjects from "@/components/portfolio/FeaturedProjects";
 import ThemePanel from "@/components/portfolio/ThemePanel";
-import ConnectForm from "@/components/portfolio/ConnectForm";
 import LocationCard from "@/components/portfolio/LocationCard";
 import ClickCounter from "@/components/portfolio/ClickCounter";
 import GitHubActivity from "@/components/portfolio/GitHubActivity";
@@ -24,12 +23,9 @@ export default function Home() {
             <ThemePanel />
           </div>
           <div className="lg:col-span-2">
-            <ConnectForm />
-          </div>
-          <div className="lg:col-span-2">
             <LocationCard />
           </div>
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-2">
             <ClickCounter />
           </div>
           <div className="lg:col-span-6">
