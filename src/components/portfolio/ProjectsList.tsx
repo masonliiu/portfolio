@@ -88,7 +88,7 @@ export default function ProjectsList() {
                       href={link.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em]"
+                      className="inline-flex items-center gap-2 text-xs lowercase tracking-[0.2em]"
                     >
                       {isGithub ? (
                         <svg

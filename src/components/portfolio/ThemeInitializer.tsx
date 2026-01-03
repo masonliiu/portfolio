@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { accentOptions, paletteClasses } from "./theme";
 
 export default function ThemeInitializer() {
+  const pathname = usePathname();
+
   useEffect(() => {
     const html = document.documentElement;
     const storedPalette = localStorage.getItem("palette");
@@ -29,7 +32,7 @@ export default function ThemeInitializer() {
     } else {
       html.classList.add("bg-effect");
     }
-  }, []);
+  }, [pathname]);
 
   return null;
 }

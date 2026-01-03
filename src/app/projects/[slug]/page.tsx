@@ -86,7 +86,7 @@ export default async function ProjectDetailPage({
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em]"
+                  className="inline-flex items-center gap-2 text-xs lowercase tracking-[0.2em]"
                 >
                   {isGithub ? (
                     <svg
@@ -151,7 +151,7 @@ export default async function ProjectDetailPage({
       </section>
 
       <Link
-        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]"
+        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold lowercase tracking-[0.3em] text-[var(--color-subtext1)]"
         href="/projects"
       >
         Back to projects

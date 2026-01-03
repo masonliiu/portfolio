@@ -16,19 +16,23 @@
   --color-overlay1: #7f849c;
   --color-overlay0: #6c7086;
 
-  --color-rosewater: #dc8a78;
+
+  --color-button1: #ff5f57;
+  --color-button2: #febc2e;
+  --color-button3: #28c840;
+  --color-rosewater: #cab9b9;
   --color-flamingo: #dd7878;
-  --color-pink: #ea76cb;
-  --color-mauve: #8839ef;
-  --color-red: #d20f39;
-  --color-maroon: #e64553;
-  --color-peach: #fe640b;
-  --color-yellow: #df8e1d;
-  --color-green: #40a02b;
-  --color-teal: #179299;
-  --color-sky: #04a5e5;
-  --color-sapphire: #209fb5;
-  --color-blue: #1e66f5;
+  --color-pink: #caa1c2;
+  --color-mauve: #ea76cb;
+  --color-red: #a88bcf;
+  --color-maroon: #c87590;
+  --color-peach: #ce9575;
+  --color-yellow: #8bbc8a;
+  --color-green: #e2f0df;
+  --color-teal: #aae0be;
+  --color-sky: #89b4fa;
+  --color-sapphire: #74b6c5;
+  --color-blue: #cdbb95;
   --color-lavender: #7287fd;
 
   --current-accent-color: var(--color-peach);
@@ -345,7 +349,7 @@ header,
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.25em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--color-subtext1);
 }
 
@@ -424,11 +428,10 @@ header,
   border-radius: 6px;
   padding: 0.25rem 0.5rem;
   font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 1000;
+  text-transform: lowercase;
   letter-spacing: 0.1em;
-  border: 1px solid color-mix(in srgb, var(--tag-color) 55%, transparent);
-  background: color-mix(in srgb, var(--tag-color) 12%, transparent);
+  background: rgba(49, 50, 68);
   color: var(--tag-color);
 }
 
@@ -480,15 +483,15 @@ header,
 }
 
 .terminal-dot--red {
-  background: var(--color-red);
+  background: var(--color-button1);
 }
 
 .terminal-dot--yellow {
-  background: var(--color-yellow);
+  background: var(--color-button2);
 }
 
 .terminal-dot--green {
-  background: var(--color-green);
+  background: var(--color-button3);
 }
 
 .terminal-window__repo {
@@ -526,15 +529,15 @@ header,
   font-size: 1.4rem;
   font-weight: 800;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
   color: var(--color-accent);
 }
 
 .header-nav {
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.16em;
-  text-transform: uppercase;
+  text-transform: lowercase;
 }
 
 .terminal-window__footer {
