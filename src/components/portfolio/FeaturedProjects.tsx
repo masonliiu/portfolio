@@ -37,33 +37,35 @@ export default function FeaturedProjects() {
           >
             <Link
               href={`/projects/${project.slug}`}
-              className="terminal-preview block"
+              className="terminal-preview-wrap block"
               style={{ viewTransitionName: `project-${project.slug}` }}
             >
-              <div className="terminal-window terminal-preview__inner">
-                <div className="terminal-window__top">
-                  <div className="terminal-window__controls">
-                    <span className="terminal-dot terminal-dot--red" />
-                    <span className="terminal-dot terminal-dot--yellow" />
-                    <span className="terminal-dot terminal-dot--green" />
+              <div className="terminal-preview terminal-preview--catalog">
+                <div className="terminal-window terminal-preview__inner">
+                  <div className="terminal-window__top">
+                    <div className="terminal-window__controls">
+                      <span className="terminal-dot terminal-dot--red" />
+                      <span className="terminal-dot terminal-dot--yellow" />
+                      <span className="terminal-dot terminal-dot--green" />
+                    </div>
+                    <span className="terminal-window__stars">
+                      ★ {project.stars ?? "—"}
+                    </span>
                   </div>
-                  <span className="terminal-window__stars">
-                    ★ {project.stars ?? "—"}
-                  </span>
-                </div>
-                <div className="terminal-window__repo truncate">
-                  {project.repo}
-                </div>
-                <p className="terminal-window__desc clamp-3">
-                  {project.summary}
-                </p>
-                <div className="terminal-window__footer">
-                  <span />
-                  <span>
-                    {project.contributors.length === 1
-                      ? project.contributors[0]
-                      : `${project.contributors.length} contributors`}
-                  </span>
+                  <div className="terminal-window__repo truncate">
+                    {project.repo}
+                  </div>
+                  <p className="terminal-window__desc clamp-3">
+                    {project.summary}
+                  </p>
+                  <div className="terminal-window__footer">
+                    <span />
+                    <span>
+                      {project.contributors.length === 1
+                        ? project.contributors[0]
+                        : `${project.contributors.length} contributors`}
+                    </span>
+                  </div>
                 </div>
               </div>
             </Link>
@@ -71,7 +73,7 @@ export default function FeaturedProjects() {
               <div className="flex flex-col gap-1">
                 <Link
                   href={`/projects/${project.slug}`}
-                  className="text-lg font-semibold"
+                  className="featured-title text-lg font-semibold"
                 >
                   {project.title}
                 </Link>

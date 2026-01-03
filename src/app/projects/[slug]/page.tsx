@@ -39,7 +39,7 @@ export default async function ProjectDetailPage({
       </div>
       <div className="mt-6 flex flex-col items-center gap-6 text-center">
         <div
-          className="terminal-preview terminal-preview--detail w-full max-w-2xl"
+          className="terminal-preview terminal-preview--detail w-full max-w-xl"
           style={{ viewTransitionName: `project-${project.slug}` }}
         >
         <div className="terminal-window">

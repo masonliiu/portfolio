@@ -80,21 +80,21 @@ export default function ThemePanel() {
         Theme
       </div>
       <div className="theme-panel__body mt-3 flex flex-col items-center gap-3 text-center">
-        <div className="flex flex-wrap justify-center gap-2">
-        {paletteOptions.map((option) => (
-          <button
-            key={option.id}
-            type="button"
-            onClick={() => setPalette(option.id)}
-            className={`rounded-[6px] border px-3 py-1 text-[13px] font-semibold lowercase tracking-[0.3em] transition hover:text-[var(--color-accent)] hover:border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] ${
-              palette === option.id
-                ? "border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] text-[var(--color-text)] shadow-sm"
-                : "border-transparent text-[var(--color-subtext1)]"
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
+        <div className="theme-panel__palettes flex flex-wrap justify-center gap-2">
+          {paletteOptions.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              onClick={() => setPalette(option.id)}
+              className={`rounded-[6px] border px-3 py-1 text-[13px] font-semibold lowercase tracking-[0.3em] transition hover:text-[var(--color-accent)] hover:border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] ${
+                palette === option.id
+                  ? "border-[color-mix(in srgb,var(--color-accent) 70%,transparent)] text-[var(--color-text)] shadow-sm"
+                  : "border-transparent text-[var(--color-subtext1)]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
         </div>
         <div
           className="swatch-grid"

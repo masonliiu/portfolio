@@ -484,6 +484,29 @@ header,
   padding: 2.2rem;
 }
 
+.terminal-preview--catalog {
+  padding: 1.6rem;
+}
+
+.terminal-preview--detail {
+  padding: 1.6rem;
+}
+
+.terminal-preview-wrap {
+  padding: 0.8rem;
+}
+
+.featured-card:hover .featured-title {
+  color: var(--color-accent);
+}
+
+.theme-panel__palettes {
+  width: 100%;
+  padding: 0.6rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-surface0) 60%, transparent);
+  background: color-mix(in srgb, var(--color-mantle) 70%, transparent);
+}
 .terminal-preview__inner {
   transition: transform 0.2s ease;
 }
