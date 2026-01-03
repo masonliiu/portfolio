@@ -228,6 +228,12 @@ a:hover {
   padding: var(--page-pad-y) var(--page-pad-x);
 }
 
+.projects-shell {
+  max-width: 90rem;
+  padding-left: calc(var(--page-pad-x) - 1.5rem);
+  padding-right: calc(var(--page-pad-x) - 1.5rem);
+}
+
 @media (min-width: 768px) {
   :root {
     --page-pad-y: 2.6rem;
