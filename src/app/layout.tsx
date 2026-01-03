@@ -54,6 +54,7 @@ export default function RootLayout({
             __html: `(() => {
   try {
     const root = document.documentElement;
+    root.style.scrollBehavior = "auto";
     const palettes = ["latte", "frappe", "macchiato", "mocha"];
     const accents = ["rosewater", "flamingo", "pink", "mauve", "red", "maroon", "peach", "yellow", "green", "teal", "sky", "sapphire", "blue", "lavender"];
     const storedPalette = localStorage.getItem("palette");
@@ -79,24 +80,37 @@ export default function RootLayout({
   } catch (err) {}
   try {
     const root = document.documentElement;
-    const saved = sessionStorage.getItem("scrollY");
-    if (saved) {
-      history.scrollRestoration = "manual";
-      window.scrollTo(0, Number(saved) || 0);
-    }
-    window.addEventListener("beforeunload", () => {
+    let readySet = false;
+    const restoreScroll = () => {
+      const saved = sessionStorage.getItem("scrollY");
+      if (saved) {
+        history.scrollRestoration = "manual";
+        window.scrollTo(0, Number(saved) || 0);
+      }
+    };
+    const markReady = () => {
+      if (readySet) return;
+      readySet = true;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          root.classList.add("ready");
+          root.style.scrollBehavior = "";
+        });
+      });
+    };
+    window.addEventListener("pagehide", () => {
       sessionStorage.setItem("scrollY", String(window.scrollY || 0));
     });
-    window.addEventListener("pageshow", () => {
-      const nextSaved = sessionStorage.getItem("scrollY");
-      if (nextSaved) {
-        window.scrollTo(0, Number(nextSaved) || 0);
-      }
+    window.addEventListener("DOMContentLoaded", () => {
+      restoreScroll();
     });
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        root.classList.add("ready");
-      });
+    window.addEventListener("load", () => {
+      restoreScroll();
+      markReady();
+    });
+    window.addEventListener("pageshow", () => {
+      restoreScroll();
+      markReady();
     });
   } catch (err) {}
 })();`,
