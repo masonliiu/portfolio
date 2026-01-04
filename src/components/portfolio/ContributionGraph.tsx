@@ -12,13 +12,7 @@ type ApiResponse = {
   days: Day[];
 };
 
-const DEFAULT_COLORS = [
-  "#1f1b33",
-  "#403a5f",
-  "#655f8b",
-  "#8a85b6",
-  "#b6b1e6",
-];
+const DEFAULT_COLORS = ["#2a2740", "#4b4470", "#6d6698", "#9a94c7"];
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -71,11 +65,17 @@ const buildRamp = (accent: string) => {
   if (!rgb) return DEFAULT_COLORS;
   const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
   const saturation = clamp(hsl.s, 45, 85);
-  const steps = [18, 32, 48, 64, 80];
+  const steps = [26, 42, 58, 74];
   return steps.map(
     (lightness) =>
       `hsl(${Math.round(hsl.h)} ${Math.round(saturation)}% ${lightness}%)`
   );
+};
+
+const resolveCssVar = (styles: CSSStyleDeclaration, value: string) => {
+  const match = value.match(/var\((--[^)]+)\)/);
+  if (!match) return value;
+  return styles.getPropertyValue(match[1]).trim() || value;
 };
 
 export default function ContributionGraph() {
@@ -89,6 +89,7 @@ export default function ContributionGraph() {
   const gridRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [levelColors, setLevelColors] = useState(DEFAULT_COLORS);
+  const [offColor, setOffColor] = useState("var(--color-surface0)");
   const [cellSize, setCellSize] = useState(10);
   const [cellGap, setCellGap] = useState(2);
 
@@ -168,10 +169,15 @@ export default function ContributionGraph() {
   useEffect(() => {
     const root = document.documentElement;
     const compute = () => {
-      const accent = getComputedStyle(root)
-        .getPropertyValue("--color-accent")
-        .trim();
+      const styles = getComputedStyle(root);
+      const accentRaw =
+        styles.getPropertyValue("--current-accent-color").trim() ||
+        styles.getPropertyValue("--color-accent").trim();
+      const surfaceRaw = styles.getPropertyValue("--color-surface0").trim();
+      const accent = resolveCssVar(styles, accentRaw);
+      const surface = resolveCssVar(styles, surfaceRaw);
       setLevelColors(buildRamp(accent));
+      setOffColor(surface || "var(--color-surface0)");
     };
     compute();
     const observer = new MutationObserver(compute);
@@ -187,11 +193,11 @@ export default function ContributionGraph() {
   }, [days]);
 
   const getColor = (count: number) => {
-    if (count === 0) return levelColors[0];
-    if (count <= maxCount * 0.25) return levelColors[1];
-    if (count <= maxCount * 0.5) return levelColors[2];
-    if (count <= maxCount * 0.75) return levelColors[3];
-    return levelColors[4];
+    if (count === 0) return offColor;
+    if (count <= maxCount * 0.25) return levelColors[0];
+    if (count <= maxCount * 0.5) return levelColors[1];
+    if (count <= maxCount * 0.75) return levelColors[2];
+    return levelColors[3];
   };
 
   return (
@@ -299,6 +305,14 @@ export default function ContributionGraph() {
       <div className="mt-3 flex items-center justify-center gap-2 text-xs text-[var(--color-subtext1)]">
         <span>Less</span>
         <div className="flex items-center gap-1">
+          <span
+            className="rounded-[3px] border border-[var(--color-surface1)]"
+            style={{
+              backgroundColor: offColor,
+              width: `${Math.max(cellSize - 1, 6)}px`,
+              height: `${Math.max(cellSize - 1, 6)}px`,
+            }}
+          />
           {levelColors.map((color) => (
             <span
               key={color}
