@@ -92,7 +92,7 @@ export default function FeaturedProjects() {
                       href={link.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-xs lowercase tracking-[0.2em]"
+                      className="inline-flex items-center gap-2 text-xs font-semibold lowercase tracking-[0.1em]"
                     >
                       {isGithub ? (
                         <svg

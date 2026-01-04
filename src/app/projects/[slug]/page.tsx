@@ -34,9 +34,6 @@ export default async function ProjectDetailPage({
   return (
     <div className="page-shell max-w-6xl">
       <div className="scroll-blur" />
-      <div className="terminal-title">
-        <span className="mt-3 text-3xl font-extrabold tracking-tight">projects</span>
-      </div>
       <div className="mt-6 flex flex-col items-center gap-6 text-center">
         <div
           className="terminal-preview terminal-preview--detail w-full max-w-xl"
@@ -88,7 +85,7 @@ export default async function ProjectDetailPage({
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-xs lowercase tracking-[0.2em]"
+                  className="inline-flex items-center gap-2 text-xs font-semibold lowercase tracking-[0.1em]"
                 >
                   {isGithub ? (
                     <svg

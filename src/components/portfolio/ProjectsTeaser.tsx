@@ -6,9 +6,6 @@ export default function ProjectsTeaser() {
       <div className="terminal-title">
         <span className="mt-3 text-3xl font-extrabold tracking-tight">projects</span>
       </div>
-      <h2 className="mt-3 text-2xl font-semibold tracking-tight">
-        Project catalog
-      </h2>
       <p className="mt-3 text-sm text-[var(--color-subtext0)]">
         Browse the full project list with detailed previews, deep dives, and
         architecture notes.

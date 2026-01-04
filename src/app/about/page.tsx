@@ -7,7 +7,7 @@ export default function AboutPage() {
       <div className="scroll-blur" />
       <AboutContent />
       <Link
-        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)] clickable"
+        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold lowercase tracking-[0.3em] text-[var(--color-subtext1)] clickable"
         href="/"
       >
         Back home

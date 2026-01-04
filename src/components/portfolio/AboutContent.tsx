@@ -1,3 +1,5 @@
+import { Link } from "next-view-transitions";
+
 export default function AboutContent() {
   return (
     <>
@@ -7,42 +9,45 @@ export default function AboutContent() {
 
       <section className="mt-6 space-y-4 text-base text-[var(--color-subtext0)]">
         <p>
-          Hey! I&apos;m Mason Liu — a CS student at UTD focused on full-stack
-          development and game development. I like building systems that feel
-          clean, fast, and thoughtful to use.
+         Hey! I'm Mason Liu — a Computer Science student at UTD based in Dallas, Texas. I specialize in full-stack development, with thorough experience in game development and low-level systems programming.
         </p>
         <p>
-          My recent work includes Mase Labs Collective, Soundborn, a JVM memory
-          arena experiment, and utility tools like a bionic reading extension.
-          I&apos;m especially interested in product polish, interactive tooling,
-          and platform-style projects.
+           Recently, I've been working on a wide variety of projects. Some very product-focused, others more technical, 
+           but all driven by my desire to build things from scratch that I'm genuinely proud to put out publicly. 
         </p>
         <p>
-          Outside of software, I spend time exploring photography, game design,
-          and new creative workflows. If you want to collaborate or chat, feel
+          Outside of software, I spend time playing virtually all sports, exploring photography, and expanding my music palette. If you want to collaborate or chat, feel
           free to reach out.
         </p>
       </section>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-subtext1)]">
-        <a href="mailto:liumasn@gmail.com">Email</a>
-        <span className="text-[var(--color-surface1)]">|</span>
-        <a
-          href="https://github.com/masonliiu"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
-        <span className="text-[var(--color-surface1)]">|</span>
-        <a
-          href="https://www.linkedin.com/in/masonliiu/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          LinkedIn
-        </a>
-      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--color-subtext1)]">
+          <a
+            href="https://github.com/masonliiu"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub
+          </a>
+          <span className="text-[var(--color-surface1)]">|</span>
+          <a
+            href="https://www.linkedin.com/in/masonliiu/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
+          </a>
+          <span className="text-[var(--color-surface1)]">|</span>
+          <a href="mailto:liumasn@gmail.com">Email</a>
+          <span className="text-[var(--color-surface1)]">|</span>
+          <a
+            href="https://instagram.com/mason_liuu"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Instagram
+          </a>
+        </div>
     </>
   );
 }

@@ -14,9 +14,10 @@ export default function Hero() {
             Mason Liu
           </span>
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-[var(--color-subtext0)]">
-          Mason Liu is a CS student at UTD focused on full-stack development and
-          game development.
+        <p className="mt-4 max-w-2xl text-[var(--color-subtext0)]">
+          I'm currently studying Computer Science at UTD. I specialize in full-stack development, with thorough experience in game development and low-level systems programming.
+          With a strong emphasis on attention to detail, 
+          I enjoy creating software that is not only efficient but also delivers a seamless yet intricate user experience.
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--color-subtext1)]">
           <a

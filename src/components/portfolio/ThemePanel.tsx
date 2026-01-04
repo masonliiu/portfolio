@@ -104,7 +104,7 @@ export default function ThemePanel() {
             {
               "--swatch-size": "1.5rem",
               "--swatch-gap": "0.45rem",
-              "--swatch-offset": "-5px",
+              "--swatch-offset": "-3px",
               "--swatch-col": String(activeCol),
               "--swatch-row": String(activeRow),
             } as React.CSSProperties
@@ -126,21 +126,6 @@ export default function ThemePanel() {
             </button>
           ))}
         </div>
-        <label className="bg-effect-toggle flex cursor-pointer items-center gap-2 text-[10px] text-[var(--color-subtext1)]">
-          <input
-            type="checkbox"
-            checked={backgroundEffect}
-            onChange={() => setBackgroundEffect((value) => !value)}
-            className="h-4 w-4 rounded border border-[var(--color-surface1)] text-[var(--color-accent)]"
-            aria-label="Toggle background effect"
-          />
-          <span className="font-semibold text-[14px] lowercase tracking-[0.1em]">
-            Background effect{": "}
-            <span className="text-[var(--color-accent)]">
-              {backgroundEffect ? "on" : "off"}
-            </span>
-          </span>
-        </label>
       </div>
     </section>
   );
