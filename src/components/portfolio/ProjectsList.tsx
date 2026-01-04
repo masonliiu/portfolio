@@ -15,6 +15,9 @@ const tagColors = [
 ];
 
 export default function ProjectsList() {
+  const sortedProjects = [...projects].sort((a, b) =>
+    b.createdAtISO.localeCompare(a.createdAtISO)
+  );
   const router = useTransitionRouter();
 
   const handleCardClick = (
@@ -41,7 +44,7 @@ export default function ProjectsList() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-        {projects.map((project) => (
+        {sortedProjects.map((project) => (
           <div
             key={project.slug}
             className="terminal-card project-card hover-panel no-lift featured-card flex min-h-[460px] flex-col cursor-pointer"

@@ -10,6 +10,7 @@ export type Project = {
   stars: number | null;
   contributors: string[];
   createdAt: string;
+  createdAtISO: string;
   summary: string;
   tags: string[];
   links: ProjectLink[];
@@ -28,20 +29,21 @@ export const projects: Project[] = [
     stars: null,
     contributors: ["masonliiu"],
     createdAt: "Nov 11, 2025",
+    createdAtISO: "2025-11-11",
     summary:
       "Full-stack commerce and fulfillment platform with Stripe checkout, automated order queues, and production monitoring for GitHub growth services.",
     tags: [
+      "Javascript",
       "React",
-      "Stripe",
       "Express",
       "Node.js",
-      "Vercel",
       "Neon",
       "PostgreSQL",
       "SQLite",
       "GitHub API",
-      "REST",
+      "REST API",
       "Webhooks",
+      "Stripe",
     ],
     links: [
       { label: "Live", href: "https://maselabs.com" },
@@ -90,6 +92,7 @@ export const projects: Project[] = [
     stars: null,
     contributors: ["masonliiu"],
     createdAt: "Dec 28, 2025",
+    createdAtISO: "2025-12-28",
     summary:
       "From-scratch manual memory arena in Java with explicit allocation, bounds checking, and raw byte layouts for runtime study.",
     tags: [
@@ -153,6 +156,7 @@ export const projects: Project[] = [
     stars: null,
     contributors: ["masonliiu"],
     createdAt: "Sep 2, 2025",
+    createdAtISO: "2025-09-02",
     summary:
       "Unity iOS turn-based RPG with a full combat loop, gacha collection, and persistent progression systems.",
     tags: [
@@ -213,6 +217,7 @@ export const projects: Project[] = [
     stars: null,
     contributors: ["masonliiu"],
     createdAt: "Oct 24, 2025",
+    createdAtISO: "2025-10-24",
     summary:
       "Chrome extension that transforms live pages into bionic reading layouts with content scripts and persistent settings.",
     tags: [
@@ -259,6 +264,7 @@ export const projects: Project[] = [
     stars: null,
     contributors: ["masonliiu"],
     createdAt: "Dec 1, 2025",
+    createdAtISO: "2025-12-01",
     summary:
       "SVG-based GitHub view counter with a drag-and-drop builder, Redis persistence, and real-time rendering.",
     tags: [
@@ -267,7 +273,6 @@ export const projects: Project[] = [
       "Redis",
       "Upstash",
       "Vercel",
-      "SVG",
     ],
     links: [
       { label: "Live", href: "https://southpark-view-counter.vercel.app/" },
