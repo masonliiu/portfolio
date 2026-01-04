@@ -87,44 +87,10 @@ export default function ContributionGraph() {
     text: string;
   } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const [levelColors, setLevelColors] = useState(DEFAULT_COLORS);
-
-  useEffect(() => {
-    const fetchGraph = async () => {
-      try {
-        const response = await fetch("/api/github/contributions");
-        if (!response.ok) throw new Error("Failed");
-        const data = (await response.json()) as ApiResponse;
-        setDays(data.days || []);
-        setStatus("ready");
-      } catch {
-        setStatus("error");
-      }
-    };
-
-    fetchGraph();
-  }, []);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    const compute = () => {
-      const accent = getComputedStyle(root)
-        .getPropertyValue("--color-accent")
-        .trim();
-      setLevelColors(buildRamp(accent));
-    };
-    compute();
-    const observer = new MutationObserver(compute);
-    observer.observe(root, {
-      attributes: true,
-      attributeFilter: ["style", "class", "data-theme"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  const maxCount = useMemo(() => {
-    return days.reduce((max, day) => Math.max(max, day.count), 0);
-  }, [days]);
+  const [cellSize, setCellSize] = useState(10);
+  const [cellGap, setCellGap] = useState(2);
 
   const { weeks, monthLabels } = useMemo(() => {
     if (days.length === 0) {
@@ -148,10 +114,10 @@ export default function ContributionGraph() {
     while (current <= endDate) {
       const week: Day[] = [];
       for (let i = 0; i < 7; i += 1) {
-          const iso = current.toISOString().slice(0, 10);
-          if (current.getDate() === 1 && current.getMonth() < 12) {
-            monthStarts.push(weekIndex);
-          }
+        const iso = current.toISOString().slice(0, 10);
+        if (current.getDate() === 1 && current.getMonth() < 12) {
+          monthStarts.push(weekIndex);
+        }
         week.push({
           date: iso,
           count: dayMap.get(iso) ?? 0,
@@ -163,6 +129,61 @@ export default function ContributionGraph() {
     }
 
     return { weeks: weeksList, monthLabels: monthStarts };
+  }, [days]);
+
+  useEffect(() => {
+    const fetchGraph = async () => {
+      try {
+        const response = await fetch("/api/github/contributions");
+        if (!response.ok) throw new Error("Failed");
+        const data = (await response.json()) as ApiResponse;
+        setDays(data.days || []);
+        setStatus("ready");
+      } catch {
+        setStatus("error");
+      }
+    };
+
+    fetchGraph();
+  }, []);
+
+  useEffect(() => {
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
+    const resize = () => {
+      const columns = weeks.length || 1;
+      const width = wrapper.clientWidth;
+      const gap = 2;
+      const rawSize = Math.floor((width - gap * (columns - 1)) / columns);
+      const size = clamp(rawSize, 6, 18);
+      setCellSize(size);
+      setCellGap(gap);
+    };
+    resize();
+    const observer = new ResizeObserver(resize);
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, [weeks.length]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const compute = () => {
+      const accent = getComputedStyle(root)
+        .getPropertyValue("--color-accent")
+        .trim();
+      setLevelColors(buildRamp(accent));
+    };
+    compute();
+    const observer = new MutationObserver(compute);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["style", "class", "data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
+  const maxCount = useMemo(() => {
+    return days.reduce((max, day) => Math.max(max, day.count), 0);
   }, [days]);
 
   const getColor = (count: number) => {
@@ -197,17 +218,21 @@ export default function ContributionGraph() {
         </p>
       ) : null}
       {status === "ready" ? (
-        <div className="relative mt-3">
+        <div className="relative mt-3" ref={wrapperRef}>
           <div
             ref={gridRef}
             className="flex flex-col"
             onMouseLeave={() => setTooltip(null)}
+            style={{
+              "--cell-size": `${cellSize}px`,
+              "--cell-gap": `${cellGap}px`,
+            }}
           >
             <div
               className="grid text-[10px] text-[var(--color-subtext1)]"
               style={{
-                gridTemplateColumns: `repeat(${weeks.length}, 12px)`,
-                columnGap: "2px",
+                gridTemplateColumns: `repeat(${weeks.length}, var(--cell-size))`,
+                columnGap: "var(--cell-gap)",
               }}
             >
               {monthLabels.map((index) => {
@@ -227,15 +252,23 @@ export default function ContributionGraph() {
                 );
               })}
             </div>
-            <div className="mt-2 flex gap-0.5">
+            <div className="mt-2 flex" style={{ gap: "var(--cell-gap)" }}>
               {weeks.map((week, weekIndex) => (
-                <div key={`week-${weekIndex}`} className="grid grid-rows-7 gap-0.5">
+                <div
+                  key={`week-${weekIndex}`}
+                  className="grid grid-rows-7"
+                  style={{ gap: "var(--cell-gap)" }}
+                >
                   {week.map((day) => (
                     <button
                       key={day.date}
                       type="button"
-                      className="h-3 w-3 rounded-[3px] border border-[var(--color-surface1)]"
-                      style={{ backgroundColor: getColor(day.count) }}
+                      className="rounded-[3px] border border-[var(--color-surface1)]"
+                      style={{
+                        width: "var(--cell-size)",
+                        height: "var(--cell-size)",
+                        backgroundColor: getColor(day.count),
+                      }}
                       onMouseEnter={(event) => {
                         const grid = gridRef.current?.getBoundingClientRect();
                         const rect = event.currentTarget.getBoundingClientRect();
@@ -269,8 +302,12 @@ export default function ContributionGraph() {
           {levelColors.map((color) => (
             <span
               key={color}
-              className="h-3 w-3 rounded-[3px] border border-[var(--color-surface1)]"
-              style={{ backgroundColor: color }}
+              className="rounded-[3px] border border-[var(--color-surface1)]"
+              style={{
+                backgroundColor: color,
+                width: `${Math.max(cellSize - 1, 6)}px`,
+                height: `${Math.max(cellSize - 1, 6)}px`,
+              }}
             />
           ))}
         </div>

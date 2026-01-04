@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type CommitItem = {
   repo: string;
@@ -23,6 +23,11 @@ export default function GitHubActivity() {
   const [commits, setCommits] = useState<CommitItem[]>([]);
   const [languages, setLanguages] = useState<LanguageItem[]>([]);
   const [status, setStatus] = useState("loading");
+  const [langTooltip, setLangTooltip] = useState<{
+    x: number;
+    text: string;
+  } | null>(null);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const cached = localStorage.getItem(CACHE_KEY);
@@ -144,26 +149,46 @@ export default function GitHubActivity() {
             )}
           </ul>
           {languages.length > 0 ? (
-            <div className="mt-3">
-              <div className="flex h-2.5 overflow-hidden rounded bg-[var(--color-surface0)]">
+            <div className="relative mt-3">
+              <div
+                ref={barRef}
+                className="flex h-2.5 overflow-hidden rounded bg-[var(--color-surface0)]"
+                onMouseLeave={() => setLangTooltip(null)}
+              >
                 {languages.map((lang) => (
                   <div
                     key={lang.name}
-                    className="group relative h-full"
+                    className="h-full"
                     style={{
                       width: `${(lang.count / totalLanguages) * 100}%`,
                       backgroundColor: lang.color,
                     }}
+                    onMouseEnter={(event) => {
+                      const bar = barRef.current?.getBoundingClientRect();
+                      const rect = event.currentTarget.getBoundingClientRect();
+                      if (!bar) return;
+                      const percentage = Math.round(
+                        (lang.count / totalLanguages) * 100
+                      );
+                      setLangTooltip({
+                        x: rect.left - bar.left + rect.width / 2,
+                        text: `${lang.name} · ${percentage}%`,
+                      });
+                    }}
                     aria-label={`${lang.name}: ${Math.round(
                       (lang.count / totalLanguages) * 100
                     )}%`}
-                  >
-                    <span className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-6 rounded-md border border-[var(--color-surface1)] bg-[var(--color-crust)] px-2 py-1 text-[10px] text-[var(--color-subtext1)] opacity-0 transition-opacity group-hover:opacity-100">
-                      {lang.name}
-                    </span>
-                  </div>
+                  />
                 ))}
               </div>
+              {langTooltip ? (
+                <span
+                  className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-6 rounded-md border border-[var(--color-surface1)] bg-[var(--color-crust)] px-2 py-1 text-[10px] text-[var(--color-subtext1)] shadow-lg"
+                  style={{ left: langTooltip.x, top: 0 }}
+                >
+                  {langTooltip.text}
+                </span>
+              ) : null}
             </div>
           ) : null}
         </>
