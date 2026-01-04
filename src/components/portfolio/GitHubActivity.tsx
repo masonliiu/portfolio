@@ -149,15 +149,19 @@ export default function GitHubActivity() {
                 {languages.map((lang) => (
                   <div
                     key={lang.name}
-                    className="relative h-full"
+                    className="group relative h-full"
                     style={{
                       width: `${(lang.count / totalLanguages) * 100}%`,
                       backgroundColor: lang.color,
                     }}
-                    title={`${lang.name}: ${Math.round(
+                    aria-label={`${lang.name}: ${Math.round(
                       (lang.count / totalLanguages) * 100
                     )}%`}
-                  />
+                  >
+                    <span className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 -translate-y-6 rounded-md border border-[var(--color-surface1)] bg-[var(--color-crust)] px-2 py-1 text-[10px] text-[var(--color-subtext1)] opacity-0 transition-opacity group-hover:opacity-100">
+                      {lang.name}
+                    </span>
+                  </div>
                 ))}
               </div>
             </div>
