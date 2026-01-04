@@ -93,66 +93,120 @@ export async function GET() {
       "User-Agent": "masonliu-portfolio",
     };
 
-    const eventsRes = await fetch(
-      `https://api.github.com/users/${USERNAME}/events/public`,
+    const searchResponse = await fetch(
+      `https://api.github.com/search/commits?q=author:${USERNAME}&sort=author-date&order=desc&per_page=4`,
       {
-        headers,
+        headers: {
+          ...headers,
+          Accept: "application/vnd.github.cloak-preview+json",
+        },
         next: { revalidate: CACHE_SECONDS },
       }
     );
 
-    if (!eventsRes.ok) {
+    if (!searchResponse.ok) {
       throw new Error("GitHub request failed");
     }
 
-    const events = (await eventsRes.json()) as Array<{
-      type: string;
-      repo: { name: string };
-      payload: { commits?: Array<{ message: string; url: string }> };
-    }>;
+    const searchData = (await searchResponse.json()) as {
+      items?: Array<{
+        url: string;
+        html_url: string;
+        commit: { message: string };
+        repository: { full_name: string };
+      }>;
+    };
 
-    const commitUrls: string[] = [];
-    events.forEach((event) => {
-      if (event.type !== "PushEvent" || !event.payload.commits) return;
-      event.payload.commits.forEach((commit) => {
-        commitUrls.push(commit.url);
-      });
-    });
-
-    const uniqueCommitUrls = Array.from(new Set(commitUrls)).slice(0, 4);
-    const commitDetails = await Promise.all(
-      uniqueCommitUrls.map(async (url) => {
-        const response = await fetch(url, {
+    let commitDetails = await Promise.all(
+      (searchData.items ?? []).map(async (item) => {
+        const response = await fetch(item.url, {
           headers,
           next: { revalidate: CACHE_SECONDS },
         });
         if (!response.ok) {
           throw new Error("Commit request failed");
         }
-        return response.json() as Promise<{
+        const detail = (await response.json()) as {
           html_url: string;
           commit: { message: string };
-          repository?: { full_name?: string };
           stats?: { additions?: number; deletions?: number };
           files?: Array<{ filename: string; additions: number; deletions: number }>;
-          url: string;
-        }>;
+        };
+        return { item, detail };
       })
     );
 
-    const commitItems: CommitItem[] = commitDetails.map((detail) => ({
-      repo:
-        detail.repository?.full_name ||
-        detail.url.split("/repos/")[1]?.split("/commits/")[0] ||
-        USERNAME,
-      message: detail.commit?.message?.split("\n")[0] || "Commit",
-      url: detail.html_url || detail.url,
+    if (commitDetails.length === 0) {
+      const eventsRes = await fetch(
+        `https://api.github.com/users/${USERNAME}/events/public`,
+        {
+          headers,
+          next: { revalidate: CACHE_SECONDS },
+        }
+      );
+
+      if (!eventsRes.ok) {
+        throw new Error("GitHub request failed");
+      }
+
+      const events = (await eventsRes.json()) as Array<{
+        type: string;
+        repo: { name: string };
+        payload: { commits?: Array<{ message: string; url: string }> };
+      }>;
+
+      const commitUrls: string[] = [];
+      const repoMap = new Map<string, string>();
+      events.forEach((event) => {
+        if (event.type !== "PushEvent" || !event.payload.commits) return;
+        event.payload.commits.forEach((commit) => {
+          commitUrls.push(commit.url);
+          repoMap.set(commit.url, event.repo.name);
+        });
+      });
+
+      const uniqueCommitUrls = Array.from(new Set(commitUrls)).slice(0, 4);
+      commitDetails = await Promise.all(
+        uniqueCommitUrls.map(async (url) => {
+          const response = await fetch(url, {
+            headers,
+            next: { revalidate: CACHE_SECONDS },
+          });
+          if (!response.ok) {
+            throw new Error("Commit request failed");
+          }
+          const detail = (await response.json()) as {
+            html_url: string;
+            commit: { message: string };
+            stats?: { additions?: number; deletions?: number };
+            files?: Array<{
+              filename: string;
+              additions: number;
+              deletions: number;
+            }>;
+          };
+          return {
+            item: {
+              repository: { full_name: repoMap.get(url) ?? USERNAME },
+              commit: { message: detail.commit.message },
+              html_url: detail.html_url,
+            },
+            detail,
+          };
+        })
+      );
+    }
+
+    const commitItems: CommitItem[] = commitDetails.map(({ item, detail }) => ({
+      repo: item.repository.full_name,
+      message: item.commit.message.split("\n")[0] || "Commit",
+      url: detail.html_url || item.html_url,
       additions: detail.stats?.additions ?? 0,
       deletions: detail.stats?.deletions ?? 0,
     }));
 
     const commitLanguageTotals: Record<string, number> = {};
-    commitDetails.forEach((detail) => {
+    commitDetails.forEach(({ detail }) => {
       (detail.files ?? []).forEach((file) => {
         const ext = getExtension(file.filename);
         const language = ext ? EXTENSION_LANGUAGE[ext] : null;

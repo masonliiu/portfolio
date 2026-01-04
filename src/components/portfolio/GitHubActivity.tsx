@@ -16,7 +16,7 @@ type LanguageItem = {
   color: string;
 };
 
-const CACHE_KEY = "github-activity-cache";
+const CACHE_KEY = "github-activity-cache-v2";
 const CACHE_TTL = 1000 * 60 * 15;
 
 export default function GitHubActivity() {
@@ -33,7 +33,10 @@ export default function GitHubActivity() {
           commits: CommitItem[];
           languages: LanguageItem[];
         };
-        if (Date.now() - parsed.timestamp < CACHE_TTL) {
+        if (
+          Date.now() - parsed.timestamp < CACHE_TTL &&
+          (parsed.commits.length > 0 || parsed.languages.length > 0)
+        ) {
           setCommits(parsed.commits);
           setLanguages(parsed.languages);
           setStatus("ready");

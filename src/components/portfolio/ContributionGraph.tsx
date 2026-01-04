@@ -12,13 +12,71 @@ type ApiResponse = {
   days: Day[];
 };
 
-const levelColors = [
-  "#2d2a4a",
-  "#4b4a7a",
-  "#6a66a3",
-  "#8a86c7",
-  "#b1aef0",
+const DEFAULT_COLORS = [
+  "#1f1b33",
+  "#403a5f",
+  "#655f8b",
+  "#8a85b6",
+  "#b6b1e6",
 ];
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
+
+const parseColor = (value: string) => {
+  if (!value) return null;
+  if (value.startsWith("#")) {
+    const hex = value.replace("#", "");
+    const full =
+      hex.length === 3
+        ? hex
+            .split("")
+            .map((c) => c + c)
+            .join("")
+        : hex;
+    const int = parseInt(full, 16);
+    return {
+      r: (int >> 16) & 255,
+      g: (int >> 8) & 255,
+      b: int & 255,
+    };
+  }
+  const match = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+  if (!match) return null;
+  return { r: Number(match[1]), g: Number(match[2]), b: Number(match[3]) };
+};
+
+const rgbToHsl = (r: number, g: number, b: number) => {
+  const rr = r / 255;
+  const gg = g / 255;
+  const bb = b / 255;
+  const max = Math.max(rr, gg, bb);
+  const min = Math.min(rr, gg, bb);
+  const delta = max - min;
+  let h = 0;
+  if (delta) {
+    if (max === rr) h = ((gg - bb) / delta) % 6;
+    if (max === gg) h = (bb - rr) / delta + 2;
+    if (max === bb) h = (rr - gg) / delta + 4;
+    h *= 60;
+  }
+  if (h < 0) h += 360;
+  const l = (max + min) / 2;
+  const s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+  return { h, s: s * 100, l: l * 100 };
+};
+
+const buildRamp = (accent: string) => {
+  const rgb = parseColor(accent);
+  if (!rgb) return DEFAULT_COLORS;
+  const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+  const saturation = clamp(hsl.s, 45, 85);
+  const steps = [18, 32, 48, 64, 80];
+  return steps.map(
+    (lightness) =>
+      `hsl(${Math.round(hsl.h)} ${Math.round(saturation)}% ${lightness}%)`
+  );
+};
 
 export default function ContributionGraph() {
   const [days, setDays] = useState<Day[]>([]);
@@ -29,6 +87,7 @@ export default function ContributionGraph() {
     text: string;
   } | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const [levelColors, setLevelColors] = useState(DEFAULT_COLORS);
 
   useEffect(() => {
     const fetchGraph = async () => {
@@ -46,6 +105,23 @@ export default function ContributionGraph() {
     fetchGraph();
   }, []);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const compute = () => {
+      const accent = getComputedStyle(root)
+        .getPropertyValue("--color-accent")
+        .trim();
+      setLevelColors(buildRamp(accent));
+    };
+    compute();
+    const observer = new MutationObserver(compute);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["style", "class", "data-theme"],
+    });
+    return () => observer.disconnect();
+  }, []);
+
   const maxCount = useMemo(() => {
     return days.reduce((max, day) => Math.max(max, day.count), 0);
   }, [days]);
@@ -55,10 +131,7 @@ export default function ContributionGraph() {
       return { weeks: [] as Day[][], monthLabels: [] as number[] };
     }
     const currentYear = new Date().getFullYear();
-    const filtered = days.filter(
-      (day) => new Date(day.date).getFullYear() === currentYear
-    );
-    const sorted = [...filtered].sort((a, b) => a.date.localeCompare(b.date));
+    const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date));
 
     const startDate = new Date(currentYear, 0, 1);
     startDate.setDate(startDate.getDate() - startDate.getDay());
@@ -75,10 +148,10 @@ export default function ContributionGraph() {
     while (current <= endDate) {
       const week: Day[] = [];
       for (let i = 0; i < 7; i += 1) {
-        const iso = current.toISOString().slice(0, 10);
-        if (current.getDate() === 1) {
-          monthStarts.push(weekIndex);
-        }
+          const iso = current.toISOString().slice(0, 10);
+          if (current.getDate() === 1 && current.getMonth() < 12) {
+            monthStarts.push(weekIndex);
+          }
         week.push({
           date: iso,
           count: dayMap.get(iso) ?? 0,
@@ -133,8 +206,8 @@ export default function ContributionGraph() {
             <div
               className="grid text-[10px] text-[var(--color-subtext1)]"
               style={{
-                gridTemplateColumns: `repeat(${weeks.length}, 16px)`,
-                columnGap: "6px",
+                gridTemplateColumns: `repeat(${weeks.length}, 12px)`,
+                columnGap: "2px",
               }}
             >
               {monthLabels.map((index) => {
@@ -154,17 +227,14 @@ export default function ContributionGraph() {
                 );
               })}
             </div>
-            <div className="mt-2 flex gap-1.5">
+            <div className="mt-2 flex gap-0.5">
               {weeks.map((week, weekIndex) => (
-                <div
-                  key={`week-${weekIndex}`}
-                  className="grid grid-rows-7 gap-1.5"
-                >
+                <div key={`week-${weekIndex}`} className="grid grid-rows-7 gap-0.5">
                   {week.map((day) => (
                     <button
                       key={day.date}
                       type="button"
-                      className="h-4 w-4 rounded-sm border border-[var(--color-surface1)]"
+                      className="h-3 w-3 rounded-[3px] border border-[var(--color-surface1)]"
                       style={{ backgroundColor: getColor(day.count) }}
                       onMouseEnter={(event) => {
                         const grid = gridRef.current?.getBoundingClientRect();
@@ -193,13 +263,13 @@ export default function ContributionGraph() {
           ) : null}
         </div>
       ) : null}
-      <div className="mt-3 flex items-center justify-between text-xs text-[var(--color-subtext1)]">
+      <div className="mt-3 flex items-center justify-center gap-2 text-xs text-[var(--color-subtext1)]">
         <span>Less</span>
         <div className="flex items-center gap-1">
           {levelColors.map((color) => (
             <span
               key={color}
-              className="h-2 w-2 rounded-sm border border-[var(--color-surface1)]"
+              className="h-3 w-3 rounded-[3px] border border-[var(--color-surface1)]"
               style={{ backgroundColor: color }}
             />
           ))}
