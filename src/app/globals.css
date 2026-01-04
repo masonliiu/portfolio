@@ -480,12 +480,15 @@ header,
 
 .terminal-preview {
   border-radius: 14px;
-  background: color-mix(in srgb, var(--color-surface2) 20%, white 80%);
+  background: color-mix(in srgb, var(--color-surface2) 20%, rgb(162, 175, 189) 80%);
   padding: 2.2rem;
 }
 
 .terminal-preview--catalog {
   padding: 1.6rem;
+  height: 190px;
+  display: flex;
+  align-items: center;
 }
 
 .terminal-preview--detail {
@@ -493,7 +496,7 @@ header,
 }
 
 .terminal-preview-wrap {
-  padding: 1rem;
+  padding: 1.4rem;
 }
 
 .featured-card:hover .featured-title {
@@ -533,7 +536,7 @@ header,
 .terminal-window {
   position: relative;
   border-radius: 12px;
-  background: color-mix(in srgb, var(--color-base) 96%, black 4%);
+  background: color-mix(in srgb, var(--color-base) 96%, rgb(198, 181, 181) 4%);
   padding: 0.9rem 1.1rem 1.1rem;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-surface1) 70%, transparent);
 }
@@ -591,6 +594,15 @@ header,
   margin-top: 0.6rem;
   font-size: 0.9rem;
   color: var(--color-subtext0);
+}
+
+.terminal-window__desc--small {
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.project-card .terminal-window {
+  width: 100%;
 }
 
 .project-section {

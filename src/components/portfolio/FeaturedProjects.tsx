@@ -1,5 +1,7 @@
+"use client";
+
 import { projects } from "@/lib/projects";
-import { Link } from "next-view-transitions";
+import { useTransitionRouter } from "next-view-transitions";
 import Image from "next/image";
 
 const tagColors = [
@@ -15,6 +17,22 @@ const tagColors = [
 
 export default function FeaturedProjects() {
   const featured = projects.slice(0, 2);
+  const router = useTransitionRouter();
+
+  const handleCardClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+    slug: string
+  ) => {
+    if ((event.target as HTMLElement).closest("a")) return;
+    router.push(`/projects/${slug}`);
+  };
+
+  const handleCardKey = (event: React.KeyboardEvent<HTMLDivElement>, slug: string) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      router.push(`/projects/${slug}`);
+    }
+  };
 
   return (
     <section>
@@ -23,21 +41,24 @@ export default function FeaturedProjects() {
           <span className="text-[var(--color-accent)]">★</span>
           Featured Projects
         </h2>
-        <Link className="arrow-link more-link" href="/projects">
+        <a className="arrow-link more-link" href="/projects">
           View all
           <span className="more-link__arrow">→</span>
-        </Link>
+        </a>
       </div>
 
       <div className="mt-6 grid gap-8 md:grid-cols-2">
         {featured.map((project) => (
           <div
             key={project.slug}
-            className="terminal-card hover-panel no-lift featured-card group overflow-hidden"
+            className="terminal-card hover-panel no-lift featured-card group overflow-hidden cursor-pointer"
+            role="link"
+            tabIndex={0}
+            onClick={(event) => handleCardClick(event, project.slug)}
+            onKeyDown={(event) => handleCardKey(event, project.slug)}
           >
-            <Link
-              href={`/projects/${project.slug}`}
-              className="terminal-preview-wrap block"
+            <div
+              className="terminal-preview-wrap"
               style={{ viewTransitionName: `project-${project.slug}` }}
             >
               <div className="terminal-preview terminal-preview--catalog">
@@ -68,15 +89,12 @@ export default function FeaturedProjects() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
             <div className="space-y-3 p-5">
               <div className="flex flex-col gap-1">
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className="featured-title text-lg font-semibold"
-                >
+                <span className="featured-title text-lg font-semibold">
                   {project.title}
-                </Link>
+                </span>
                 <span className="text-sm text-[var(--color-subtext1)]">
                   {project.createdAt}
                 </span>

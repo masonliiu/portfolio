@@ -27,9 +27,9 @@ export const projects: Project[] = [
     repo: "masonliiu/maselabs",
     stars: null,
     contributors: ["masonliiu"],
-    createdAt: "Nov 11",
+    createdAt: "Nov 11, 2025",
     summary:
-      "Full-stack commerce and fulfillment platform for GitHub growth services with Stripe checkout, order tracking, and automated execution.",
+      "Full-stack commerce and fulfillment platform with Stripe checkout, automated order queues, and production monitoring for GitHub growth services.",
     tags: [
       "React",
       "Stripe",
@@ -37,9 +37,11 @@ export const projects: Project[] = [
       "Node.js",
       "Vercel",
       "Neon",
-      "Postgres",
+      "PostgreSQL",
       "SQLite",
       "GitHub API",
+      "REST",
+      "Webhooks",
     ],
     links: [
       { label: "Live", href: "https://maselabs.com" },
@@ -89,10 +91,12 @@ export const projects: Project[] = [
     contributors: ["masonliiu"],
     createdAt: "Dec 28, 2025",
     summary:
-      "A Java memory arena built to model JVM-style allocation and deepen understanding of low-level runtime behavior.",
+      "From-scratch manual memory arena in Java with explicit allocation, bounds checking, and raw byte layouts for runtime study.",
     tags: [
       "Java",
       "JVM",
+      "Memory Management",
+      "Data Structures",
     ],
     links: [
       {
@@ -148,14 +152,15 @@ export const projects: Project[] = [
     repo: "masonliiu/soundborn",
     stars: null,
     contributors: ["masonliiu"],
-    createdAt: "Sep 2",
+    createdAt: "Sep 2, 2025",
     summary:
-      "A Unity 6.2 iOS turn-based RPG where musical genres become characters; core systems are complete with ongoing content development.",
+      "Unity iOS turn-based RPG with a full combat loop, gacha collection, and persistent progression systems.",
     tags: [
       "Unity",
       "C#",
       "iOS",
       "URP",
+      "Unity Input System",
     ],
     links: [
       { label: "GitHub", href: "https://github.com/masonliiu/soundborn" },
@@ -207,13 +212,14 @@ export const projects: Project[] = [
     repo: "masonliiu/bionic-reading-extension",
     stars: null,
     contributors: ["masonliiu"],
-    createdAt: "—",
+    createdAt: "Oct 24, 2025",
     summary:
-      "A Chrome extension that applies bionic reading to any webpage, rebuilding text for faster scanning and focus.",
+      "Chrome extension that transforms live pages into bionic reading layouts with content scripts and persistent settings.",
     tags: [
       "Chrome Extension",
       "JavaScript",
       "Browser APIs",
+      "Content Scripts",
     ],
     links: [
       {
@@ -252,15 +258,16 @@ export const projects: Project[] = [
     repo: "masonliiu/south-park-view-counter",
     stars: null,
     contributors: ["masonliiu"],
-    createdAt: "Dec 1",
+    createdAt: "Dec 1, 2025",
     summary:
-      "A South Park-themed GitHub profile view counter with a drag-and-drop builder, real-time counts, and Redis-backed persistence.",
+      "SVG-based GitHub view counter with a drag-and-drop builder, Redis persistence, and real-time rendering.",
     tags: [
       "Node.js",
       "Express",
       "Redis",
-      "Vercel",
       "Upstash",
+      "Vercel",
+      "SVG",
     ],
     links: [
       { label: "Live", href: "https://southpark-view-counter.vercel.app/" },

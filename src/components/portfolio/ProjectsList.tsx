@@ -1,5 +1,7 @@
+"use client";
+
 import { projects } from "@/lib/projects";
-import { Link } from "next-view-transitions";
+import { useTransitionRouter } from "next-view-transitions";
 
 const tagColors = [
   "peach",
@@ -13,6 +15,23 @@ const tagColors = [
 ];
 
 export default function ProjectsList() {
+  const router = useTransitionRouter();
+
+  const handleCardClick = (
+    event: React.MouseEvent<HTMLDivElement>,
+    slug: string
+  ) => {
+    if ((event.target as HTMLElement).closest("a")) return;
+    router.push(`/projects/${slug}`);
+  };
+
+  const handleCardKey = (event: React.KeyboardEvent<HTMLDivElement>, slug: string) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      router.push(`/projects/${slug}`);
+    }
+  };
+
   return (
     <section className="space-y-6">
       <div>
@@ -25,11 +44,14 @@ export default function ProjectsList() {
         {projects.map((project) => (
           <div
             key={project.slug}
-            className="terminal-card project-card hover-panel no-lift featured-card flex min-h-[460px] flex-col"
+            className="terminal-card project-card hover-panel no-lift featured-card flex min-h-[460px] flex-col cursor-pointer"
+            role="link"
+            tabIndex={0}
+            onClick={(event) => handleCardClick(event, project.slug)}
+            onKeyDown={(event) => handleCardKey(event, project.slug)}
           >
-            <Link
-              href={`/projects/${project.slug}`}
-              className="terminal-preview-wrap block"
+            <div
+              className="terminal-preview-wrap"
               style={{ viewTransitionName: `project-${project.slug}` }}
             >
               <div className="terminal-preview terminal-preview--catalog">
@@ -60,15 +82,12 @@ export default function ProjectsList() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
             <div className="flex grow flex-col gap-3 p-4">
               <div className="card-title-row flex items-center justify-between gap-4">
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className="featured-title text-base font-semibold"
-                >
+                <span className="featured-title text-base font-semibold">
                   {project.title}
-                </Link>
+                </span>
                 <span className="text-xs text-[var(--color-subtext1)]">
                   {project.createdAt}
                 </span>
