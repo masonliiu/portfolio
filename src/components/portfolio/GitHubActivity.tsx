@@ -6,24 +6,14 @@ type CommitItem = {
   repo: string;
   message: string;
   url: string;
+  additions: number;
+  deletions: number;
 };
 
 type LanguageItem = {
   name: string;
   count: number;
   color: string;
-};
-
-const LANGUAGE_COLORS: Record<string, string> = {
-  JavaScript: "#f1e05a",
-  TypeScript: "#3178c6",
-  Java: "#b07219",
-  "C#": "#178600",
-  CSS: "#563d7c",
-  HTML: "#e34c26",
-  Python: "#3572a5",
-  Go: "#00ADD8",
-  Shell: "#89e051",
 };
 
 const CACHE_KEY = "github-activity-cache";
@@ -56,63 +46,25 @@ export default function GitHubActivity() {
 
     const fetchData = async () => {
       try {
-        const [eventsRes, reposRes] = await Promise.all([
-          fetch("https://api.github.com/users/masonliiu/events/public"),
-          fetch("https://api.github.com/users/masonliiu/repos?per_page=100"),
-        ]);
-
-        if (!eventsRes.ok || !reposRes.ok) {
+        const response = await fetch("/api/github/activity");
+        if (!response.ok) {
           throw new Error("GitHub request failed");
         }
+        const data = (await response.json()) as {
+          commits: CommitItem[];
+          languages: LanguageItem[];
+        };
 
-        const events = (await eventsRes.json()) as Array<{
-          type: string;
-          repo: { name: string };
-          payload: { commits?: Array<{ message: string; url: string }> };
-        }>;
-
-        const commitItems: CommitItem[] = [];
-        events.forEach((event) => {
-          if (event.type !== "PushEvent" || !event.payload.commits) return;
-          event.payload.commits.forEach((commit) => {
-            commitItems.push({
-              repo: event.repo.name,
-              message: commit.message,
-              url: commit.url.replace("api.", "").replace("repos/", ""),
-            });
-          });
-        });
-
-        const repos = (await reposRes.json()) as Array<{
-          language: string | null;
-        }>;
-
-        const languageCount: Record<string, number> = {};
-        repos.forEach((repo) => {
-          if (!repo.language) return;
-          languageCount[repo.language] = (languageCount[repo.language] || 0) + 1;
-        });
-
-        const languageItems = Object.entries(languageCount)
-          .map(([name, count]) => ({
-            name,
-            count,
-            color: LANGUAGE_COLORS[name] || "#94a3b8",
-          }))
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 6);
-
-        const finalCommits = commitItems.slice(0, 4);
-        setCommits(finalCommits);
-        setLanguages(languageItems);
+        setCommits(data.commits);
+        setLanguages(data.languages);
         setStatus("ready");
 
         localStorage.setItem(
           CACHE_KEY,
           JSON.stringify({
             timestamp: Date.now(),
-            commits: finalCommits,
-            languages: languageItems,
+            commits: data.commits,
+            languages: data.languages,
           })
         );
       } catch {
@@ -153,7 +105,7 @@ export default function GitHubActivity() {
       ) : null}
       {status === "ready" ? (
         <>
-          <ul className="mt-3 space-y-1.5 text-base">
+          <ul className="mt-3 space-y-2 text-sm text-[var(--color-subtext0)]">
             {commits.length === 0 ? (
               <li className="text-sm text-[var(--color-subtext1)]">
                 No recent public commits.
@@ -162,7 +114,7 @@ export default function GitHubActivity() {
               commits.map((commit) => (
                 <li key={`${commit.repo}-${commit.message}`}>
                   <a
-                    className="flex min-w-0 items-center gap-2 text-[var(--color-subtext0)]"
+                    className="flex min-w-0 items-center gap-2"
                     href={commit.url}
                     target="_blank"
                     rel="noreferrer"
@@ -173,6 +125,15 @@ export default function GitHubActivity() {
                     </span>
                     <span className="min-w-0 flex-1 truncate">
                       {commit.message}
+                    </span>
+                    <span className="flex-shrink-0 text-xs">
+                      <span className="text-emerald-400">
+                        +{commit.additions.toLocaleString()}
+                      </span>{" "}
+                      /{" "}
+                      <span className="text-rose-400">
+                        -{commit.deletions.toLocaleString()}
+                      </span>
                     </span>
                   </a>
                 </li>
@@ -190,6 +151,9 @@ export default function GitHubActivity() {
                       width: `${(lang.count / totalLanguages) * 100}%`,
                       backgroundColor: lang.color,
                     }}
+                    title={`${lang.name}: ${Math.round(
+                      (lang.count / totalLanguages) * 100
+                    )}%`}
                   />
                 ))}
               </div>
