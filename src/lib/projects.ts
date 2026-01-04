@@ -54,7 +54,7 @@ export const projects: Project[] = [
         title: "Overview",
         body: [
           "Mase Labs Collective is a full-funnel commerce and fulfillment platform for GitHub growth services.",
-          "It blends a polished storefront, verified Stripe checkout, live order tracking, and automated fulfillment pipelines into one production-ready system.",
+          "It combines a polished storefront, verified Stripe checkout, live order tracking, and automated fulfillment into a single production-ready system.",
         ],
       },
       {
@@ -109,14 +109,14 @@ export const projects: Project[] = [
     ],
     sections: [
       {
-        title: "Motivation",
+        title: "Overview",
         body: [
-          "This project removes JVM abstractions by implementing memory management directly on top of a single byte array.",
+          "This project strips away JVM abstractions by implementing memory management directly on a single byte array.",
           "It makes allocation, pointer math, and layout rules explicit instead of hidden behind the runtime.",
         ],
       },
       {
-        title: "Memory Arena Model",
+        title: "Core Mechanics",
         bullets: [
           "Contiguous byte[] arena with a single allocation pointer.",
           "Explicit alloc and allocAligned with alignment waste tracking.",
@@ -124,7 +124,7 @@ export const projects: Project[] = [
         ],
       },
       {
-        title: "Data Structures Built on Raw Bytes",
+        title: "Data Structures",
         bullets: [
           "Linked list nodes: [value:int][next:int].",
           "Fixed array and dynamic vector stores.",
@@ -171,14 +171,14 @@ export const projects: Project[] = [
     ],
     sections: [
       {
-        title: "World & Premise",
+        title: "Overview",
         body: [
           "Soundborn is a turn-based RPG where musical genres manifest as characters fighting The Silence.",
-          "The project is in active development with core gameplay systems fully implemented.",
+          "The project is in active development with core gameplay systems implemented end-to-end.",
         ],
       },
       {
-        title: "Core Gameplay Systems",
+        title: "Core Systems",
         bullets: [
           "Character collection and gacha system.",
           "Party lineup management with 4-member teams.",
@@ -234,7 +234,7 @@ export const projects: Project[] = [
     ],
     sections: [
       {
-        title: "Purpose",
+        title: "Overview",
         body: [
           "The extension transforms live webpage text into bionic reading format to improve readability and focus.",
         ],
