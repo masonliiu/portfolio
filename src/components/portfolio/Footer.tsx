@@ -12,6 +12,7 @@ function formatTime(seconds: number) {
 
 export default function Footer() {
   const [timeOnSite, setTimeOnSite] = useState("00:00");
+  const [viewCount, setViewCount] = useState(0);
 
   useEffect(() => {
     const sessionStart = Date.now();
@@ -37,6 +38,15 @@ export default function Footer() {
     };
   }, []);
 
+  useEffect(() => {
+    const viewKey = "site-view-count";
+    const stored = localStorage.getItem(viewKey);
+    const current = stored ? Number(stored) : 0;
+    const next = current + 1;
+    localStorage.setItem(viewKey, String(next));
+    setViewCount(next);
+  }, []);
+
   return (
     <footer className="text-xs text-[var(--color-subtext0)]">
       <div className="page-shell" style={{ paddingTop: "0px"}}>
@@ -47,6 +57,11 @@ export default function Footer() {
               <div className="flex items-center gap-2">
                 <span>Time on site</span>
                 <span className="text-[var(--color-accent)]">{timeOnSite}</span>
+              </div>
+              <span className="hidden md:inline">·</span>
+              <div className="flex items-center gap-2">
+                <span>{viewCount.toLocaleString()}</span>
+                <span>views</span>
               </div>
               <span className="hidden md:inline">·</span>
               <a href="mailto:liumasn@gmail.com">Email</a>
