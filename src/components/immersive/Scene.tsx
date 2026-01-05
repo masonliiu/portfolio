@@ -23,22 +23,22 @@ const anchors: Record<string, Anchor> = {
   couch: {
     position: new THREE.Vector3(-1.65, 1.18, 1.6),
     target: new THREE.Vector3(-0.4, 0.95, 0.1),
-    lookRange: { yaw: 0.7, pitch: 0.3 },
+    lookRange: { yaw: 0.9, pitch: 0.45 },
   },
   desk: {
     position: new THREE.Vector3(1.5, 1.25, -1.2),
     target: new THREE.Vector3(1.3, 1.0, -1.8),
-    lookRange: { yaw: 0.4, pitch: 0.24 },
+    lookRange: { yaw: 0.6, pitch: 0.35 },
   },
   wallPhoto: {
     position: new THREE.Vector3(-0.6, 1.4, 1.1),
     target: new THREE.Vector3(-0.6, 1.3, -2.0),
-    lookRange: { yaw: 0.35, pitch: 0.22 },
+    lookRange: { yaw: 0.55, pitch: 0.32 },
   },
   projects: {
     position: new THREE.Vector3(1.6, 1.3, -0.6),
     target: new THREE.Vector3(1.9, 1.2, -0.6),
-    lookRange: { yaw: 0.4, pitch: 0.24 },
+    lookRange: { yaw: 0.6, pitch: 0.35 },
   },
 };
 
@@ -336,7 +336,7 @@ function WindowLight() {
 
 function Bed() {
   return (
-    <group position={[1.5, 0.32, 1.84]}>
+    <group position={[1.45, 0.32, 2.5]} rotation={[0, Math.PI, 0]}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[1.4, 0.22, 0.8]} />
         <meshStandardMaterial color="#356fa3" />
@@ -345,15 +345,15 @@ function Bed() {
         <boxGeometry args={[1.3, 0.12, 0.7]} />
         <meshStandardMaterial color="#4b8ec0" />
       </mesh>
-      <mesh position={[0, 0.3, -0.22]}>
+      <mesh position={[0, 0.3, -0.28]}>
         <boxGeometry args={[1.2, 0.12, 0.28]} />
         <meshStandardMaterial color="#7fb0d9" />
       </mesh>
-      <mesh position={[0.45, 0.33, -0.2]}>
+      <mesh position={[0.45, 0.33, 0.22]}>
         <boxGeometry args={[0.35, 0.1, 0.26]} />
         <meshStandardMaterial color="#a8c8e6" />
       </mesh>
-      <mesh position={[-0.45, 0.33, -0.2]}>
+      <mesh position={[-0.45, 0.33, 0.22]}>
         <boxGeometry args={[0.35, 0.1, 0.26]} />
         <meshStandardMaterial color="#a8c8e6" />
       </mesh>
