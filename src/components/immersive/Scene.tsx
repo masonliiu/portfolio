@@ -36,8 +36,8 @@ const anchors: Record<string, Anchor> = {
     lookRange: { yaw: 0.3, pitch: 0.2 },
   },
   projects: {
-    position: new THREE.Vector3(2.2, 1.45, -0.5),
-    target: new THREE.Vector3(2.4, 1.25, -1.7),
+    position: new THREE.Vector3(1.9, 1.4, -0.8),
+    target: new THREE.Vector3(2.3, 1.3, -0.8),
     lookRange: { yaw: 0.3, pitch: 0.2 },
   },
 };
@@ -91,11 +91,19 @@ function CameraRig({
       lookOffset.current.pitch += event.movementY * sensitivity;
     };
 
+    const handlePointerDown = () => {
+      if (document.pointerLockElement !== gl.domElement) {
+        gl.domElement.requestPointerLock();
+      }
+    };
+
     document.addEventListener("pointerlockchange", handlePointerLock);
     document.addEventListener("mousemove", handleMouseMove);
+    gl.domElement.addEventListener("pointerdown", handlePointerDown);
     return () => {
       document.removeEventListener("pointerlockchange", handlePointerLock);
       document.removeEventListener("mousemove", handleMouseMove);
+      gl.domElement.removeEventListener("pointerdown", handlePointerDown);
     };
   }, [gl, reducedMotion]);
 
@@ -187,32 +195,32 @@ function Laptop() {
 
 function Desk() {
   return (
-    <group position={[2.2, 0.6, -2.1]}>
+    <group position={[2.2, 0.75, -2.1]}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[1.4, 0.1, 0.9]} />
         <meshStandardMaterial color="#0f172a" />
       </mesh>
-      <mesh castShadow position={[0, 0.45, 0]}>
-        <boxGeometry args={[0.12, 0.9, 0.12]} />
+      <mesh castShadow position={[0.5, -0.4, 0.35]}>
+        <boxGeometry args={[0.12, 0.8, 0.12]} />
         <meshStandardMaterial color="#111827" />
       </mesh>
-      <mesh castShadow position={[-0.55, 0.45, 0.35]}>
-        <boxGeometry args={[0.12, 0.9, 0.12]} />
+      <mesh castShadow position={[-0.5, -0.4, 0.35]}>
+        <boxGeometry args={[0.12, 0.8, 0.12]} />
         <meshStandardMaterial color="#111827" />
       </mesh>
-      <mesh castShadow position={[0.55, 0.45, -0.35]}>
-        <boxGeometry args={[0.12, 0.9, 0.12]} />
+      <mesh castShadow position={[0.5, -0.4, -0.35]}>
+        <boxGeometry args={[0.12, 0.8, 0.12]} />
         <meshStandardMaterial color="#111827" />
       </mesh>
-      <mesh castShadow position={[-0.55, 0.45, -0.35]}>
-        <boxGeometry args={[0.12, 0.9, 0.12]} />
+      <mesh castShadow position={[-0.5, -0.4, -0.35]}>
+        <boxGeometry args={[0.12, 0.8, 0.12]} />
         <meshStandardMaterial color="#111827" />
       </mesh>
-      <mesh castShadow position={[0.2, 0.12, 0.2]} rotation={[-0.25, 0.15, 0]}>
+      <mesh castShadow position={[0.2, 0.08, 0.2]} rotation={[-0.25, 0.15, 0]}>
         <boxGeometry args={[0.5, 0.02, 0.35]} />
         <meshStandardMaterial color="#1f2937" />
       </mesh>
-      <mesh castShadow position={[-0.3, 0.12, -0.2]} rotation={[-0.1, -0.2, 0]}>
+      <mesh castShadow position={[-0.3, 0.08, -0.2]} rotation={[-0.1, -0.2, 0]}>
         <boxGeometry args={[0.4, 0.02, 0.28]} />
         <meshStandardMaterial color="#0b1120" />
       </mesh>
@@ -235,21 +243,37 @@ function WallPhoto() {
   );
 }
 
-function ProjectsBoard() {
+function WindowLight() {
+  const slats = Array.from({ length: 6 }, (_, index) => index);
+
   return (
-    <group position={[2.75, 1.4, -0.6]} rotation={[0, -Math.PI / 2, 0]}>
-      <mesh castShadow>
-        <boxGeometry args={[1.2, 0.8, 0.05]} />
+    <group position={[2.75, 1.5, -0.6]} rotation={[0, -Math.PI / 2, 0]}>
+      <mesh>
+        <boxGeometry args={[1.1, 0.75, 0.06]} />
         <meshStandardMaterial color="#0b1120" />
       </mesh>
-      <mesh position={[-0.3, 0.1, 0.04]}>
-        <boxGeometry args={[0.3, 0.2, 0.02]} />
+      <mesh position={[0, 0, 0.04]}>
+        <planeGeometry args={[0.95, 0.6]} />
+        <meshStandardMaterial emissive="#8db4ff" color="#1e293b" />
+      </mesh>
+      {slats.map((index) => (
+        <mesh key={index} position={[0, 0.22 - index * 0.09, 0.05]}>
+          <boxGeometry args={[0.9, 0.03, 0.02]} />
+          <meshStandardMaterial color="#0f172a" />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.42, 0.08]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[0.02, 0.02, 1.1, 16]} />
         <meshStandardMaterial color="#1f2937" />
       </mesh>
-      <mesh position={[0.2, -0.1, 0.04]}>
-        <boxGeometry args={[0.35, 0.22, 0.02]} />
-        <meshStandardMaterial color="#172554" />
-      </mesh>
+      <rectAreaLight
+        position={[0, 0, 0.2]}
+        rotation={[0, 0, 0]}
+        width={0.9}
+        height={0.55}
+        intensity={4.5}
+        color="#a7c5ff"
+      />
     </group>
   );
 }
@@ -305,11 +329,6 @@ export default function Scene({
       shadows
       camera={{ position: [-2.0, 1.15, 1.7], fov: 42 }}
       className="h-full w-full"
-      onPointerDown={(event) => {
-        if (document.pointerLockElement !== event.currentTarget) {
-          event.currentTarget.requestPointerLock();
-        }
-      }}
     >
       <color attach="background" args={["#05070f"]} />
       <CameraRig activePanel={activePanel} reducedMotion={reducedMotion} />
@@ -332,7 +351,7 @@ export default function Scene({
       <Laptop />
       <Desk />
       <WallPhoto />
-      <ProjectsBoard />
+      <WindowLight />
       <Hotspots activePanel={activePanel} onSelect={onSelect} />
       <Environment preset="city" />
     </Canvas>
