@@ -66,6 +66,7 @@ function CameraRig({
   const targetPosition = useRef(new THREE.Vector3());
   const tempTarget = useRef(new THREE.Vector3());
   const raycaster = useRef(new THREE.Raycaster());
+  const lookTarget = useRef({ yaw: 0, pitch: 0 });
   const lookOffset = useRef({ yaw: 0, pitch: 0 });
   const lookCurrent = useRef({ yaw: 0, pitch: 0 });
   const lookLimits = useRef(anchor.lookRange);
@@ -76,6 +77,7 @@ function CameraRig({
   }, [anchor]);
 
   useEffect(() => {
+    lookTarget.current = { yaw: 0, pitch: 0 };
     lookOffset.current = { yaw: 0, pitch: 0 };
     lookCurrent.current = { yaw: 0, pitch: 0 };
     lookLimits.current = anchor.lookRange;
@@ -92,15 +94,15 @@ function CameraRig({
     const handleMouseMove = (event: MouseEvent) => {
       if (!isLocked.current) return;
       const sensitivity = reducedMotion ? 0.0012 : 0.0016;
-      lookOffset.current.yaw += event.movementX * sensitivity;
-      lookOffset.current.pitch -= event.movementY * sensitivity;
-      lookOffset.current.yaw = THREE.MathUtils.clamp(
-        lookOffset.current.yaw,
+      lookTarget.current.yaw += event.movementX * sensitivity;
+      lookTarget.current.pitch -= event.movementY * sensitivity;
+      lookTarget.current.yaw = THREE.MathUtils.clamp(
+        lookTarget.current.yaw,
         -lookLimits.current.yaw,
         lookLimits.current.yaw,
       );
-      lookOffset.current.pitch = THREE.MathUtils.clamp(
-        lookOffset.current.pitch,
+      lookTarget.current.pitch = THREE.MathUtils.clamp(
+        lookTarget.current.pitch,
         -lookLimits.current.pitch,
         lookLimits.current.pitch,
       );
@@ -168,6 +170,19 @@ function CameraRig({
     );
 
     const lookScale = allowLook && isLocked.current ? 1 : 0;
+    const offsetDamping = reducedMotion ? 1 : 18;
+    lookOffset.current.yaw = THREE.MathUtils.damp(
+      lookOffset.current.yaw,
+      lookTarget.current.yaw,
+      offsetDamping,
+      delta,
+    );
+    lookOffset.current.pitch = THREE.MathUtils.damp(
+      lookOffset.current.pitch,
+      lookTarget.current.pitch,
+      offsetDamping,
+      delta,
+    );
     const targetYaw = THREE.MathUtils.clamp(
       lookOffset.current.yaw,
       -anchor.lookRange.yaw,
@@ -191,7 +206,7 @@ function CameraRig({
       lookDamping,
       delta,
     );
-    baseEuler.y += lookCurrent.current.yaw;
+    baseEuler.y -= lookCurrent.current.yaw;
     baseEuler.x += lookCurrent.current.pitch;
     baseEuler.x = THREE.MathUtils.clamp(
       baseEuler.x,
@@ -427,7 +442,7 @@ function Room() {
         <boxGeometry args={[6, 2.8, 0.2]} />
         <meshStandardMaterial color="#111a2b" />
       </mesh>
-      <group position={[-1.6, 0.25, 2.35]}>
+      <group position={[-1.6, 0.25, 2.35]} rotation={[0, Math.PI, 0]}>
         <mesh castShadow>
           <boxGeometry args={[2.6, 0.5, 1.1]} />
           <meshStandardMaterial color="#2b3a55" />
