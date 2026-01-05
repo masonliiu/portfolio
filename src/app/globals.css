@@ -258,7 +258,7 @@ a:hover {
   background: var(--color-base);
   border: 1px solid color-mix(in srgb, var(--color-surface0) 70%, transparent);
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: 15px 15px 30px rgba(15, 23, 42, 0.12);
 }
 
 .terminal-card-muted {
@@ -465,6 +465,7 @@ header,
 .location-card,
 .click-card {
   min-height: 270px;
+  box-shadow: 15px 15px 30px rgba(15, 23, 42, 0.12);
 }
 
 .tag-pill {
@@ -479,14 +480,13 @@ header,
 }
 
 .terminal-preview {
-  border-radius: 14px;
+  border-radius: 15px;
   background: color-mix(in srgb, var(--color-surface2) 20%, rgb(162, 175, 189) 80%);
-  padding: 2.2rem;
 }
 
 .terminal-preview--catalog {
-  padding: 1.6rem;
-  height: 190px;
+  padding: 1rem;
+  height: 260px;
   display: flex;
   align-items: center;
 }
