@@ -148,6 +148,10 @@ body.immersive-mode {
   overflow: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  height: 100vh;
+  overscroll-behavior: none;
+  position: fixed;
+  width: 100%;
 }
 
 body.immersive-mode::-webkit-scrollbar {
@@ -156,6 +160,13 @@ body.immersive-mode::-webkit-scrollbar {
 
 html.immersive-mode {
   overflow: hidden;
+  height: 100%;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+}
+
+html.immersive-mode::-webkit-scrollbar {
+  display: none;
 }
 
 html:not(.ready),

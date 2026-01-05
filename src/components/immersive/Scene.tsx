@@ -5,7 +5,7 @@ import { Environment } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import Hotspots from "./Hotspots";
-import type { PanelKey } from "./data";
+import { hotspots, type PanelKey } from "./data";
 
 type SceneProps = {
   activePanel: PanelKey | null;
@@ -21,24 +21,24 @@ type Anchor = {
 
 const anchors: Record<string, Anchor> = {
   couch: {
-    position: new THREE.Vector3(-2.0, 1.15, 1.7),
-    target: new THREE.Vector3(-0.4, 0.9, 0.2),
-    lookRange: { yaw: 0.55, pitch: 0.32 },
+    position: new THREE.Vector3(-2.2, 1.2, 2.05),
+    target: new THREE.Vector3(-0.6, 0.95, 0.3),
+    lookRange: { yaw: 0.8, pitch: 0.36 },
   },
   desk: {
     position: new THREE.Vector3(2.05, 1.35, -1.35),
     target: new THREE.Vector3(1.9, 1.0, -2.1),
-    lookRange: { yaw: 0.35, pitch: 0.24 },
+    lookRange: { yaw: 0.45, pitch: 0.26 },
   },
   wallPhoto: {
     position: new THREE.Vector3(-0.8, 1.45, 1.4),
     target: new THREE.Vector3(-0.8, 1.35, -2.6),
-    lookRange: { yaw: 0.3, pitch: 0.2 },
+    lookRange: { yaw: 0.42, pitch: 0.24 },
   },
   projects: {
     position: new THREE.Vector3(1.9, 1.4, -0.8),
     target: new THREE.Vector3(2.3, 1.3, -0.8),
-    lookRange: { yaw: 0.3, pitch: 0.2 },
+    lookRange: { yaw: 0.45, pitch: 0.28 },
   },
 };
 
@@ -52,9 +52,11 @@ const panelToAnchor: Record<PanelKey, keyof typeof anchors> = {
 
 function CameraRig({
   activePanel,
+  onSelect,
   reducedMotion = false,
 }: {
   activePanel: PanelKey | null;
+  onSelect: (panel: PanelKey) => void;
   reducedMotion?: boolean;
 }) {
   const { camera, gl } = useThree();
@@ -63,8 +65,10 @@ function CameraRig({
   const baseQuat = useRef(new THREE.Quaternion());
   const targetPosition = useRef(new THREE.Vector3());
   const tempTarget = useRef(new THREE.Vector3());
+  const raycaster = useRef(new THREE.Raycaster());
   const lookOffset = useRef({ yaw: 0, pitch: 0 });
   const lookCurrent = useRef({ yaw: 0, pitch: 0 });
+  const lookLimits = useRef(anchor.lookRange);
   const isLocked = useRef(false);
 
   useEffect(() => {
@@ -74,6 +78,7 @@ function CameraRig({
   useEffect(() => {
     lookOffset.current = { yaw: 0, pitch: 0 };
     lookCurrent.current = { yaw: 0, pitch: 0 };
+    lookLimits.current = anchor.lookRange;
   }, [anchorName]);
 
   useEffect(() => {
@@ -89,6 +94,16 @@ function CameraRig({
       const sensitivity = reducedMotion ? 0.0012 : 0.0016;
       lookOffset.current.yaw += event.movementX * sensitivity;
       lookOffset.current.pitch -= event.movementY * sensitivity;
+      lookOffset.current.yaw = THREE.MathUtils.clamp(
+        lookOffset.current.yaw,
+        -lookLimits.current.yaw,
+        lookLimits.current.yaw,
+      );
+      lookOffset.current.pitch = THREE.MathUtils.clamp(
+        lookOffset.current.pitch,
+        -lookLimits.current.pitch,
+        lookLimits.current.pitch,
+      );
     };
 
     const handlePointerDown = () => {
@@ -97,15 +112,41 @@ function CameraRig({
       }
     };
 
+    const handleClick = () => {
+      if (!isLocked.current) return;
+      raycaster.current.setFromCamera({ x: 0, y: 0 }, camera);
+      let closest: { panelKey: PanelKey; distance: number } | null = null;
+      hotspots.forEach((spot) => {
+        const spotPosition = new THREE.Vector3(...spot.position);
+        const toSpot = spotPosition.clone().sub(raycaster.current.ray.origin);
+        if (raycaster.current.ray.direction.dot(toSpot) <= 0) {
+          return;
+        }
+        const distance = raycaster.current.ray.distanceToPoint(spotPosition);
+        if (distance <= spot.radius) {
+          const originDistance =
+            raycaster.current.ray.origin.distanceTo(spotPosition);
+          if (!closest || originDistance < closest.distance) {
+            closest = { panelKey: spot.panelKey, distance: originDistance };
+          }
+        }
+      });
+      if (closest) {
+        onSelect(closest.panelKey);
+      }
+    };
+
     document.addEventListener("pointerlockchange", handlePointerLock);
     document.addEventListener("mousemove", handleMouseMove);
     gl.domElement.addEventListener("pointerdown", handlePointerDown);
+    gl.domElement.addEventListener("click", handleClick);
     return () => {
       document.removeEventListener("pointerlockchange", handlePointerLock);
       document.removeEventListener("mousemove", handleMouseMove);
       gl.domElement.removeEventListener("pointerdown", handlePointerDown);
+      gl.domElement.removeEventListener("click", handleClick);
     };
-  }, [gl, reducedMotion]);
+  }, [camera, gl, onSelect, reducedMotion]);
 
   useFrame((state, delta) => {
     const damping = reducedMotion ? 1 : 6;
@@ -137,7 +178,7 @@ function CameraRig({
       -anchor.lookRange.pitch,
       anchor.lookRange.pitch,
     );
-    const lookDamping = reducedMotion ? 1 : 10;
+    const lookDamping = reducedMotion ? 1 : 16;
     lookCurrent.current.yaw = THREE.MathUtils.damp(
       lookCurrent.current.yaw,
       targetYaw * lookScale,
@@ -278,39 +319,70 @@ function WindowLight() {
   );
 }
 
+function Bed() {
+  return (
+    <group position={[2.2, 0.35, 2.05]}>
+      <mesh castShadow receiveShadow>
+        <boxGeometry args={[1.6, 0.25, 0.9]} />
+        <meshStandardMaterial color="#1f2a44" />
+      </mesh>
+      <mesh position={[0, 0.18, 0]}>
+        <boxGeometry args={[1.5, 0.12, 0.8]} />
+        <meshStandardMaterial color="#2b3a55" />
+      </mesh>
+      <mesh position={[0, 0.32, -0.3]}>
+        <boxGeometry args={[1.4, 0.14, 0.3]} />
+        <meshStandardMaterial color="#3b4d6b" />
+      </mesh>
+      <mesh position={[0.6, 0.35, -0.25]}>
+        <boxGeometry args={[0.4, 0.12, 0.28]} />
+        <meshStandardMaterial color="#4c6a8a" />
+      </mesh>
+      <mesh position={[-0.6, 0.35, -0.25]}>
+        <boxGeometry args={[0.4, 0.12, 0.28]} />
+        <meshStandardMaterial color="#4c6a8a" />
+      </mesh>
+      <mesh position={[0, 0.55, -0.55]}>
+        <boxGeometry args={[1.6, 0.5, 0.08]} />
+        <meshStandardMaterial color="#1c2436" />
+      </mesh>
+    </group>
+  );
+}
+
 function RoomDetails() {
   return (
     <group>
-      <mesh receiveShadow position={[-0.4, 0.01, 0.6]}>
-        <boxGeometry args={[2.4, 0.02, 1.4]} />
-        <meshStandardMaterial color="#1f2937" />
+      <mesh receiveShadow position={[-0.2, 0.01, 0.4]}>
+        <boxGeometry args={[2.6, 0.02, 1.6]} />
+        <meshStandardMaterial color="#2a3447" />
       </mesh>
-      <mesh position={[0.2, 0.03, 0.4]}>
+      <mesh position={[0.1, 0.03, 0.2]}>
         <circleGeometry args={[0.7, 32]} />
         <meshStandardMaterial color="#1e293b" />
       </mesh>
-      <mesh position={[-1.9, 0.55, 0.9]}>
+      <mesh position={[1.7, 0.55, 0.6]}>
         <boxGeometry args={[0.5, 0.4, 0.5]} />
         <meshStandardMaterial color="#0f172a" />
       </mesh>
-      <mesh position={[-1.9, 0.95, 0.9]}>
+      <mesh position={[1.7, 0.95, 0.6]}>
         <cylinderGeometry args={[0.06, 0.06, 0.4, 16]} />
         <meshStandardMaterial color="#1f2937" />
       </mesh>
-      <mesh position={[-1.9, 1.15, 0.9]}>
+      <mesh position={[1.7, 1.15, 0.6]}>
         <coneGeometry args={[0.2, 0.3, 24]} />
         <meshStandardMaterial color="#cbd5f5" emissive="#f8fafc" />
       </mesh>
-      <pointLight position={[-1.9, 1.25, 0.9]} intensity={0.6} color="#f8f3d9" />
-      <mesh position={[-2.4, 0.2, 0.4]}>
+      <pointLight position={[1.7, 1.25, 0.6]} intensity={0.6} color="#f8f3d9" />
+      <mesh position={[2.35, 0.2, -0.2]}>
         <cylinderGeometry args={[0.12, 0.14, 0.25, 18]} />
         <meshStandardMaterial color="#2f4f4f" />
       </mesh>
-      <mesh position={[-2.4, 0.4, 0.4]}>
+      <mesh position={[2.35, 0.4, -0.2]}>
         <sphereGeometry args={[0.22, 20, 20]} />
         <meshStandardMaterial color="#5ca36d" />
       </mesh>
-      <group position={[-2.2, 1.15, -1.6]}>
+      <group position={[-2.7, 1.2, -1.7]} rotation={[0, Math.PI / 2, 0]}>
         <mesh>
           <boxGeometry args={[0.8, 0.12, 0.25]} />
           <meshStandardMaterial color="#1f2937" />
@@ -355,7 +427,7 @@ function Room() {
         <boxGeometry args={[6, 2.8, 0.2]} />
         <meshStandardMaterial color="#111a2b" />
       </mesh>
-      <group position={[-2.5, 0.25, 2.45]}>
+      <group position={[-1.6, 0.25, 2.35]}>
         <mesh castShadow>
           <boxGeometry args={[2.6, 0.5, 1.1]} />
           <meshStandardMaterial color="#2b3a55" />
@@ -381,11 +453,15 @@ export default function Scene({
   return (
     <Canvas
       shadows
-      camera={{ position: [-2.0, 1.15, 1.7], fov: 42 }}
+      camera={{ position: [-2.2, 1.2, 2.05], fov: 42 }}
       className="h-full w-full"
     >
       <color attach="background" args={["#05070f"]} />
-      <CameraRig activePanel={activePanel} reducedMotion={reducedMotion} />
+      <CameraRig
+        activePanel={activePanel}
+        onSelect={onSelect}
+        reducedMotion={reducedMotion}
+      />
       <ambientLight intensity={0.55} color="#8aa0c8" />
       <directionalLight
         position={[4, 6, 2]}
@@ -406,6 +482,7 @@ export default function Scene({
       <Desk />
       <WallPhoto />
       <WindowLight />
+      <Bed />
       <RoomDetails />
       <Hotspots activePanel={activePanel} onSelect={onSelect} />
       <Environment preset="city" />

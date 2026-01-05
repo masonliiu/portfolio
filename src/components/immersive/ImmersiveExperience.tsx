@@ -43,7 +43,7 @@ export default function ImmersiveExperience() {
   }, []);
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden bg-slate-950 text-white">
+    <div className="fixed inset-0 overflow-hidden bg-slate-950 text-white">
       <Scene
         activePanel={activePanel}
         onSelect={(panel) => setActivePanel(panel)}
@@ -51,12 +51,18 @@ export default function ImmersiveExperience() {
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2">
+          <div className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-white/80" />
+          <div className="absolute left-1/2 bottom-0 h-2 w-px -translate-x-1/2 bg-white/80" />
+          <div className="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
+          <div className="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
+        </div>
         <div className="pointer-events-auto absolute left-6 top-6 max-w-xs rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-xs uppercase tracking-[0.3em] text-slate-300">
           Immersive Mode
         </div>
         <div className="pointer-events-auto absolute left-6 bottom-6 max-w-sm rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-200">
-          Click to lock your cursor and look around. Click glowing objects to
-          move. Press Escape to return to the couch.
+          Click to lock your cursor and look around. Line up the crosshair with
+          glowing objects, then click. Press Escape to return to the couch.
         </div>
         <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
           <button
