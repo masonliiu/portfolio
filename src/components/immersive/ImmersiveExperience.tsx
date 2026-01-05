@@ -35,7 +35,11 @@ export default function ImmersiveExperience() {
 
   useEffect(() => {
     document.body.classList.add("immersive-mode");
-    return () => document.body.classList.remove("immersive-mode");
+    document.documentElement.classList.add("immersive-mode");
+    return () => {
+      document.body.classList.remove("immersive-mode");
+      document.documentElement.classList.remove("immersive-mode");
+    };
   }, []);
 
   return (
