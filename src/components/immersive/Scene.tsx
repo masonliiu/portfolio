@@ -254,23 +254,23 @@ function Desk() {
     <group position={[1.55, 0.7, -1.55]}>
       <mesh castShadow receiveShadow>
         <boxGeometry args={[1.4, 0.1, 0.9]} />
-        <meshStandardMaterial color="#6f5230" />
+        <meshStandardMaterial color="#b07a4f" roughness={0.6} />
       </mesh>
       <mesh castShadow position={[0.5, -0.4, 0.35]}>
         <boxGeometry args={[0.12, 0.8, 0.12]} />
-        <meshStandardMaterial color="#3f2e1b" />
+        <meshStandardMaterial color="#5a3b22" roughness={0.7} />
       </mesh>
       <mesh castShadow position={[-0.5, -0.4, 0.35]}>
         <boxGeometry args={[0.12, 0.8, 0.12]} />
-        <meshStandardMaterial color="#3f2e1b" />
+        <meshStandardMaterial color="#5a3b22" roughness={0.7} />
       </mesh>
       <mesh castShadow position={[0.5, -0.4, -0.35]}>
         <boxGeometry args={[0.12, 0.8, 0.12]} />
-        <meshStandardMaterial color="#3f2e1b" />
+        <meshStandardMaterial color="#5a3b22" roughness={0.7} />
       </mesh>
       <mesh castShadow position={[-0.5, -0.4, -0.35]}>
         <boxGeometry args={[0.12, 0.8, 0.12]} />
-        <meshStandardMaterial color="#3f2e1b" />
+        <meshStandardMaterial color="#5a3b22" roughness={0.7} />
       </mesh>
       <mesh castShadow position={[0.2, 0.08, 0.2]} rotation={[-0.25, 0.15, 0]}>
         <boxGeometry args={[0.5, 0.02, 0.35]} />
@@ -289,11 +289,11 @@ function WallPhoto() {
     <group position={[-0.6, 1.4, -2.05]}>
       <mesh castShadow>
         <boxGeometry args={[0.9, 0.6, 0.05]} />
-        <meshStandardMaterial color="#2f3b52" />
+        <meshStandardMaterial color="#6b4f3a" />
       </mesh>
       <mesh position={[0, 0, 0.04]}>
         <planeGeometry args={[0.75, 0.45]} />
-        <meshStandardMaterial color="#a7b6cc" />
+        <meshStandardMaterial color="#d8cbb8" />
       </mesh>
     </group>
   );
@@ -306,29 +306,29 @@ function WindowLight() {
     <group position={[2.12, 1.35, -0.4]} rotation={[0, -Math.PI / 2, 0]}>
       <mesh>
         <boxGeometry args={[1.0, 0.7, 0.06]} />
-        <meshStandardMaterial color="#2a3a4f" />
+        <meshStandardMaterial color="#3f4f63" />
       </mesh>
       <mesh position={[0, 0, 0.04]}>
         <planeGeometry args={[0.86, 0.55]} />
-        <meshStandardMaterial emissive="#bcd6ff" color="#c5d4ea" />
+        <meshStandardMaterial emissive="#d8e6ff" color="#e7eef7" />
       </mesh>
       {slats.map((index) => (
         <mesh key={index} position={[0, 0.22 - index * 0.09, 0.05]}>
           <boxGeometry args={[0.84, 0.03, 0.02]} />
-          <meshStandardMaterial color="#d8e2f0" />
+          <meshStandardMaterial color="#f2f1ec" />
         </mesh>
       ))}
       <mesh position={[0, 0.42, 0.08]} rotation={[0, 0, Math.PI / 2]}>
         <cylinderGeometry args={[0.02, 0.02, 1.0, 16]} />
-        <meshStandardMaterial color="#cbd5e1" />
+        <meshStandardMaterial color="#d8d2c7" />
       </mesh>
       <rectAreaLight
         position={[0, 0, 0.2]}
         rotation={[0, 0, 0]}
         width={0.8}
         height={0.5}
-        intensity={5.5}
-        color="#cfe3ff"
+        intensity={6}
+        color="#e5f0ff"
       />
     </group>
   );
@@ -336,30 +336,30 @@ function WindowLight() {
 
 function Bed() {
   return (
-    <group position={[1.45, 0.32, 2.5]} rotation={[0, Math.PI, 0]}>
+    <group position={[1.45, 0.32, 1.6]} rotation={[0, 0, 0]}>
       <mesh castShadow receiveShadow>
-        <boxGeometry args={[1.4, 0.22, 0.8]} />
-        <meshStandardMaterial color="#356fa3" />
+        <boxGeometry args={[1.4, 0.22, 1.05]} />
+        <meshStandardMaterial color="#8aa3b8" roughness={0.6} />
       </mesh>
       <mesh position={[0, 0.18, 0]}>
-        <boxGeometry args={[1.3, 0.12, 0.7]} />
-        <meshStandardMaterial color="#4b8ec0" />
+        <boxGeometry args={[1.3, 0.12, 0.95]} />
+        <meshStandardMaterial color="#b9ccd8" roughness={0.65} />
       </mesh>
-      <mesh position={[0, 0.3, -0.28]}>
-        <boxGeometry args={[1.2, 0.12, 0.28]} />
-        <meshStandardMaterial color="#7fb0d9" />
+      <mesh position={[0, 0.3, -0.38]}>
+        <boxGeometry args={[1.2, 0.12, 0.38]} />
+        <meshStandardMaterial color="#e6d9c8" roughness={0.7} />
       </mesh>
-      <mesh position={[0.45, 0.33, 0.22]}>
+      <mesh position={[0.45, 0.33, 0.28]}>
         <boxGeometry args={[0.35, 0.1, 0.26]} />
-        <meshStandardMaterial color="#a8c8e6" />
+        <meshStandardMaterial color="#f1e6d7" roughness={0.7} />
       </mesh>
-      <mesh position={[-0.45, 0.33, 0.22]}>
+      <mesh position={[-0.45, 0.33, 0.28]}>
         <boxGeometry args={[0.35, 0.1, 0.26]} />
-        <meshStandardMaterial color="#a8c8e6" />
+        <meshStandardMaterial color="#f1e6d7" roughness={0.7} />
       </mesh>
-      <mesh position={[0, 0.45, 0.36]}>
+      <mesh position={[0, 0.45, 0.48]}>
         <boxGeometry args={[1.4, 0.5, 0.08]} />
-        <meshStandardMaterial color="#2a3d55" />
+        <meshStandardMaterial color="#7b5b44" />
       </mesh>
     </group>
   );
@@ -370,25 +370,25 @@ function RoomDetails() {
     <group>
       <mesh receiveShadow position={[-0.1, 0.01, 0.3]}>
         <boxGeometry args={[2.2, 0.02, 1.4]} />
-        <meshStandardMaterial color="#6b7280" />
+        <meshStandardMaterial color="#cbbba7" roughness={0.8} />
       </mesh>
       <mesh position={[0.1, 0.03, 0.1]}>
         <circleGeometry args={[0.6, 32]} />
-        <meshStandardMaterial color="#9aa4b2" />
+        <meshStandardMaterial color="#d8ccb8" roughness={0.85} />
       </mesh>
       <mesh position={[1.4, 0.5, 0.5]}>
         <boxGeometry args={[0.5, 0.4, 0.5]} />
-        <meshStandardMaterial color="#4b5563" />
+        <meshStandardMaterial color="#8b7b6c" />
       </mesh>
       <mesh position={[1.4, 0.88, 0.5]}>
         <cylinderGeometry args={[0.06, 0.06, 0.4, 16]} />
-        <meshStandardMaterial color="#374151" />
+        <meshStandardMaterial color="#5b4a3b" />
       </mesh>
       <mesh position={[1.4, 1.05, 0.5]}>
         <coneGeometry args={[0.2, 0.3, 24]} />
-        <meshStandardMaterial color="#fef3c7" emissive="#fef9c3" />
+        <meshStandardMaterial color="#fff3e0" emissive="#fef6d6" />
       </mesh>
-      <pointLight position={[1.4, 1.15, 0.5]} intensity={0.6} color="#fef3c7" />
+      <pointLight position={[1.4, 1.15, 0.5]} intensity={0.8} color="#f7d7b2" />
       <mesh position={[2.0, 0.2, -0.1]}>
         <cylinderGeometry args={[0.12, 0.14, 0.25, 18]} />
         <meshStandardMaterial color="#3f5d4c" />
@@ -400,19 +400,19 @@ function RoomDetails() {
       <group position={[-2.05, 1.15, -1.1]} rotation={[0, Math.PI / 2, 0]}>
         <mesh>
           <boxGeometry args={[0.8, 0.12, 0.25]} />
-          <meshStandardMaterial color="#5b6b7f" />
+          <meshStandardMaterial color="#7b6a58" />
         </mesh>
         <mesh position={[-0.22, 0.14, 0]}>
           <boxGeometry args={[0.18, 0.22, 0.2]} />
-          <meshStandardMaterial color="#334155" />
+          <meshStandardMaterial color="#a78f79" />
         </mesh>
         <mesh position={[0.05, 0.14, 0]}>
           <boxGeometry args={[0.18, 0.26, 0.2]} />
-          <meshStandardMaterial color="#475569" />
+          <meshStandardMaterial color="#b79c82" />
         </mesh>
         <mesh position={[0.32, 0.14, 0]}>
           <boxGeometry args={[0.18, 0.18, 0.2]} />
-          <meshStandardMaterial color="#64748b" />
+          <meshStandardMaterial color="#c2aa92" />
         </mesh>
       </group>
     </group>
@@ -424,52 +424,56 @@ function Room() {
     <group>
       <mesh receiveShadow position={[0, 0, 0]}>
         <boxGeometry args={[4.6, 0.18, 4.6]} />
-        <meshStandardMaterial color="#6b7280" />
+        <meshStandardMaterial color="#c9a57a" roughness={0.7} />
       </mesh>
       <mesh receiveShadow position={[0, 1.3, -2.2]}>
         <boxGeometry args={[4.6, 2.6, 0.2]} />
-        <meshStandardMaterial color="#c0c6d4" />
+        <meshStandardMaterial color="#efe4d6" />
       </mesh>
       <mesh receiveShadow position={[0, 1.3, 2.2]}>
         <boxGeometry args={[4.6, 2.6, 0.2]} />
-        <meshStandardMaterial color="#b4bccd" />
+        <meshStandardMaterial color="#eadfce" />
       </mesh>
       <mesh receiveShadow position={[-2.2, 1.3, 0]} rotation={[0, Math.PI / 2, 0]}>
         <boxGeometry args={[4.6, 2.6, 0.2]} />
-        <meshStandardMaterial color="#c5ccd9" />
+        <meshStandardMaterial color="#efe7db" />
       </mesh>
       <mesh receiveShadow position={[2.2, 1.3, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <boxGeometry args={[4.6, 2.6, 0.2]} />
-        <meshStandardMaterial color="#c5ccd9" />
+        <meshStandardMaterial color="#efe7db" />
       </mesh>
       <group position={[-1.6, 0.22, 1.8]} rotation={[0, Math.PI, 0]}>
         <mesh castShadow>
           <boxGeometry args={[2.1, 0.4, 0.85]} />
-          <meshStandardMaterial color="#3a75b0" />
+          <meshStandardMaterial color="#c28b6a" roughness={0.75} />
         </mesh>
         <mesh castShadow position={[0, 0.32, -0.35]}>
           <boxGeometry args={[2.1, 0.45, 0.18]} />
-          <meshStandardMaterial color="#2b5d8f" />
+          <meshStandardMaterial color="#b27959" roughness={0.75} />
         </mesh>
         <mesh castShadow position={[-0.95, 0.2, 0]}>
           <boxGeometry args={[0.14, 0.38, 0.85]} />
-          <meshStandardMaterial color="#2b5d8f" />
+          <meshStandardMaterial color="#b27959" roughness={0.75} />
         </mesh>
       </group>
       <group position={[-2.2, 0.9, 1.1]} rotation={[0, Math.PI / 2, 0]}>
         <mesh>
           <boxGeometry args={[0.9, 1.6, 0.06]} />
-          <meshStandardMaterial color="#e5e7eb" />
+          <meshStandardMaterial color="#f2e8d8" />
         </mesh>
         <mesh position={[0, 0, 0.04]}>
           <boxGeometry args={[0.95, 1.65, 0.02]} />
-          <meshStandardMaterial color="#9aa4b2" />
+          <meshStandardMaterial color="#d0bfa8" />
         </mesh>
         <mesh position={[0.35, 0, 0.06]}>
           <sphereGeometry args={[0.04, 12, 12]} />
-          <meshStandardMaterial color="#d1bfa7" />
+          <meshStandardMaterial color="#c2a88a" />
         </mesh>
       </group>
+      <mesh position={[0, 2.5, 0]}>
+        <boxGeometry args={[4.6, 0.12, 4.6]} />
+        <meshStandardMaterial color="#f5efe6" />
+      </mesh>
     </group>
   );
 }
@@ -485,16 +489,17 @@ export default function Scene({
       camera={{ position: [-1.65, 1.18, 1.6], fov: 42 }}
       className="h-full w-full"
     >
-      <color attach="background" args={["#121826"]} />
+      <color attach="background" args={["#cfc6bb"]} />
+      <fog attach="fog" args={["#d7cec2", 4.5, 10]} />
       <CameraRig
         activePanel={activePanel}
         onSelect={onSelect}
         reducedMotion={reducedMotion}
       />
-      <ambientLight intensity={0.8} color="#cbd5e1" />
+      <ambientLight intensity={0.9} color="#f1e3d2" />
       <directionalLight
         position={[4, 6, 2]}
-        intensity={1.1}
+        intensity={1.15}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -503,7 +508,7 @@ export default function Scene({
         position={[-3, 4, 2]}
         angle={0.35}
         penumbra={0.4}
-        intensity={0.55}
+        intensity={0.45}
         castShadow
       />
       <Room />
