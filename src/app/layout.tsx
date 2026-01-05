@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 
-import TerminalHeader from "@/components/portfolio/TerminalHeader";
+import RouteHeader from "@/components/portfolio/RouteHeader";
 import ThemeInitializer from "@/components/portfolio/ThemeInitializer";
 import { ViewTransitions } from "next-view-transitions";
 
@@ -138,7 +138,7 @@ export default function RootLayout({
       <body className={`${jetBrainsMono.variable} antialiased`}>
         <ThemeInitializer />
         <ViewTransitions>
-          <TerminalHeader />
+          <RouteHeader />
           {children}
         </ViewTransitions>
       </body>

@@ -33,6 +33,11 @@ export default function ImmersiveExperience() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
 
+  useEffect(() => {
+    document.body.classList.add("immersive-mode");
+    return () => document.body.classList.remove("immersive-mode");
+  }, []);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-slate-950 text-white">
       <Scene
@@ -46,8 +51,8 @@ export default function ImmersiveExperience() {
           Immersive Mode
         </div>
         <div className="pointer-events-auto absolute left-6 bottom-6 max-w-sm rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-200">
-          Move your cursor to look around. Click glowing objects to move. Press
-          Escape to return to the couch.
+          Click to lock your cursor and look around. Click glowing objects to
+          move. Press Escape to return to the couch.
         </div>
         <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
           <button

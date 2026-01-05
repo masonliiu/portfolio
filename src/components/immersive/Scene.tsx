@@ -21,24 +21,24 @@ type Anchor = {
 
 const anchors: Record<string, Anchor> = {
   couch: {
-    position: new THREE.Vector3(-2.0, 1.05, 2.0),
+    position: new THREE.Vector3(-2.0, 1.15, 1.7),
     target: new THREE.Vector3(-0.4, 0.9, 0.2),
-    lookRange: { yaw: 0.42, pitch: 0.26 },
+    lookRange: { yaw: 0.55, pitch: 0.32 },
   },
   desk: {
     position: new THREE.Vector3(2.05, 1.35, -1.35),
     target: new THREE.Vector3(1.9, 1.0, -2.1),
-    lookRange: { yaw: 0.3, pitch: 0.22 },
+    lookRange: { yaw: 0.35, pitch: 0.24 },
   },
   wallPhoto: {
     position: new THREE.Vector3(-0.8, 1.45, 1.4),
     target: new THREE.Vector3(-0.8, 1.35, -2.6),
-    lookRange: { yaw: 0.24, pitch: 0.18 },
+    lookRange: { yaw: 0.3, pitch: 0.2 },
   },
   projects: {
     position: new THREE.Vector3(2.2, 1.45, -0.5),
     target: new THREE.Vector3(2.4, 1.25, -1.7),
-    lookRange: { yaw: 0.2, pitch: 0.16 },
+    lookRange: { yaw: 0.3, pitch: 0.2 },
   },
 };
 
@@ -57,16 +57,47 @@ function CameraRig({
   activePanel: PanelKey | null;
   reducedMotion?: boolean;
 }) {
-  const { camera, pointer } = useThree();
+  const { camera, gl } = useThree();
   const anchorName = activePanel ? panelToAnchor[activePanel] : "couch";
   const anchor = anchors[anchorName];
   const baseQuat = useRef(new THREE.Quaternion());
   const targetPosition = useRef(new THREE.Vector3());
   const tempTarget = useRef(new THREE.Vector3());
+  const lookOffset = useRef({ yaw: 0, pitch: 0 });
+  const lookCurrent = useRef({ yaw: 0, pitch: 0 });
+  const isLocked = useRef(false);
 
   useEffect(() => {
     targetPosition.current.copy(anchor.position);
   }, [anchor]);
+
+  useEffect(() => {
+    lookOffset.current = { yaw: 0, pitch: 0 };
+    lookCurrent.current = { yaw: 0, pitch: 0 };
+  }, [anchorName]);
+
+  useEffect(() => {
+    const handlePointerLock = () => {
+      isLocked.current = document.pointerLockElement === gl.domElement;
+      if (!isLocked.current) {
+        lookOffset.current = { yaw: 0, pitch: 0 };
+      }
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!isLocked.current) return;
+      const sensitivity = reducedMotion ? 0.0012 : 0.0016;
+      lookOffset.current.yaw += event.movementX * sensitivity;
+      lookOffset.current.pitch += event.movementY * sensitivity;
+    };
+
+    document.addEventListener("pointerlockchange", handlePointerLock);
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      document.removeEventListener("pointerlockchange", handlePointerLock);
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [gl, reducedMotion]);
 
   useFrame((state, delta) => {
     const damping = reducedMotion ? 1 : 6;
@@ -87,11 +118,32 @@ function CameraRig({
       "YXZ",
     );
 
-    const lookScale = allowLook ? 1 : 0;
-    const yaw = pointer.x * anchor.lookRange.yaw * lookScale;
-    const pitch = -pointer.y * anchor.lookRange.pitch * lookScale;
-    baseEuler.y += yaw;
-    baseEuler.x += pitch;
+    const lookScale = allowLook && isLocked.current ? 1 : 0;
+    const targetYaw = THREE.MathUtils.clamp(
+      lookOffset.current.yaw,
+      -anchor.lookRange.yaw,
+      anchor.lookRange.yaw,
+    );
+    const targetPitch = THREE.MathUtils.clamp(
+      lookOffset.current.pitch,
+      -anchor.lookRange.pitch,
+      anchor.lookRange.pitch,
+    );
+    const lookDamping = reducedMotion ? 1 : 10;
+    lookCurrent.current.yaw = THREE.MathUtils.damp(
+      lookCurrent.current.yaw,
+      targetYaw * lookScale,
+      lookDamping,
+      delta,
+    );
+    lookCurrent.current.pitch = THREE.MathUtils.damp(
+      lookCurrent.current.pitch,
+      targetPitch * lookScale,
+      lookDamping,
+      delta,
+    );
+    baseEuler.y += lookCurrent.current.yaw;
+    baseEuler.x += lookCurrent.current.pitch;
     baseEuler.x = THREE.MathUtils.clamp(
       baseEuler.x,
       -Math.PI / 3,
@@ -114,7 +166,7 @@ function Laptop() {
   });
 
   return (
-    <group position={[-1.65, 0.55, 1.7]} rotation={[0, 0.35, 0]}>
+    <group position={[-1.6, 0.55, 1.35]} rotation={[0, 0.35, 0]}>
       <mesh castShadow>
         <boxGeometry args={[0.6, 0.04, 0.4]} />
         <meshStandardMaterial color="#1f2937" />
@@ -225,7 +277,7 @@ function Room() {
         <boxGeometry args={[6, 2.8, 0.2]} />
         <meshStandardMaterial color="#0b1120" />
       </mesh>
-      <group position={[-2.2, 0.25, 2.1]}>
+      <group position={[-2.5, 0.25, 2.45]}>
         <mesh castShadow>
           <boxGeometry args={[2.6, 0.5, 1.1]} />
           <meshStandardMaterial color="#1e293b" />
@@ -251,8 +303,13 @@ export default function Scene({
   return (
     <Canvas
       shadows
-      camera={{ position: [-2.0, 1.05, 2.0], fov: 42 }}
+      camera={{ position: [-2.0, 1.15, 1.7], fov: 42 }}
       className="h-full w-full"
+      onPointerDown={(event) => {
+        if (document.pointerLockElement !== event.currentTarget) {
+          event.currentTarget.requestPointerLock();
+        }
+      }}
     >
       <color attach="background" args={["#05070f"]} />
       <CameraRig activePanel={activePanel} reducedMotion={reducedMotion} />

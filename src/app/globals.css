@@ -143,6 +143,10 @@ body {
   min-height: 100vh;
 }
 
+body.immersive-mode {
+  cursor: none;
+}
+
 html:not(.ready),
 html:not(.ready) body {
   overflow: hidden !important;
