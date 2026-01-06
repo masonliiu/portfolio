@@ -23,9 +23,9 @@ type AnchorMap = Record<string, Anchor>;
 
 const defaultAnchors: AnchorMap = {
   couch: {
-    position: new THREE.Vector3(-1.65, 1.18, 1.6),
-    target: new THREE.Vector3(-0.4, 0.95, 0.1),
-    lookRange: { yaw: 0.9, pitch: 0.45 },
+    position: new THREE.Vector3(-1.7, 1.12, 1.7),
+    target: new THREE.Vector3(0.15, 1.02, 0.15),
+    lookRange: { yaw: 1.35, pitch: 0.8 },
   },
   desk: {
     position: new THREE.Vector3(1.5, 1.25, -1.2),
@@ -245,23 +245,36 @@ function findObjectByKeyword(scene: THREE.Object3D, keywords: string[]) {
 function buildAnchorFromObject(
   obj: THREE.Object3D,
   roomCenter: THREE.Vector3 | null,
-  offsets: { forward: number; up: number; targetUp: number },
+  offsets: {
+    forward: number;
+    up: number;
+    targetUp: number;
+    targetForward?: number;
+    side?: number;
+  },
 ) {
   const box = new THREE.Box3().setFromObject(obj);
   const center = box.getCenter(new THREE.Vector3());
   const size = box.getSize(new THREE.Vector3());
-  const forward = roomCenter
+  const forwardDir = roomCenter
     ? roomCenter.clone().sub(center).normalize()
     : new THREE.Vector3(0, 0, 1)
         .applyQuaternion(obj.getWorldQuaternion(new THREE.Quaternion()))
         .normalize();
-  const up = new THREE.Vector3(0, 1, 0);
+  const upDir = new THREE.Vector3(0, 1, 0);
+  const rightDir = new THREE.Vector3()
+    .crossVectors(forwardDir, upDir)
+    .normalize();
 
   const position = center
     .clone()
-    .add(forward.multiplyScalar(size.z * offsets.forward))
-    .add(up.multiplyScalar(size.y * offsets.up));
-  const target = center.clone().add(up.multiplyScalar(size.y * offsets.targetUp));
+    .add(forwardDir.clone().multiplyScalar(size.z * offsets.forward))
+    .add(rightDir.clone().multiplyScalar(size.x * (offsets.side ?? 0)))
+    .add(upDir.clone().multiplyScalar(size.y * offsets.up));
+  const target = center
+    .clone()
+    .add(forwardDir.clone().multiplyScalar(size.z * (offsets.targetForward ?? 0)))
+    .add(upDir.clone().multiplyScalar(size.y * offsets.targetUp));
 
   return { position, target };
 }
@@ -291,9 +304,11 @@ function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
     const nextAnchors: AnchorMap = { ...defaultAnchors };
     if (couchObj) {
       const { position, target } = buildAnchorFromObject(couchObj, roomCenter, {
-        forward: 0.6,
-        up: 0.35,
-        targetUp: 0.2,
+        forward: -0.12,
+        up: 0.75,
+        targetUp: 0.25,
+        targetForward: 0.4,
+        side: -0.75,
       });
       nextAnchors.couch = {
         ...nextAnchors.couch,
