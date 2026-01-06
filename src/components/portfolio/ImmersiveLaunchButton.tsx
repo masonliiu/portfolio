@@ -20,30 +20,49 @@ export default function ImmersiveLaunchButton({
   const router = useRouter();
   const [isCapturing, setIsCapturing] = useState(false);
 
+  const preloadRoom = async () => {
+    try {
+      const response = await fetch("/models/office.glb", { cache: "force-cache" });
+      if (response.ok) {
+        await response.arrayBuffer();
+      }
+    } catch {
+      // Preload failures should not block navigation.
+    }
+  };
+
+  const captureSnapshot = async () => {
+    const nextRoot = document.getElementById("__next");
+    const target = nextRoot ?? document.body;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const dataUrl = await toPng(target, {
+      cacheBust: true,
+      skipFonts: true,
+      pixelRatio: 1,
+      width: viewportWidth,
+      height: viewportHeight,
+      style: {
+        width: `${viewportWidth}px`,
+        height: `${viewportHeight}px`,
+      },
+    });
+    return { dataUrl, width: viewportWidth, height: viewportHeight };
+  };
+
   const handleClick = async () => {
     if (isCapturing) return;
     setIsCapturing(true);
 
     try {
-      const nextRoot = document.getElementById("__next");
-      const target = nextRoot ?? document.body;
-      const viewportWidth = document.documentElement.clientWidth;
-      const viewportHeight = document.documentElement.clientHeight;
-      const dataUrl = await toPng(target, {
-        cacheBust: true,
-        skipFonts: true,
-        pixelRatio: 1,
-        width: viewportWidth,
-        height: viewportHeight,
-        style: {
-          width: `${viewportWidth}px`,
-          height: `${viewportHeight}px`,
-        },
-      });
+      const [{ dataUrl, width, height }] = await Promise.all([
+        captureSnapshot(),
+        preloadRoom(),
+      ]);
       sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
       sessionStorage.setItem(
         IMMERSIVE_SNAPSHOT_META_KEY,
-        JSON.stringify({ width: viewportWidth, height: viewportHeight }),
+        JSON.stringify({ width, height }),
       );
     } catch (error) {
       console.error("Failed to capture immersive snapshot", error);

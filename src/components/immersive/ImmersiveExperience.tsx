@@ -46,6 +46,7 @@ export default function ImmersiveExperience() {
       return null;
     }
   });
+  const [transitionChecked, setTransitionChecked] = useState(false);
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   useEffect(() => {
@@ -90,6 +91,7 @@ export default function ImmersiveExperience() {
         }
       }
     }
+    setTransitionChecked(true);
   }, [transitionImage, transitionMeta]);
 
   useEffect(() => {
@@ -117,6 +119,7 @@ export default function ImmersiveExperience() {
 
   const handleTransitionEnd = useCallback(() => {
     setTransitionActive(false);
+    setTransitionChecked(true);
     window.setTimeout(() => {
       sessionStorage.removeItem(IMMERSIVE_SNAPSHOT_KEY);
       sessionStorage.removeItem(IMMERSIVE_SNAPSHOT_META_KEY);
@@ -139,7 +142,7 @@ export default function ImmersiveExperience() {
     transitionActive && transitionImage && !transitionStarted
       ? "opacity-0"
       : "opacity-100";
-  const showUi = !transitionImage || !transitionActive;
+  const showUi = transitionChecked && (!transitionImage || !transitionActive);
 
   return (
     <div className={rootClassName}>
@@ -160,8 +163,7 @@ export default function ImmersiveExperience() {
             style={{
               position: "absolute",
               top: 0,
-              left: "50%",
-              transform: "translateX(-50%)",
+              left: 0,
               width: transitionMeta ? `${transitionMeta.width}px` : "100%",
               height: transitionMeta ? `${transitionMeta.height}px` : "100%",
               display: "block",
