@@ -178,6 +178,26 @@ html:not(.ready) body {
   visibility: hidden;
 }
 
+html.snapshot-mode,
+html.snapshot-mode body {
+  background: var(--color-base, #1e1e2e) !important;
+}
+
+html.snapshot-mode *,
+html.snapshot-mode *::before,
+html.snapshot-mode *::after {
+  background-image: none !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  color: inherit !important;
+}
+
+html.snapshot-mode body {
+  color: var(--color-text, #cdd6f4) !important;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--color-accent) 30%, transparent);
   color: var(--color-accent);

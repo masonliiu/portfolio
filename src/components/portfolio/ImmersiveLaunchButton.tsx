@@ -1,6 +1,6 @@
 "use client";
 
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import { IMMERSIVE_SNAPSHOT_KEY } from "@/components/immersive/transition";
@@ -26,35 +26,15 @@ export default function ImmersiveLaunchButton({
     await new Promise(requestAnimationFrame);
 
     try {
-      const root = document.documentElement;
-      const prevAccent = root.style.getPropertyValue("--color-accent");
-      const accent = getComputedStyle(root)
-        .getPropertyValue("--current-accent-color")
-        .trim();
-      if (accent) {
-        root.style.setProperty("--color-accent", accent);
-      }
-
-      const canvas = await html2canvas(document.body, {
-        backgroundColor: null,
-        useCORS: true,
-        logging: false,
-        x: 0,
-        y: 0,
+      const nextRoot = document.getElementById("__next");
+      const target = nextRoot ?? document.body;
+      const dataUrl = await toPng(target, {
+        cacheBust: true,
+        pixelRatio: window.devicePixelRatio,
         width: window.innerWidth,
         height: window.innerHeight,
-        scrollX: 0,
-        scrollY: 0,
       });
-      const dataUrl = canvas.toDataURL("image/png", 0.92);
       sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
-      if (accent) {
-        if (prevAccent) {
-          root.style.setProperty("--color-accent", prevAccent);
-        } else {
-          root.style.removeProperty("--color-accent");
-        }
-      }
     } catch (error) {
       console.error("Failed to capture immersive snapshot", error);
     }
