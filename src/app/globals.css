@@ -154,6 +154,13 @@ body.immersive-mode {
   width: 100%;
 }
 
+body.snapshot-backdrop {
+  background-image: var(--snapshot-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 body.immersive-mode::-webkit-scrollbar {
   display: none;
 }

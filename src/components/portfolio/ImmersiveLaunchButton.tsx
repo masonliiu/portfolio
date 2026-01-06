@@ -30,11 +30,18 @@ export default function ImmersiveLaunchButton({
       const target = nextRoot ?? document.body;
       const dataUrl = await toPng(target, {
         cacheBust: true,
-        pixelRatio: window.devicePixelRatio,
+        skipFonts: true,
+        pixelRatio: 1,
         width: window.innerWidth,
         height: window.innerHeight,
+        style: {
+          width: `${window.innerWidth}px`,
+          height: `${window.innerHeight}px`,
+        },
       });
       sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
+      document.body.style.setProperty("--snapshot-image", `url("${dataUrl}")`);
+      document.body.classList.add("snapshot-backdrop");
     } catch (error) {
       console.error("Failed to capture immersive snapshot", error);
     }

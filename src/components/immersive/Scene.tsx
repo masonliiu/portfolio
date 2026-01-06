@@ -22,6 +22,7 @@ type SceneProps = {
   transitionImage?: string | null;
   transitionActive?: boolean;
   onTransitionEnd?: () => void;
+  onTransitionStart?: () => void;
 };
 
 type Anchor = {
@@ -277,8 +278,8 @@ function LaptopScreenTransition({
     if (!overlayRef.current || !screenRef.current || done.current) return;
 
     elapsed.current += delta;
-    const hold = 0.25;
-    const duration = 1.35;
+    const hold = 0.5;
+    const duration = 2.4;
     const t = Math.min(Math.max((elapsed.current - hold) / duration, 0), 1);
     const ease = t * t * (3 - 2 * t);
 
@@ -311,7 +312,7 @@ function LaptopScreenTransition({
     );
     overlayRef.current.scale.lerpVectors(startScale.current, endScale.current, ease);
 
-    tempOpacity.current = t < 0.85 ? 1 : 1 - (t - 0.85) / 0.15;
+    tempOpacity.current = t < 0.8 ? 1 : 1 - (t - 0.8) / 0.2;
     const material = overlayRef.current.material as THREE.MeshBasicMaterial;
     material.opacity = tempOpacity.current;
 
@@ -548,6 +549,7 @@ export default function Scene({
   transitionImage,
   transitionActive = false,
   onTransitionEnd,
+  onTransitionStart,
 }: SceneProps) {
   const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
   const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
@@ -572,6 +574,11 @@ export default function Scene({
       setScreenTexture(texture);
     });
   }, [transitionImage]);
+
+  useEffect(() => {
+    if (!transitionActive || !screenTexture) return;
+    onTransitionStart?.();
+  }, [onTransitionStart, screenTexture, transitionActive]);
 
   const cameraPosition = useMemo(() => {
     const pos = sceneAnchors.couch.position;
