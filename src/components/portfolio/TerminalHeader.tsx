@@ -2,6 +2,7 @@
 
 import { Link as TransitionLink } from "next-view-transitions";
 import { usePathname } from "next/navigation";
+import ImmersiveLaunchButton from "./ImmersiveLaunchButton";
 
 function buildSegments(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
@@ -72,12 +73,9 @@ export default function TerminalHeader() {
               Contact
             </a>
           </div>
-          <TransitionLink
-            className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition"
-            href="/immersive"
-          >
+          <ImmersiveLaunchButton className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition">
             Immersive
-          </TransitionLink>
+          </ImmersiveLaunchButton>
         </div>
       </div>
     </header>

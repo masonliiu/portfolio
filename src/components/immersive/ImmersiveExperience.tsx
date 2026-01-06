@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Scene from "./Scene";
 import type { PanelKey } from "./data";
+import { IMMERSIVE_SNAPSHOT_KEY } from "./transition";
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -22,6 +23,8 @@ function useMediaQuery(query: string) {
 export default function ImmersiveExperience() {
   const [activePanel, setActivePanel] = useState<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [transitionImage, setTransitionImage] = useState<string | null>(null);
+  const [transitionActive, setTransitionActive] = useState(false);
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   useEffect(() => {
@@ -49,12 +52,28 @@ export default function ImmersiveExperience() {
     };
   }, []);
 
+  useEffect(() => {
+    const stored = sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY);
+    if (stored) {
+      setTransitionImage(stored);
+      setTransitionActive(true);
+    }
+  }, []);
+
+  const handleTransitionEnd = useCallback(() => {
+    setTransitionActive(false);
+    sessionStorage.removeItem(IMMERSIVE_SNAPSHOT_KEY);
+  }, []);
+
   return (
     <div className="fixed inset-0 overflow-hidden bg-slate-950 text-white">
       <Scene
         activePanel={activePanel}
         onSelect={(panel) => setActivePanel(panel)}
         reducedMotion={prefersReducedMotion}
+        transitionImage={transitionImage}
+        transitionActive={transitionActive}
+        onTransitionEnd={handleTransitionEnd}
       />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(0,0,0,0)_52%,_rgba(0,0,0,0.4)_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.18),_transparent_55%)]" />

@@ -2,7 +2,15 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, useGLTF } from "@react-three/drei";
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import * as THREE from "three";
 import Hotspots from "./Hotspots";
 import { hotspots, type Hotspot, type PanelKey } from "./data";
@@ -11,6 +19,9 @@ type SceneProps = {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
   reducedMotion?: boolean;
+  transitionImage?: string | null;
+  transitionActive?: boolean;
+  onTransitionEnd?: () => void;
 };
 
 type Anchor = {
@@ -23,9 +34,9 @@ type AnchorMap = Record<string, Anchor>;
 
 const defaultAnchors: AnchorMap = {
   couch: {
-    position: new THREE.Vector3(-1.7, 1.12, 1.7),
-    target: new THREE.Vector3(0.15, 1.02, 0.15),
-    lookRange: { yaw: 1.35, pitch: 0.8 },
+    position: new THREE.Vector3(-1.6, 1.05, 1.35),
+    target: new THREE.Vector3(-0.85, 0.6, 0.55),
+    lookRange: { yaw: 1.45, pitch: 0.85 },
   },
   desk: {
     position: new THREE.Vector3(1.5, 1.25, -1.2),
@@ -229,6 +240,143 @@ type RoomModelProps = {
   onHotspots: (spots: Hotspot[]) => void;
 };
 
+type LaptopProps = {
+  position: [number, number, number];
+  rotation: [number, number, number];
+  scale?: number;
+  screenRef: RefObject<THREE.Mesh>;
+  screenTexture?: THREE.Texture | null;
+};
+
+type LaptopScreenTransitionProps = {
+  screenRef: RefObject<THREE.Mesh>;
+  texture: THREE.Texture;
+  onDone?: () => void;
+};
+
+function LaptopScreenTransition({
+  screenRef,
+  texture,
+  onDone,
+}: LaptopScreenTransitionProps) {
+  const overlayRef = useRef<THREE.Mesh>(null);
+  const { camera, size } = useThree();
+  const elapsed = useRef(0);
+  const done = useRef(false);
+  const startPos = useRef(new THREE.Vector3());
+  const endPos = useRef(new THREE.Vector3());
+  const startQuat = useRef(new THREE.Quaternion());
+  const endQuat = useRef(new THREE.Quaternion());
+  const startScale = useRef(new THREE.Vector3());
+  const endScale = useRef(new THREE.Vector3());
+  const tempDirection = useRef(new THREE.Vector3());
+  const tempScale = useRef(new THREE.Vector3());
+  const tempOpacity = useRef(1);
+
+  useFrame((state, delta) => {
+    if (!overlayRef.current || !screenRef.current || done.current) return;
+
+    elapsed.current += delta;
+    const hold = 0.25;
+    const duration = 1.35;
+    const t = Math.min(Math.max((elapsed.current - hold) / duration, 0), 1);
+    const ease = t * t * (3 - 2 * t);
+
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const distance = 0.28;
+    const height = 2 * Math.tan(vFov / 2) * distance;
+    const width = height * (size.width / size.height);
+
+    camera.getWorldDirection(tempDirection.current);
+    startPos.current
+      .copy(camera.position)
+      .add(tempDirection.current.multiplyScalar(distance));
+    startQuat.current.copy(camera.quaternion);
+    startScale.current.set(width, height, 1);
+
+    screenRef.current.getWorldPosition(endPos.current);
+    screenRef.current.getWorldQuaternion(endQuat.current);
+    screenRef.current.getWorldScale(tempScale.current);
+
+    const geometry = screenRef.current.geometry as THREE.PlaneGeometry;
+    const screenWidth = geometry.parameters.width * tempScale.current.x;
+    const screenHeight = geometry.parameters.height * tempScale.current.y;
+    endScale.current.set(screenWidth, screenHeight, 1);
+
+    overlayRef.current.position.lerpVectors(startPos.current, endPos.current, ease);
+    overlayRef.current.quaternion.slerpQuaternions(
+      startQuat.current,
+      endQuat.current,
+      ease,
+    );
+    overlayRef.current.scale.lerpVectors(startScale.current, endScale.current, ease);
+
+    tempOpacity.current = t < 0.85 ? 1 : 1 - (t - 0.85) / 0.15;
+    const material = overlayRef.current.material as THREE.MeshBasicMaterial;
+    material.opacity = tempOpacity.current;
+
+    if (t >= 1 && !done.current) {
+      done.current = true;
+      onDone?.();
+    }
+  });
+
+  return (
+    <mesh ref={overlayRef} renderOrder={10}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        map={texture}
+        toneMapped={false}
+        transparent
+        opacity={1}
+        depthTest={false}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+function Laptop({
+  position,
+  rotation,
+  scale = 1,
+  screenRef,
+  screenTexture,
+}: LaptopProps) {
+  return (
+    <group position={position} rotation={rotation} scale={scale}>
+      <mesh castShadow receiveShadow position={[0, 0.02, 0]}>
+        <boxGeometry args={[0.46, 0.03, 0.32]} />
+        <meshStandardMaterial color="#c9cdd3" metalness={0.8} roughness={0.25} />
+      </mesh>
+      <mesh castShadow receiveShadow position={[0, 0.03, 0.02]}>
+        <boxGeometry args={[0.42, 0.008, 0.26]} />
+        <meshStandardMaterial color="#9aa2ad" metalness={0.35} roughness={0.5} />
+      </mesh>
+      <mesh castShadow receiveShadow position={[0, 0.045, 0.11]}>
+        <boxGeometry args={[0.12, 0.003, 0.08]} />
+        <meshStandardMaterial color="#8f96a1" metalness={0.2} roughness={0.55} />
+      </mesh>
+      <group position={[0, 0.04, -0.16]} rotation={[-0.6, 0, 0]}>
+        <mesh castShadow receiveShadow position={[0, 0.17, -0.007]}>
+          <boxGeometry args={[0.48, 0.34, 0.014]} />
+          <meshStandardMaterial color="#bfc5cd" metalness={0.7} roughness={0.28} />
+        </mesh>
+        <mesh ref={screenRef} position={[0, 0.17, 0.008]}>
+          <planeGeometry args={[0.42, 0.26]} />
+          <meshStandardMaterial
+            color="#0a0d12"
+            emissive="#1c1f24"
+            emissiveIntensity={0.35}
+            map={screenTexture ?? undefined}
+            emissiveMap={screenTexture ?? undefined}
+          />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
 function findObjectByKeyword(scene: THREE.Object3D, keywords: string[]) {
   const lowered = keywords.map((keyword) => keyword.toLowerCase());
   let match: THREE.Object3D | null = null;
@@ -251,6 +399,7 @@ function buildAnchorFromObject(
     targetUp: number;
     targetForward?: number;
     side?: number;
+    targetSide?: number;
   },
 ) {
   const box = new THREE.Box3().setFromObject(obj);
@@ -274,6 +423,7 @@ function buildAnchorFromObject(
   const target = center
     .clone()
     .add(forwardDir.clone().multiplyScalar(size.z * (offsets.targetForward ?? 0)))
+    .add(rightDir.clone().multiplyScalar(size.x * (offsets.targetSide ?? 0)))
     .add(upDir.clone().multiplyScalar(size.y * offsets.targetUp));
 
   return { position, target };
@@ -309,6 +459,7 @@ function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
         targetUp: 0.25,
         targetForward: 0.4,
         side: -0.75,
+        targetSide: -1.3,
       });
       nextAnchors.couch = {
         ...nextAnchors.couch,
@@ -394,9 +545,14 @@ export default function Scene({
   activePanel,
   onSelect,
   reducedMotion,
+  transitionImage,
+  transitionActive = false,
+  onTransitionEnd,
 }: SceneProps) {
   const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
   const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
+  const [screenTexture, setScreenTexture] = useState<THREE.Texture | null>(null);
+  const screenRef = useRef<THREE.Mesh>(null);
   const handleAnchors = useCallback((nextAnchors: AnchorMap) => {
     setSceneAnchors(nextAnchors);
   }, []);
@@ -404,9 +560,33 @@ export default function Scene({
     setSceneHotspots(nextHotspots);
   }, []);
 
+  useEffect(() => {
+    if (!transitionImage) {
+      setScreenTexture(null);
+      return;
+    }
+    const loader = new THREE.TextureLoader();
+    loader.load(transitionImage, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.needsUpdate = true;
+      setScreenTexture(texture);
+    });
+  }, [transitionImage]);
+
   const cameraPosition = useMemo(() => {
     const pos = sceneAnchors.couch.position;
     return [pos.x, pos.y, pos.z] as [number, number, number];
+  }, [sceneAnchors]);
+
+  const laptopTransform = useMemo(() => {
+    const couchPos = sceneAnchors.couch.position;
+    const offset = new THREE.Vector3(-0.12, -0.33, -0.1);
+    const position = couchPos.clone().add(offset);
+    return {
+      position: [position.x, position.y, position.z] as [number, number, number],
+      rotation: [-0.25, 0.45, 0],
+      scale: 1,
+    };
   }, [sceneAnchors]);
 
   return (
@@ -441,6 +621,18 @@ export default function Scene({
       <Suspense fallback={null}>
         <RoomModel onAnchors={handleAnchors} onHotspots={handleHotspots} />
       </Suspense>
+      <Laptop
+        {...laptopTransform}
+        screenRef={screenRef}
+        screenTexture={screenTexture}
+      />
+      {transitionActive && screenTexture && (
+        <LaptopScreenTransition
+          screenRef={screenRef}
+          texture={screenTexture}
+          onDone={onTransitionEnd}
+        />
+      )}
       <Hotspots
         activePanel={activePanel}
         onSelect={onSelect}
