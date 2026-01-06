@@ -2,10 +2,10 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, useGLTF } from "@react-three/drei";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import Hotspots from "./Hotspots";
-import { hotspots, type PanelKey } from "./data";
+import { hotspots, type Hotspot, type PanelKey } from "./data";
 
 type SceneProps = {
   activePanel: PanelKey | null;
@@ -19,7 +19,9 @@ type Anchor = {
   lookRange: { yaw: number; pitch: number };
 };
 
-const anchors: Record<string, Anchor> = {
+type AnchorMap = Record<string, Anchor>;
+
+const defaultAnchors: AnchorMap = {
   couch: {
     position: new THREE.Vector3(-1.65, 1.18, 1.6),
     target: new THREE.Vector3(-0.4, 0.95, 0.1),
@@ -53,10 +55,12 @@ const panelToAnchor: Record<PanelKey, keyof typeof anchors> = {
 function CameraRig({
   activePanel,
   onSelect,
+  anchors,
   reducedMotion = false,
 }: {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
+  anchors: AnchorMap;
   reducedMotion?: boolean;
 }) {
   const { camera, gl } = useThree();
@@ -220,8 +224,152 @@ function CameraRig({
   return null;
 }
 
-function RoomModel() {
+type RoomModelProps = {
+  onAnchors: (anchors: AnchorMap) => void;
+  onHotspots: (spots: Hotspot[]) => void;
+};
+
+function findObjectByKeyword(scene: THREE.Object3D, keywords: string[]) {
+  const lowered = keywords.map((keyword) => keyword.toLowerCase());
+  let match: THREE.Object3D | null = null;
+  scene.traverse((obj) => {
+    if (match) return;
+    const name = obj.name.toLowerCase();
+    if (lowered.some((keyword) => name.includes(keyword))) {
+      match = obj;
+    }
+  });
+  return match;
+}
+
+function buildAnchorFromObject(
+  obj: THREE.Object3D,
+  roomCenter: THREE.Vector3 | null,
+  offsets: { forward: number; up: number; targetUp: number },
+) {
+  const box = new THREE.Box3().setFromObject(obj);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const forward = roomCenter
+    ? roomCenter.clone().sub(center).normalize()
+    : new THREE.Vector3(0, 0, 1)
+        .applyQuaternion(obj.getWorldQuaternion(new THREE.Quaternion()))
+        .normalize();
+  const up = new THREE.Vector3(0, 1, 0);
+
+  const position = center
+    .clone()
+    .add(forward.multiplyScalar(size.z * offsets.forward))
+    .add(up.multiplyScalar(size.y * offsets.up));
+  const target = center.clone().add(up.multiplyScalar(size.y * offsets.targetUp));
+
+  return { position, target };
+}
+
+function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
   const { scene } = useGLTF("/models/FinalSceneLightingFix.glb");
+  const handled = useRef(false);
+
+  useEffect(() => {
+    if (handled.current) return;
+    handled.current = true;
+
+    const roomBounds = new THREE.Box3().setFromObject(scene);
+    const roomCenter = roomBounds.isEmpty()
+      ? null
+      : roomBounds.getCenter(new THREE.Vector3());
+
+    const couchObj =
+      findObjectByKeyword(scene, ["sofa", "couch"]) || scene.getObjectByName("Sofa");
+    const deskObj =
+      findObjectByKeyword(scene, ["desk", "table"]) || scene.getObjectByName("Table");
+    const photoObj =
+      findObjectByKeyword(scene, ["painting", "frame", "picture"]) ||
+      scene.getObjectByName("Frame");
+    const shelfObj = findObjectByKeyword(scene, ["shelf", "book"]);
+
+    const nextAnchors: AnchorMap = { ...defaultAnchors };
+    if (couchObj) {
+      const { position, target } = buildAnchorFromObject(couchObj, roomCenter, {
+        forward: 0.6,
+        up: 0.35,
+        targetUp: 0.2,
+      });
+      nextAnchors.couch = {
+        ...nextAnchors.couch,
+        position,
+        target,
+      };
+    }
+
+    if (deskObj) {
+      const { position, target } = buildAnchorFromObject(deskObj, roomCenter, {
+        forward: 0.8,
+        up: 0.45,
+        targetUp: 0.25,
+      });
+      nextAnchors.desk = {
+        ...nextAnchors.desk,
+        position,
+        target,
+      };
+    }
+
+    if (photoObj) {
+      const { position, target } = buildAnchorFromObject(photoObj, roomCenter, {
+        forward: 0.5,
+        up: 0.2,
+        targetUp: 0.0,
+      });
+      nextAnchors.wallPhoto = {
+        ...nextAnchors.wallPhoto,
+        position,
+        target,
+      };
+    }
+
+    if (shelfObj) {
+      const { position, target } = buildAnchorFromObject(shelfObj, roomCenter, {
+        forward: 0.8,
+        up: 0.2,
+        targetUp: 0.0,
+      });
+      nextAnchors.projects = {
+        ...nextAnchors.projects,
+        position,
+        target,
+      };
+    }
+
+    const spots: Hotspot[] = hotspots.map((spot) => {
+      let source: THREE.Object3D | null = null;
+      if (spot.panelKey === "resume" || spot.panelKey === "experience") {
+        source = deskObj;
+      } else if (spot.panelKey === "skills") {
+        source = photoObj;
+      } else if (spot.panelKey === "projects") {
+        source = shelfObj;
+      } else if (spot.panelKey === "contact") {
+        source = couchObj;
+      }
+
+      if (!source) {
+        return spot;
+      }
+
+      const center = new THREE.Box3()
+        .setFromObject(source)
+        .getCenter(new THREE.Vector3());
+      return {
+        ...spot,
+        position: [center.x, center.y, center.z],
+      };
+    });
+
+    onAnchors(nextAnchors);
+    onHotspots(spots);
+  }, [onAnchors, onHotspots, scene]);
+
   return <primitive object={scene} />;
 }
 
@@ -232,10 +380,24 @@ export default function Scene({
   onSelect,
   reducedMotion,
 }: SceneProps) {
+  const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
+  const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
+  const handleAnchors = useCallback((nextAnchors: AnchorMap) => {
+    setSceneAnchors(nextAnchors);
+  }, []);
+  const handleHotspots = useCallback((nextHotspots: Hotspot[]) => {
+    setSceneHotspots(nextHotspots);
+  }, []);
+
+  const cameraPosition = useMemo(() => {
+    const pos = sceneAnchors.couch.position;
+    return [pos.x, pos.y, pos.z] as [number, number, number];
+  }, [sceneAnchors]);
+
   return (
     <Canvas
       shadows
-      camera={{ position: [-1.65, 1.18, 1.6], fov: 42 }}
+      camera={{ position: cameraPosition, fov: 42 }}
       className="h-full w-full"
     >
       <color attach="background" args={["#cfc6bb"]} />
@@ -244,13 +406,18 @@ export default function Scene({
         activePanel={activePanel}
         onSelect={onSelect}
         reducedMotion={reducedMotion}
+        anchors={sceneAnchors}
       />
       <ambientLight intensity={0.7} color="#f1e3d2" />
       <directionalLight position={[4, 6, 2]} intensity={0.9} castShadow />
       <Suspense fallback={null}>
-        <RoomModel />
+        <RoomModel onAnchors={handleAnchors} onHotspots={handleHotspots} />
       </Suspense>
-      <Hotspots activePanel={activePanel} onSelect={onSelect} />
+      <Hotspots
+        activePanel={activePanel}
+        onSelect={onSelect}
+        spots={sceneHotspots}
+      />
       <Environment preset="city" />
     </Canvas>
   );

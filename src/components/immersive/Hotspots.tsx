@@ -8,15 +8,21 @@ import { hotspots } from "./data";
 type HotspotsProps = {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
+  spots?: Hotspot[];
 };
 
-export default function Hotspots({ activePanel, onSelect }: HotspotsProps) {
+export default function Hotspots({
+  activePanel,
+  onSelect,
+  spots,
+}: HotspotsProps) {
   const [hovered, setHovered] = useState<string | null>(null);
   useCursor(Boolean(hovered));
+  const activeSpots = spots ?? hotspots;
 
   return (
     <group>
-      {hotspots.map((spot) => {
+      {activeSpots.map((spot) => {
         const isActive = activePanel === spot.panelKey;
         const isHovered = hovered === spot.id;
         return (
