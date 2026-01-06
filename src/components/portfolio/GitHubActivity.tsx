@@ -120,7 +120,7 @@ export default function GitHubActivity() {
               </li>
             ) : (
               commits.map((commit) => (
-                <li key={`${commit.repo}-${commit.message}`}>
+                <li key={commit.url}>
                   <a
                     className="flex min-w-0 items-center gap-2"
                     href={commit.url}

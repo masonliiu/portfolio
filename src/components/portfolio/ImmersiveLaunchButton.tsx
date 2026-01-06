@@ -3,7 +3,10 @@
 import { toPng } from "html-to-image";
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { IMMERSIVE_SNAPSHOT_KEY } from "@/components/immersive/transition";
+import {
+  IMMERSIVE_SNAPSHOT_KEY,
+  IMMERSIVE_SNAPSHOT_META_KEY,
+} from "@/components/immersive/transition";
 
 type ImmersiveLaunchButtonProps = {
   className?: string;
@@ -21,27 +24,27 @@ export default function ImmersiveLaunchButton({
     if (isCapturing) return;
     setIsCapturing(true);
 
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    await new Promise(requestAnimationFrame);
-    await new Promise(requestAnimationFrame);
-
     try {
       const nextRoot = document.getElementById("__next");
       const target = nextRoot ?? document.body;
+      const viewportWidth = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
       const dataUrl = await toPng(target, {
         cacheBust: true,
         skipFonts: true,
         pixelRatio: 1,
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: viewportWidth,
+        height: viewportHeight,
         style: {
-          width: `${window.innerWidth}px`,
-          height: `${window.innerHeight}px`,
+          width: `${viewportWidth}px`,
+          height: `${viewportHeight}px`,
         },
       });
       sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
-      document.body.style.setProperty("--snapshot-image", `url("${dataUrl}")`);
-      document.body.classList.add("snapshot-backdrop");
+      sessionStorage.setItem(
+        IMMERSIVE_SNAPSHOT_META_KEY,
+        JSON.stringify({ width: viewportWidth, height: viewportHeight }),
+      );
     } catch (error) {
       console.error("Failed to capture immersive snapshot", error);
     }
