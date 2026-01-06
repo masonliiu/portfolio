@@ -280,7 +280,7 @@ function buildAnchorFromObject(
 }
 
 function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
-  const { scene } = useGLTF("/models/FinalSceneLightingFix.glb");
+  const { scene } = useGLTF("/models/office.glb");
   const handled = useRef(false);
 
   useEffect(() => {
@@ -388,7 +388,7 @@ function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
   return <primitive object={scene} />;
 }
 
-useGLTF.preload("/models/FinalSceneLightingFix.glb");
+useGLTF.preload("/models/office.glb");
 
 export default function Scene({
   activePanel,
@@ -412,19 +412,32 @@ export default function Scene({
   return (
     <Canvas
       shadows
-      camera={{ position: cameraPosition, fov: 42 }}
+      camera={{ position: cameraPosition, fov: 44 }}
       className="h-full w-full"
     >
-      <color attach="background" args={["#cfc6bb"]} />
-      <fog attach="fog" args={["#d7cec2", 4.5, 10]} />
+      <color attach="background" args={["#b29a7c"]} />
+      <fog attach="fog" args={["#ad967d", 6, 13]} />
       <CameraRig
         activePanel={activePanel}
         onSelect={onSelect}
         reducedMotion={reducedMotion}
         anchors={sceneAnchors}
       />
-      <ambientLight intensity={0.7} color="#f1e3d2" />
-      <directionalLight position={[4, 6, 2]} intensity={0.9} castShadow />
+      <ambientLight intensity={0.05} color="#e2b987" />
+      <hemisphereLight
+        intensity={0.03}
+        skyColor="#e3ba85"
+        groundColor="#8f765c"
+      />
+      <directionalLight
+        position={[4, 6, 2]}
+        intensity={0.1}
+        color="#e0b172"
+        castShadow
+        shadow-mapSize={[1024, 1024]}
+        shadow-bias={-0.0008}
+      />
+      <directionalLight position={[-3, 3, -2]} intensity={0.02} color="#c8a175" />
       <Suspense fallback={null}>
         <RoomModel onAnchors={handleAnchors} onHotspots={handleHotspots} />
       </Suspense>
@@ -433,7 +446,7 @@ export default function Scene({
         onSelect={onSelect}
         spots={sceneHotspots}
       />
-      <Environment preset="city" />
+      <Environment preset="sunset" intensity={0.03} />
     </Canvas>
   );
 }

@@ -42,11 +42,11 @@ export default function Hotspots({
           >
             <sphereGeometry args={[spot.radius, 24, 24]} />
             <meshStandardMaterial
-              color={isActive ? "#f8fafc" : "#94a3b8"}
+              color={isActive ? "#f1f5f9" : "#a3b0bf"}
               transparent
-              opacity={isHovered || isActive ? 0.22 : 0.08}
-              emissive={isActive ? "#f8fafc" : "#64748b"}
-              emissiveIntensity={isHovered || isActive ? 0.8 : 0.2}
+              opacity={isHovered || isActive ? 0.14 : 0.05}
+              emissive={isActive ? "#e2e8f0" : "#6b7280"}
+              emissiveIntensity={isHovered || isActive ? 0.35 : 0.12}
             />
           </mesh>
         );
