@@ -52,17 +52,22 @@ export default function ImmersiveLaunchButton({
       }
     });
     let dataUrl: string;
+    const baseOptions = {
+      cacheBust: true,
+      skipFonts: true,
+      fontEmbedCSS: "",
+      pixelRatio: window.devicePixelRatio,
+      width: viewportWidth,
+      height: viewportHeight,
+      style: {
+        width: `${viewportWidth}px`,
+        height: `${viewportHeight}px`,
+      },
+    };
     try {
-      dataUrl = await toPng(target, {
-        cacheBust: true,
-        pixelRatio: window.devicePixelRatio,
-        width: viewportWidth,
-        height: viewportHeight,
-        style: {
-          width: `${viewportWidth}px`,
-          height: `${viewportHeight}px`,
-        },
-      });
+      dataUrl = await toPng(target, baseOptions);
+    } catch (error) {
+      throw error;
     } finally {
       disabledSheets.forEach((sheet) => {
         sheet.disabled = false;
