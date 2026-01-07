@@ -71,6 +71,7 @@ function CameraRig({
   reducedMotion = false,
   onSettled,
   settleReset = 0,
+  transitionPitch = 0,
 }: {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
@@ -78,6 +79,7 @@ function CameraRig({
   reducedMotion?: boolean;
   onSettled?: () => void;
   settleReset?: number;
+  transitionPitch?: number;
 }) {
   const { camera, gl } = useThree();
   const anchorName = activePanel ? panelToAnchor[activePanel] : "couch";
@@ -236,7 +238,7 @@ function CameraRig({
       delta,
     );
     baseEuler.y += lookCurrent.current.yaw;
-    baseEuler.x += lookCurrent.current.pitch;
+    baseEuler.x += lookCurrent.current.pitch + transitionPitch;
     baseEuler.x = THREE.MathUtils.clamp(
       baseEuler.x,
       -Math.PI / 3,
@@ -269,6 +271,7 @@ type LaptopScreenTransitionProps = {
   texture: THREE.Texture;
   onDone?: () => void;
   onActive?: (isActive: boolean) => void;
+  onProgress?: (progress: number) => void;
 };
 
 function LaptopScreenTransition({
@@ -276,6 +279,7 @@ function LaptopScreenTransition({
   texture,
   onDone,
   onActive,
+  onProgress,
 }: LaptopScreenTransitionProps) {
   const overlayRef = useRef<THREE.Mesh>(null);
   const { camera, size } = useThree();
@@ -300,6 +304,7 @@ function LaptopScreenTransition({
     const duration = 2.0;
     const t = Math.min(Math.max((elapsed.current - hold) / duration, 0), 1);
     const ease = t * t * (3 - 2 * t);
+    onProgress?.(ease);
 
     const vFov = THREE.MathUtils.degToRad(camera.fov);
     const distance = 0.28;
@@ -330,7 +335,7 @@ function LaptopScreenTransition({
     );
     overlayRef.current.scale.lerpVectors(startScale.current, endScale.current, ease);
 
-    tempOpacity.current = t < 0.8 ? 1 : 1 - (t - 0.8) / 0.2;
+    tempOpacity.current = 1;
     const material = overlayRef.current.material as THREE.MeshBasicMaterial;
     material.opacity = tempOpacity.current;
 
@@ -387,15 +392,15 @@ function Laptop({
           <planeGeometry args={[0.42, 0.26]} />
           {screenUnlit ? (
             <meshBasicMaterial
-              color="#0a0d12"
+              color="#ffffff"
               map={screenTexture ?? undefined}
               toneMapped={false}
             />
           ) : (
             <meshStandardMaterial
-              color="#0a0d12"
-              emissive="#1c1f24"
-              emissiveIntensity={0.35}
+              color="#202634"
+              emissive="#f4f8ff"
+              emissiveIntensity={0.6}
               map={screenTexture ?? undefined}
               emissiveMap={screenTexture ?? undefined}
             />
@@ -588,6 +593,7 @@ export default function Scene({
   const [sceneReady, setSceneReady] = useState(false);
   const [cameraSettled, setCameraSettled] = useState(false);
   const [settleReset, setSettleReset] = useState(0);
+  const [transitionProgress, setTransitionProgress] = useState(0);
   const screenRef = useRef<THREE.Mesh>(null);
   const transitionStartRef = useRef(false);
   const handleAnchors = useCallback((nextAnchors: AnchorMap) => {
@@ -624,6 +630,7 @@ export default function Scene({
       setCameraSettled(false);
       setSettleReset((value) => value + 1);
       transitionStartRef.current = false;
+      setTransitionProgress(0);
     }
   }, [transitionActive]);
 
@@ -638,11 +645,11 @@ export default function Scene({
 
   const laptopTransform = useMemo(() => {
     const couchPos = sceneAnchors.couch.position;
-    const offset = new THREE.Vector3(-0.12, -0.33, -0.1);
+    const offset = new THREE.Vector3(-0.34, -0.67, -0.05);
     const position = couchPos.clone().add(offset);
     return {
       position: [position.x, position.y, position.z] as [number, number, number],
-      rotation: [-0.25, 0.45, 0],
+      rotation: [0, 1.56, 0],
       scale: 1,
     };
   }, [sceneAnchors]);
@@ -660,6 +667,7 @@ export default function Scene({
         onSelect={onSelect}
         reducedMotion={reducedMotion}
         anchors={sceneAnchors}
+        transitionPitch={-0.65 * transitionProgress}
         settleReset={settleReset}
         onSettled={() => {
           setCameraSettled(true);
@@ -698,6 +706,7 @@ export default function Scene({
           screenRef={screenRef}
           texture={screenTexture}
           onActive={setTransitionAnimating}
+          onProgress={setTransitionProgress}
           onDone={onTransitionEnd}
         />
       )}
