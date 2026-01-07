@@ -322,6 +322,32 @@ type LaptopScreenTransitionProps = {
   onProgress?: (progress: number) => void;
 };
 
+function PaintingReveal({
+  paintingRef,
+  baseQuatRef,
+  revealed,
+}: {
+  paintingRef: RefObject<THREE.Object3D>;
+  baseQuatRef: RefObject<THREE.Quaternion>;
+  revealed: boolean;
+}) {
+  useFrame((_, delta) => {
+    const painting = paintingRef.current;
+    if (!painting) return;
+    const baseQuat = baseQuatRef.current;
+    const targetQuat = new THREE.Quaternion().copy(baseQuat);
+    if (revealed) {
+      const revealQuat = new THREE.Quaternion().setFromEuler(
+        new THREE.Euler(-0.05, -1.2, 0),
+      );
+      targetQuat.multiply(revealQuat);
+    }
+    painting.quaternion.slerp(targetQuat, Math.min(delta * 3, 1));
+  });
+
+  return null;
+}
+
 function LaptopScreenTransition({
   screenRef,
   texture,
@@ -563,9 +589,11 @@ function RoomModel({
 
     if (deskObj) {
       const { position, target } = buildAnchorFromObject(deskObj, roomCenter, {
-        forward: 0.55,
+        forward: 0.6,
         up: 0.65,
-        targetUp: 0.1,
+        targetUp: 0.2,
+        targetSide: -0.4,
+        side: -0.34,
       });
       nextAnchors.deskPapers = {
         ...nextAnchors.deskPapers,
@@ -576,9 +604,11 @@ function RoomModel({
 
     if (photoObj) {
       const { position, target } = buildAnchorFromObject(photoObj, roomCenter, {
-        forward: 0.45,
-        up: 0.15,
-        targetUp: 0.05,
+        forward: 62,
+        up: 0.36,
+        targetUp: -1,
+        side: 0.1,
+        targetSide: 16,
       });
       nextAnchors.painting = {
         ...nextAnchors.painting,
@@ -589,9 +619,11 @@ function RoomModel({
 
     if (shelfObj) {
       const { position, target } = buildAnchorFromObject(shelfObj, roomCenter, {
-        forward: 0.75,
-        up: 0.2,
-        targetUp: 0.1,
+        forward: 1.5,
+        up: 1.4,
+        targetUp: 0,
+        side: -2,
+        targetSide: 0.2,
       });
       nextAnchors.shelf = {
         ...nextAnchors.shelf,
@@ -602,9 +634,11 @@ function RoomModel({
 
     if (tableObj) {
       const { position, target } = buildAnchorFromObject(tableObj, roomCenter, {
-        forward: 0.35,
-        up: 0.6,
-        targetUp: 0.05,
+        forward: 3.5,
+        up: -0.6,
+        targetUp: -15,
+        side: -0.05,
+        targetSide: 2.4,
       });
       nextAnchors.table = {
         ...nextAnchors.table,
@@ -799,20 +833,6 @@ export default function Scene({
     });
   }, []);
 
-  useFrame((_, delta) => {
-    const painting = paintingRef.current;
-    if (!painting) return;
-    const baseQuat = paintingBaseQuat.current;
-    const targetQuat = new THREE.Quaternion().copy(baseQuat);
-    if (paintingRevealed) {
-      const revealQuat = new THREE.Quaternion().setFromEuler(
-        new THREE.Euler(-0.05, -1.2, 0),
-      );
-      targetQuat.multiply(revealQuat);
-    }
-    painting.quaternion.slerp(targetQuat, Math.min(delta * 3, 1));
-  });
-
   const cameraPosition = useMemo(() => {
     const pos = sceneAnchors.couch.position;
     return [pos.x, pos.y, pos.z] as [number, number, number];
@@ -837,6 +857,11 @@ export default function Scene({
     >
       <color attach="background" args={["#b29a7c"]} />
       <fog attach="fog" args={["#ad967d", 6, 13]} />
+      <PaintingReveal
+        paintingRef={paintingRef}
+        baseQuatRef={paintingBaseQuat}
+        revealed={paintingRevealed}
+      />
       <CameraRig
         activePanel={activePanel}
         onSelect={onSelect}
