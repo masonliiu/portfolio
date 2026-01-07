@@ -145,11 +145,11 @@ body {
 
 body.immersive-mode {
   cursor: none;
-  overflow: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   height: 100vh;
   overscroll-behavior: none;
+}
+
+html.snapshot-locked body.immersive-mode {
   padding-right: var(--snapshot-scrollbar, 0px);
 }
 
@@ -160,19 +160,25 @@ body.snapshot-backdrop {
   background-repeat: no-repeat;
 }
 
-body.immersive-mode::-webkit-scrollbar {
+body.immersive-ready::-webkit-scrollbar {
   display: none;
 }
 
-html.immersive-mode {
+html.immersive-ready {
   overflow: hidden;
   height: 100%;
   overscroll-behavior: none;
   scrollbar-width: none;
 }
 
-html.immersive-mode::-webkit-scrollbar {
+html.immersive-ready::-webkit-scrollbar {
   display: none;
+}
+
+body.immersive-ready {
+  overflow: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 html:not(.ready),

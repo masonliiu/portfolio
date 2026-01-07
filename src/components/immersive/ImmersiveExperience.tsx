@@ -60,6 +60,7 @@ export default function ImmersiveExperience() {
   }, [transitionImage]);
 
   const handleTransitionEnd = useCallback(() => {
+    window.dispatchEvent(new Event("immersive:ready"));
     setTransitionActive(false);
     setTransitionChecked(true);
     window.setTimeout(() => {

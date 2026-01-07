@@ -89,14 +89,53 @@ export default function ImmersiveSnapshotOverlay() {
     const root = document.documentElement;
     const scrollbarWidth = meta?.scrollbarWidth ?? 0;
     root.style.setProperty("--snapshot-scrollbar", `${scrollbarWidth}px`);
+    if (meta?.width) {
+      root.style.setProperty("--snapshot-width", `${meta.width}px`);
+    }
+    if (meta?.height) {
+      root.style.setProperty("--snapshot-height", `${meta.height}px`);
+    }
     root.classList.add("immersive-mode");
     document.body.classList.add("immersive-mode");
     return () => {
       root.style.removeProperty("--snapshot-scrollbar");
+      root.style.removeProperty("--snapshot-width");
+      root.style.removeProperty("--snapshot-height");
       root.classList.remove("immersive-mode");
+      root.classList.remove("immersive-ready");
       document.body.classList.remove("immersive-mode");
+      document.body.classList.remove("immersive-ready");
     };
   }, [isImmersive, meta?.scrollbarWidth]);
+
+  useEffect(() => {
+    if (!isImmersive) return;
+    const root = document.documentElement;
+    if (visible) {
+      root.classList.add("snapshot-locked");
+      document.body.classList.add("snapshot-locked");
+    } else {
+      root.classList.remove("snapshot-locked");
+      document.body.classList.remove("snapshot-locked");
+    }
+    return () => {
+      root.classList.remove("snapshot-locked");
+      document.body.classList.remove("snapshot-locked");
+    };
+  }, [isImmersive, visible]);
+
+  useEffect(() => {
+    if (!isImmersive) return;
+    const root = document.documentElement;
+    const handleReady = () => {
+      root.classList.add("immersive-ready");
+      document.body.classList.add("immersive-ready");
+    };
+    window.addEventListener("immersive:ready", handleReady);
+    return () => {
+      window.removeEventListener("immersive:ready", handleReady);
+    };
+  }, [isImmersive]);
 
   useEffect(() => {
     if (!isImmersive) return;
@@ -116,8 +155,9 @@ export default function ImmersiveSnapshotOverlay() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[60] bg-black"
+      className="pointer-events-none fixed inset-0 z-[60]"
       style={{
+        backgroundColor: "var(--color-base, #1e1e2e)",
         backgroundImage: `url("${overlayImage}")`,
         backgroundSize: "100% 100%",
         backgroundPosition: "top left",
