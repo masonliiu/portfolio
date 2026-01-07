@@ -11,7 +11,11 @@ import {
   type DetailKey,
   type PanelKey,
 } from "./data";
-import { IMMERSIVE_SNAPSHOT_KEY, IMMERSIVE_SNAPSHOT_META_KEY } from "./transition";
+import {
+  IMMERSIVE_SNAPSHOT_KEY,
+  IMMERSIVE_SNAPSHOT_LAST_KEY,
+  IMMERSIVE_SNAPSHOT_META_KEY,
+} from "./transition";
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = useState(false);
@@ -34,7 +38,10 @@ export default function ImmersiveExperience() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
-    return sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY);
+    return (
+      sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY) ??
+      localStorage.getItem(IMMERSIVE_SNAPSHOT_LAST_KEY)
+    );
   });
   const [transitionActive, setTransitionActive] = useState(
     Boolean(transitionImage),
@@ -98,7 +105,9 @@ export default function ImmersiveExperience() {
 
   useEffect(() => {
     if (transitionImage) return;
-    const stored = sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY);
+    const stored =
+      sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY) ??
+      localStorage.getItem(IMMERSIVE_SNAPSHOT_LAST_KEY);
     if (stored) {
       setTransitionImage(stored);
       setTransitionActive(true);

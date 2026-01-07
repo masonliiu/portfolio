@@ -6,6 +6,8 @@ import { useState, type ReactNode } from "react";
 import {
   IMMERSIVE_SNAPSHOT_KEY,
   IMMERSIVE_SNAPSHOT_META_KEY,
+  IMMERSIVE_SNAPSHOT_LAST_KEY,
+  IMMERSIVE_SNAPSHOT_LAST_META_KEY,
 } from "@/components/immersive/transition";
 
 type ImmersiveLaunchButtonProps = {
@@ -93,6 +95,11 @@ export default function ImmersiveLaunchButton({
       sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
       sessionStorage.setItem(
         IMMERSIVE_SNAPSHOT_META_KEY,
+        JSON.stringify({ width, height, scrollbarWidth }),
+      );
+      localStorage.setItem(IMMERSIVE_SNAPSHOT_LAST_KEY, dataUrl);
+      localStorage.setItem(
+        IMMERSIVE_SNAPSHOT_LAST_META_KEY,
         JSON.stringify({ width, height, scrollbarWidth }),
       );
     } catch (error) {

@@ -4,7 +4,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   IMMERSIVE_SNAPSHOT_KEY,
+  IMMERSIVE_SNAPSHOT_LAST_KEY,
   IMMERSIVE_SNAPSHOT_META_KEY,
+  IMMERSIVE_SNAPSHOT_LAST_META_KEY,
 } from "./transition";
 
 type SnapshotMeta = {
@@ -16,24 +18,18 @@ type SnapshotMeta = {
 export default function ImmersiveSnapshotOverlay() {
   const pathname = usePathname();
   const isImmersive = pathname.startsWith("/immersive");
-  const [snapshot, setSnapshot] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY);
-  });
+  const [hasMounted, setHasMounted] = useState(false);
+  const [snapshot, setSnapshot] = useState<string | null>(null);
   const [decodedSnapshot, setDecodedSnapshot] = useState<string | null>(null);
-  const [meta, setMeta] = useState<SnapshotMeta | null>(() => {
-    if (typeof window === "undefined") return null;
-    const raw = sessionStorage.getItem(IMMERSIVE_SNAPSHOT_META_KEY);
-    if (!raw) return null;
-    try {
-      return JSON.parse(raw) as SnapshotMeta;
-    } catch {
-      return null;
-    }
-  });
+  const [meta, setMeta] = useState<SnapshotMeta | null>(null);
   const [visible, setVisible] = useState(Boolean(snapshot));
 
   useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasMounted) return;
     if (!isImmersive) {
       setSnapshot(null);
       setDecodedSnapshot(null);
@@ -42,21 +38,26 @@ export default function ImmersiveSnapshotOverlay() {
       return;
     }
 
-    const stored = sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY);
-    if (stored) {
-      setSnapshot(stored);
+    const storedSnapshot =
+      sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY) ??
+      localStorage.getItem(IMMERSIVE_SNAPSHOT_LAST_KEY);
+    const storedMeta =
+      sessionStorage.getItem(IMMERSIVE_SNAPSHOT_META_KEY) ??
+      localStorage.getItem(IMMERSIVE_SNAPSHOT_LAST_META_KEY);
+
+    if (storedSnapshot) {
+      setSnapshot(storedSnapshot);
       setVisible(true);
     }
 
-    const raw = sessionStorage.getItem(IMMERSIVE_SNAPSHOT_META_KEY);
-    if (raw) {
+    if (storedMeta) {
       try {
-        setMeta(JSON.parse(raw) as SnapshotMeta);
+        setMeta(JSON.parse(storedMeta) as SnapshotMeta);
       } catch {
         setMeta(null);
       }
     }
-  }, [isImmersive]);
+  }, [hasMounted, isImmersive]);
 
   useEffect(() => {
     if (!snapshot) {
@@ -149,7 +150,7 @@ export default function ImmersiveSnapshotOverlay() {
   }, [isImmersive]);
 
   const overlayImage = decodedSnapshot ?? snapshot;
-  if (!isImmersive || !visible || !overlayImage) {
+  if (!hasMounted || !isImmersive || !visible || !overlayImage) {
     return null;
   }
 
