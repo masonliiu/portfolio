@@ -69,11 +69,15 @@ function CameraRig({
   onSelect,
   anchors,
   reducedMotion = false,
+  onSettled,
+  settleReset = 0,
 }: {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
   anchors: AnchorMap;
   reducedMotion?: boolean;
+  onSettled?: () => void;
+  settleReset?: number;
 }) {
   const { camera, gl } = useThree();
   const anchorName = activePanel ? panelToAnchor[activePanel] : "couch";
@@ -87,6 +91,11 @@ function CameraRig({
   const lookCurrent = useRef({ yaw: 0, pitch: 0 });
   const lookLimits = useRef(anchor.lookRange);
   const isLocked = useRef(false);
+  const settledRef = useRef(false);
+
+  useEffect(() => {
+    settledRef.current = false;
+  }, [settleReset]);
 
   useEffect(() => {
     targetPosition.current.copy(anchor.position);
@@ -175,6 +184,10 @@ function CameraRig({
 
     const distanceToAnchor = camera.position.distanceTo(anchor.position);
     const allowLook = distanceToAnchor < 0.08;
+    if (!settledRef.current && distanceToAnchor < 0.04) {
+      settledRef.current = true;
+      onSettled?.();
+    }
 
     tempTarget.current.copy(anchor.target);
     baseQuat.current.setFromRotationMatrix(
@@ -239,6 +252,7 @@ function CameraRig({
 type RoomModelProps = {
   onAnchors: (anchors: AnchorMap) => void;
   onHotspots: (spots: Hotspot[]) => void;
+  onReady?: () => void;
 };
 
 type LaptopProps = {
@@ -247,18 +261,21 @@ type LaptopProps = {
   scale?: number;
   screenRef: RefObject<THREE.Mesh>;
   screenTexture?: THREE.Texture | null;
+  screenUnlit?: boolean;
 };
 
 type LaptopScreenTransitionProps = {
   screenRef: RefObject<THREE.Mesh>;
   texture: THREE.Texture;
   onDone?: () => void;
+  onActive?: (isActive: boolean) => void;
 };
 
 function LaptopScreenTransition({
   screenRef,
   texture,
   onDone,
+  onActive,
 }: LaptopScreenTransitionProps) {
   const overlayRef = useRef<THREE.Mesh>(null);
   const { camera, size } = useThree();
@@ -277,9 +294,10 @@ function LaptopScreenTransition({
   useFrame((state, delta) => {
     if (!overlayRef.current || !screenRef.current || done.current) return;
 
+    onActive?.(true);
     elapsed.current += delta;
-    const hold = 0.5;
-    const duration = 2.4;
+    const hold = 1;
+    const duration = 2.0;
     const t = Math.min(Math.max((elapsed.current - hold) / duration, 0), 1);
     const ease = t * t * (3 - 2 * t);
 
@@ -318,6 +336,7 @@ function LaptopScreenTransition({
 
     if (t >= 1 && !done.current) {
       done.current = true;
+      onActive?.(false);
       onDone?.();
     }
   });
@@ -343,6 +362,7 @@ function Laptop({
   scale = 1,
   screenRef,
   screenTexture,
+  screenUnlit = false,
 }: LaptopProps) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
@@ -365,13 +385,21 @@ function Laptop({
         </mesh>
         <mesh ref={screenRef} position={[0, 0.17, 0.008]}>
           <planeGeometry args={[0.42, 0.26]} />
-          <meshStandardMaterial
-            color="#0a0d12"
-            emissive="#1c1f24"
-            emissiveIntensity={0.35}
-            map={screenTexture ?? undefined}
-            emissiveMap={screenTexture ?? undefined}
-          />
+          {screenUnlit ? (
+            <meshBasicMaterial
+              color="#0a0d12"
+              map={screenTexture ?? undefined}
+              toneMapped={false}
+            />
+          ) : (
+            <meshStandardMaterial
+              color="#0a0d12"
+              emissive="#1c1f24"
+              emissiveIntensity={0.35}
+              map={screenTexture ?? undefined}
+              emissiveMap={screenTexture ?? undefined}
+            />
+          )}
         </mesh>
       </group>
     </group>
@@ -430,7 +458,7 @@ function buildAnchorFromObject(
   return { position, target };
 }
 
-function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
+function RoomModel({ onAnchors, onHotspots, onReady }: RoomModelProps) {
   const { scene } = useGLTF("/models/office.glb");
   const handled = useRef(false);
 
@@ -535,6 +563,7 @@ function RoomModel({ onAnchors, onHotspots }: RoomModelProps) {
 
     onAnchors(nextAnchors);
     onHotspots(spots);
+    onReady?.();
   }, [onAnchors, onHotspots, scene]);
 
   return <primitive object={scene} />;
@@ -550,11 +579,17 @@ export default function Scene({
   transitionActive = false,
   onTransitionEnd,
   onTransitionStart,
+  onTransitionAnimating,
 }: SceneProps) {
   const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
   const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
   const [screenTexture, setScreenTexture] = useState<THREE.Texture | null>(null);
+  const [transitionAnimating, setTransitionAnimating] = useState(false);
+  const [sceneReady, setSceneReady] = useState(false);
+  const [cameraSettled, setCameraSettled] = useState(false);
+  const [settleReset, setSettleReset] = useState(0);
   const screenRef = useRef<THREE.Mesh>(null);
+  const transitionStartRef = useRef(false);
   const handleAnchors = useCallback((nextAnchors: AnchorMap) => {
     setSceneAnchors(nextAnchors);
   }, []);
@@ -576,9 +611,25 @@ export default function Scene({
   }, [transitionImage]);
 
   useEffect(() => {
-    if (!transitionActive || !screenTexture) return;
+    if (!transitionActive || !screenTexture || !sceneReady || !cameraSettled) {
+      return;
+    }
+    if (transitionStartRef.current) return;
+    transitionStartRef.current = true;
     onTransitionStart?.();
-  }, [onTransitionStart, screenTexture, transitionActive]);
+  }, [cameraSettled, onTransitionStart, screenTexture, sceneReady, transitionActive]);
+
+  useEffect(() => {
+    if (transitionActive) {
+      setCameraSettled(false);
+      setSettleReset((value) => value + 1);
+      transitionStartRef.current = false;
+    }
+  }, [transitionActive]);
+
+  useEffect(() => {
+    onTransitionAnimating?.(transitionAnimating);
+  }, [onTransitionAnimating, transitionAnimating]);
 
   const cameraPosition = useMemo(() => {
     const pos = sceneAnchors.couch.position;
@@ -609,6 +660,10 @@ export default function Scene({
         onSelect={onSelect}
         reducedMotion={reducedMotion}
         anchors={sceneAnchors}
+        settleReset={settleReset}
+        onSettled={() => {
+          setCameraSettled(true);
+        }}
       />
       <ambientLight intensity={0.05} color="#e2b987" />
       <hemisphereLight
@@ -626,17 +681,23 @@ export default function Scene({
       />
       <directionalLight position={[-3, 3, -2]} intensity={0.02} color="#c8a175" />
       <Suspense fallback={null}>
-        <RoomModel onAnchors={handleAnchors} onHotspots={handleHotspots} />
+        <RoomModel
+          onAnchors={handleAnchors}
+          onHotspots={handleHotspots}
+          onReady={() => setSceneReady(true)}
+        />
       </Suspense>
       <Laptop
         {...laptopTransform}
         screenRef={screenRef}
         screenTexture={screenTexture}
+        screenUnlit={transitionActive || transitionAnimating}
       />
       {transitionActive && screenTexture && (
         <LaptopScreenTransition
           screenRef={screenRef}
           texture={screenTexture}
+          onActive={setTransitionAnimating}
           onDone={onTransitionEnd}
         />
       )}

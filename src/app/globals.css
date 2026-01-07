@@ -150,8 +150,7 @@ body.immersive-mode {
   -ms-overflow-style: none;
   height: 100vh;
   overscroll-behavior: none;
-  position: fixed;
-  width: 100%;
+  padding-right: var(--snapshot-scrollbar, 0px);
 }
 
 body.snapshot-backdrop {

@@ -5,6 +5,7 @@ import "./globals.css";
 
 import RouteHeader from "@/components/portfolio/RouteHeader";
 import ThemeInitializer from "@/components/portfolio/ThemeInitializer";
+import ImmersiveSnapshotOverlay from "@/components/immersive/ImmersiveSnapshotOverlay";
 import { ViewTransitions } from "next-view-transitions";
 
 const jetBrainsMono = localFont({
@@ -137,6 +138,7 @@ export default function RootLayout({
       </head>
       <body className={`${jetBrainsMono.variable} antialiased`}>
         <ThemeInitializer />
+        <ImmersiveSnapshotOverlay />
         <ViewTransitions>
           <RouteHeader />
           {children}
