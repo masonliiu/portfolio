@@ -1185,18 +1185,17 @@ export default function Scene({
       position: [number, number, number];
       radius: number;
     }> = [];
-
     if (resume && experience) {
       indicators.push({
         id: "desk-papers",
         position: average([resume.position, experience.position]),
-        radius: Math.max(resume.radius, experience.radius) * 0.9,
+        radius: Math.max(resume.radius, experience.radius) * 0.6,
       });
     } else if (resume) {
       indicators.push({
         id: "desk-papers",
         position: resume.position,
-        radius: resume.radius * 0.9,
+        radius: resume.radius * 0.5,
       });
     }
 
@@ -1204,24 +1203,28 @@ export default function Scene({
       indicators.push({
         id: "photo-book",
         position: photography.position,
-        radius: photography.radius * 0.9,
+        radius: photography.radius * 0.5,
       });
     }
 
+    const add = (pos: [number, number, number], dx: number, dy: number, dz: number) =>
+      [pos[0] + dx, pos[1] + dy, pos[2] + dz] as [number, number, number];
+  
     if (painting) {
       indicators.push({
         id: "gallery-wall",
-        position: painting.position,
-        radius: painting.radius * 0.8,
+        position: add(painting.position, -0.6, 1.1, 0.4),
+        radius: painting.radius * 0.4,
       });
     }
 
     if (shelfSpots.length) {
+      const shelfPos = average(shelfSpots.map((spot) => spot.position));
       indicators.push({
         id: "shelf-books",
-        position: average(shelfSpots.map((spot) => spot.position)),
+        position: add(shelfPos, 0, 0.25, 0.9),
         radius:
-          shelfSpots.reduce((max, spot) => Math.max(max, spot.radius), 0) * 0.8,
+          shelfSpots.reduce((max, spot) => Math.max(max, spot.radius), 0) * 0.6,
       });
     }
 
