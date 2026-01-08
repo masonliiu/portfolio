@@ -33,6 +33,8 @@ type SceneProps = {
   onTransitionEnd?: () => void;
   onTransitionStart?: () => void;
   onTransitionAnimating?: (isAnimating: boolean) => void;
+  onPanelHitMapReady?: () => void;
+  onDebugHitName?: (value: string | null) => void;
 };
 
 type Anchor = {
@@ -78,6 +80,126 @@ const panelToAnchor: Record<PanelKey, keyof typeof defaultAnchors> = {
   shelf: "shelf",
 };
 
+const panelObjectNameOverrides: Record<PanelKey, string[]> = {
+  desk: ["Table", "Monitor", "Monitor_Stand", "Display"],
+  table: ["Plane", "Vert002_1", "Vert002_2", "Book0002_1", "Book0002_2"],
+  painting: ["abstract-expressionism-abstract-painting-acrylic-paint-1585325"],
+  shelf: [
+    "Shelves",
+    "Book0",
+    "Book0.001",
+    "Book0.002",
+    "Book0.003",
+    "Book0.004",
+    "Book0.005",
+    "Book0.006",
+    "Book0.007",
+    "Book0.008",
+    "Book0.009",
+    "Book0.010",
+    "Book0.011",
+    "Book0.012",
+    "Book0.013",
+    "Book0.014",
+    "Book0.015",
+    "Book0.016",
+    "Book0.017",
+  ],
+};
+
+const detailObjectNameOverrides = {
+  resume: ["Resume_Paper"],
+  experience: ["Experience_Paper"],
+  photography: ["Notebook"],
+} as const;
+
+const panelSpotOffsets: Record<
+  PanelKey,
+  { forward: number; up: number; side: number }
+> = {
+  desk: { forward: 0.2, up: 0.35, side: 0.1 },
+  table: { forward: 0.15, up: 0.35, side: 0.0 },
+  painting: { forward: 0.6, up: 0.0, side: 0.0 },
+  shelf: { forward: 0.25, up: 0.3, side: 0.0 },
+};
+
+type PanelHitMap = WeakMap<THREE.Object3D, PanelKey>;
+
+function findObjectByNameList(scene: THREE.Object3D, names: readonly string[]) {
+  const matches = findObjectsByNameList(scene, names);
+  return matches[0] ?? null;
+}
+
+function findObjectsByNameList(
+  scene: THREE.Object3D,
+  names: readonly string[],
+) {
+  const lowered = names.map((name) => name.toLowerCase());
+  const matches: THREE.Object3D[] = [];
+  scene.traverse((obj) => {
+    const name = (obj.name || "").toLowerCase();
+    if (!name) return;
+    if (lowered.some((needle) => name === needle)) {
+      matches.push(obj);
+    }
+  });
+  return matches;
+}
+
+function placeSpotOnObject(
+  obj: THREE.Object3D,
+  roomCenter: THREE.Vector3 | null,
+  offsets: { forward: number; up: number; side: number },
+) {
+  const box = new THREE.Box3().setFromObject(obj);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3());
+  const forwardDir = roomCenter
+    ? roomCenter.clone().sub(center).normalize()
+    : new THREE.Vector3(0, 0, 1)
+        .applyQuaternion(obj.getWorldQuaternion(new THREE.Quaternion()))
+        .normalize();
+  const upDir = new THREE.Vector3(0, 1, 0);
+  const rightDir = new THREE.Vector3()
+    .crossVectors(forwardDir, upDir)
+    .normalize();
+
+  return center
+    .clone()
+    .add(forwardDir.clone().multiplyScalar(size.z * offsets.forward))
+    .add(rightDir.clone().multiplyScalar(size.x * offsets.side))
+    .add(upDir.clone().multiplyScalar(size.y * offsets.up));
+}
+
+function findPanelFromObject(
+  object: THREE.Object3D | null,
+  hitMap: PanelHitMap | null,
+): PanelKey | null {
+  if (!hitMap) return null;
+  let current: THREE.Object3D | null = object;
+  while (current) {
+    const panel = hitMap.get(current);
+    if (panel) return panel;
+    current = current.parent ?? null;
+  }
+  // Fallback: try matching object names against panel overrides.
+  current = object;
+  while (current) {
+    const name = (current.name || "").toLowerCase();
+    if (name) {
+      const panelMatch = (Object.keys(panelObjectNameOverrides) as PanelKey[]).find(
+        (panel) =>
+          panelObjectNameOverrides[panel].some(
+            (needle) => name === needle.toLowerCase(),
+          ),
+      );
+      if (panelMatch) return panelMatch;
+    }
+    current = current.parent ?? null;
+  }
+  return null;
+}
+
 function CameraRig({
   activePanel,
   onSelect,
@@ -89,6 +211,8 @@ function CameraRig({
   spots = hotspots,
   detailSpots = detailHotspots,
   onSelectDetail,
+  panelHitMap,
+  onDebugHitName,
 }: {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
@@ -100,8 +224,10 @@ function CameraRig({
   spots?: Hotspot[];
   detailSpots?: DetailHotspot[];
   onSelectDetail?: (detail: DetailKey) => void;
+  panelHitMap?: PanelHitMap;
+  onDebugHitName?: (value: string | null) => void;
 }) {
-  const { camera, gl } = useThree();
+  const { camera, gl, scene } = useThree();
   const anchorName = activePanel ? panelToAnchor[activePanel] : "couch";
   const anchor = anchors[anchorName];
   const baseQuat = useRef(new THREE.Quaternion());
@@ -162,8 +288,21 @@ function CameraRig({
     };
 
     const handleClick = () => {
-      if (!isLocked.current) return;
-      raycaster.current.setFromCamera({ x: 0, y: 0 }, camera);
+      if (!panelHitMap) return;
+      raycaster.current.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const intersections = raycaster.current.intersectObjects(
+        scene.children,
+        true,
+      );
+      for (const hit of intersections) {
+        const panel = findPanelFromObject(hit.object, panelHitMap ?? null);
+        if (panel) {
+          document.exitPointerLock?.();
+          onSelect(panel);
+          return;
+        }
+      }
+
       let closestDetail: { key: DetailKey; distance: number } | null = null;
       if (activePanel) {
         detailSpots.forEach((spot) => {
@@ -223,12 +362,33 @@ function CameraRig({
     };
   }, [camera, gl, onSelect, reducedMotion]);
 
+  const lastDebugName = useRef<string | null>(null);
+
   useFrame((state, delta) => {
     const damping = reducedMotion ? 1 : 6;
     const moveDelta = reducedMotion ? 1 : Math.min(delta * damping, 1);
 
     targetPosition.current.copy(anchor.position);
     camera.position.lerp(targetPosition.current, moveDelta);
+
+    if (onDebugHitName) {
+      raycaster.current.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const intersections = raycaster.current.intersectObjects(
+        scene.children,
+        true,
+      );
+      const hit = intersections[0];
+      const panel = hit
+        ? findPanelFromObject(hit.object, panelHitMap ?? null)
+        : null;
+      const nextName = hit
+        ? `${hit.object.name || "(unnamed)"}${panel ? ` · ${panel}` : ""}`
+        : null;
+      if (nextName !== lastDebugName.current) {
+        lastDebugName.current = nextName;
+        onDebugHitName(nextName);
+      }
+    }
 
     const distanceToAnchor = camera.position.distanceTo(anchor.position);
     const allowLook = distanceToAnchor < 0.08;
@@ -302,6 +462,8 @@ type RoomModelProps = {
   onHotspots: (spots: Hotspot[]) => void;
   onDetailHotspots: (spots: DetailHotspot[]) => void;
   onPaintingRef: (object: THREE.Object3D | null) => void;
+  onPanelHitMap: (map: PanelHitMap) => void;
+  onPanelHitMapReady: () => void;
   onReady?: () => void;
 };
 
@@ -309,13 +471,13 @@ type LaptopProps = {
   position: [number, number, number];
   rotation: [number, number, number];
   scale?: number;
-  screenRef: RefObject<THREE.Mesh>;
+  screenRef: RefObject<THREE.Mesh | null>;
   screenTexture?: THREE.Texture | null;
   screenUnlit?: boolean;
 };
 
 type LaptopScreenTransitionProps = {
-  screenRef: RefObject<THREE.Mesh>;
+  screenRef: RefObject<THREE.Mesh | null>;
   texture: THREE.Texture;
   onDone?: () => void;
   onActive?: (isActive: boolean) => void;
@@ -327,7 +489,7 @@ function PaintingReveal({
   baseQuatRef,
   revealed,
 }: {
-  paintingRef: RefObject<THREE.Object3D>;
+  paintingRef: RefObject<THREE.Object3D | null>;
   baseQuatRef: RefObject<THREE.Quaternion>;
   revealed: boolean;
 }) {
@@ -380,7 +542,7 @@ function LaptopScreenTransition({
     const ease = t * t * (3 - 2 * t);
     onProgress?.(ease);
 
-    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const vFov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov);
     const distance = 0.28;
     const height = 2 * Math.tan(vFov / 2) * distance;
     const width = height * (size.width / size.height);
@@ -542,6 +704,8 @@ function RoomModel({
   onHotspots,
   onDetailHotspots,
   onPaintingRef,
+  onPanelHitMap,
+  onPanelHitMapReady,
   onReady,
 }: RoomModelProps) {
   const { scene } = useGLTF("/models/office.glb");
@@ -558,17 +722,46 @@ function RoomModel({
 
     const couchObj =
       findObjectByKeyword(scene, ["sofa", "couch"]) || scene.getObjectByName("Sofa");
-    const deskObj =
-      findObjectByKeyword(scene, ["desk"]) ||
-      findObjectByKeyword(scene, ["table"]) ||
-      scene.getObjectByName("Table");
-    const photoObj =
-      findObjectByKeyword(scene, ["painting", "frame", "picture"]) ||
-      scene.getObjectByName("Frame");
-    const shelfObj = findObjectByKeyword(scene, ["shelf", "book"]);
-    const tableObj =
-      findObjectByKeyword(scene, ["coffee", "round", "small", "table"]) ||
-      scene.getObjectByName("CoffeeTable");
+    const deskObjects = findObjectsByNameList(
+      scene,
+      panelObjectNameOverrides.desk,
+    );
+    const tableObjects = findObjectsByNameList(
+      scene,
+      panelObjectNameOverrides.table,
+    );
+    const photoObjects = findObjectsByNameList(
+      scene,
+      panelObjectNameOverrides.painting,
+    );
+    const shelfObjects = findObjectsByNameList(
+      scene,
+      panelObjectNameOverrides.shelf,
+    );
+    const deskObj = deskObjects[0] ?? null;
+    const tableObj = tableObjects[0] ?? null;
+    const photoObj = photoObjects[0] ?? null;
+    const shelfObj = shelfObjects[0] ?? null;
+
+    const panelHitMap: PanelHitMap = new WeakMap();
+    const registerPanelMeshes = (root: THREE.Object3D | null, panel: PanelKey) => {
+      if (!root) return;
+      root.traverse((child) => {
+        if ((child as THREE.Mesh).isMesh) {
+          panelHitMap.set(child, panel);
+        }
+      });
+    };
+    const registerPanelMeshesForList = (
+      roots: THREE.Object3D[],
+      panel: PanelKey,
+    ) => {
+      roots.forEach((root) => registerPanelMeshes(root, panel));
+    };
+    registerPanelMeshesForList(deskObjects, "desk");
+    registerPanelMeshesForList(tableObjects, "table");
+    registerPanelMeshesForList(photoObjects, "painting");
+    registerPanelMeshesForList(shelfObjects, "shelf");
 
     const nextAnchors: AnchorMap = { ...defaultAnchors };
     if (couchObj) {
@@ -663,9 +856,8 @@ function RoomModel({
         return spot;
       }
 
-      const center = new THREE.Box3()
-        .setFromObject(source)
-        .getCenter(new THREE.Vector3());
+      const offsets = panelSpotOffsets[spot.panelKey];
+      const center = placeSpotOnObject(source, roomCenter, offsets);
       return {
         ...spot,
         position: [center.x, center.y, center.z],
@@ -673,6 +865,45 @@ function RoomModel({
     });
 
     const nextDetailSpots: DetailHotspot[] = detailHotspots.map((spot) => {
+      if (spot.detailKey === "resume") {
+        const resumeObj = findObjectByNameList(
+          scene,
+          detailObjectNameOverrides.resume,
+        );
+        if (resumeObj) {
+          const center = new THREE.Box3()
+            .setFromObject(resumeObj)
+            .getCenter(new THREE.Vector3());
+          return { ...spot, position: [center.x, center.y, center.z] };
+        }
+      }
+
+      if (spot.detailKey === "experience") {
+        const experienceObj = findObjectByNameList(
+          scene,
+          detailObjectNameOverrides.experience,
+        );
+        if (experienceObj) {
+          const center = new THREE.Box3()
+            .setFromObject(experienceObj)
+            .getCenter(new THREE.Vector3());
+          return { ...spot, position: [center.x, center.y, center.z] };
+        }
+      }
+
+      if (spot.detailKey === "photography") {
+        const notebookObj = findObjectByNameList(
+          scene,
+          detailObjectNameOverrides.photography,
+        );
+        if (notebookObj) {
+          const center = new THREE.Box3()
+            .setFromObject(notebookObj)
+            .getCenter(new THREE.Vector3());
+          return { ...spot, position: [center.x, center.y, center.z] };
+        }
+      }
+
       if (spot.panelKey === "desk" && deskObj) {
         const box = new THREE.Box3().setFromObject(deskObj);
         const center = box.getCenter(new THREE.Vector3());
@@ -731,8 +962,18 @@ function RoomModel({
     onHotspots(spots);
     onDetailHotspots(nextDetailSpots);
     onPaintingRef(photoObj ?? null);
+    onPanelHitMap(panelHitMap);
+    onPanelHitMapReady();
     onReady?.();
-  }, [onAnchors, onDetailHotspots, onHotspots, onPaintingRef, scene]);
+  }, [
+    onAnchors,
+    onDetailHotspots,
+    onHotspots,
+    onPanelHitMap,
+    onPanelHitMapReady,
+    onPaintingRef,
+    scene,
+  ]);
 
   return <primitive object={scene} />;
 }
@@ -750,6 +991,8 @@ export default function Scene({
   onTransitionEnd,
   onTransitionStart,
   onTransitionAnimating,
+  onPanelHitMapReady,
+  onDebugHitName,
 }: SceneProps) {
   const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
   const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
@@ -761,7 +1004,7 @@ export default function Scene({
   const [cameraSettled, setCameraSettled] = useState(false);
   const [settleReset, setSettleReset] = useState(0);
   const [transitionProgress, setTransitionProgress] = useState(0);
-  const screenRef = useRef<THREE.Mesh>(null);
+  const screenRef = useRef<THREE.Mesh | null>(null);
   const paintingRef = useRef<THREE.Object3D | null>(null);
   const paintingBaseQuat = useRef(new THREE.Quaternion());
   const [paintingPanel, setPaintingPanel] = useState<{
@@ -769,6 +1012,7 @@ export default function Scene({
     rotation: [number, number, number];
     size: [number, number];
   } | null>(null);
+  const [panelHitMap, setPanelHitMap] = useState<PanelHitMap | null>(null);
   const transitionStartRef = useRef(false);
   const handleAnchors = useCallback((nextAnchors: AnchorMap) => {
     setSceneAnchors(nextAnchors);
@@ -872,6 +1116,8 @@ export default function Scene({
         settleReset={settleReset}
         spots={sceneHotspots}
         detailSpots={sceneDetailHotspots}
+        panelHitMap={panelHitMap ?? undefined}
+        onDebugHitName={onDebugHitName}
         onSettled={() => {
           setCameraSettled(true);
         }}
@@ -879,7 +1125,7 @@ export default function Scene({
       <ambientLight intensity={0.05} color="#e2b987" />
       <hemisphereLight
         intensity={0.03}
-        skyColor="#e3ba85"
+        color="#e3ba85"
         groundColor="#8f765c"
       />
       <directionalLight
@@ -897,6 +1143,12 @@ export default function Scene({
           onHotspots={handleHotspots}
           onDetailHotspots={handleDetailHotspots}
           onPaintingRef={handlePaintingRef}
+          onPanelHitMap={(map) => {
+            setPanelHitMap(map);
+          }}
+          onPanelHitMapReady={() => {
+            onPanelHitMapReady?.();
+          }}
           onReady={() => setSceneReady(true)}
         />
       </Suspense>
@@ -951,11 +1203,11 @@ export default function Scene({
             .filter((spot) => spot.panelKey === activePanel)
             .map((spot) => (
               <mesh key={spot.id} position={spot.position}>
-                <sphereGeometry args={[spot.radius, 18, 18]} />
+                <sphereGeometry args={[spot.radius, 36, 36]} />
                 <meshStandardMaterial
                   color="#f8fafc"
                   transparent
-                  opacity={0.16}
+                  opacity={1}
                   emissive="#e2e8f0"
                   emissiveIntensity={0.45}
                 />
@@ -963,7 +1215,7 @@ export default function Scene({
             ))}
         </group>
       )}
-      <Environment preset="sunset" intensity={0.03} />
+      <Environment preset="sunset" />
     </Canvas>
   );
 }

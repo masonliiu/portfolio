@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Scene from "./Scene";
 import {
   detailContent,
@@ -35,6 +35,9 @@ export default function ImmersiveExperience() {
   const [activePanel, setActivePanel] = useState<PanelKey | null>(null);
   const [activeDetail, setActiveDetail] = useState<DetailKey | null>(null);
   const [paintingRevealed, setPaintingRevealed] = useState(false);
+  const [panelHitMapReady, setPanelHitMapReady] = useState(false);
+  const [debugHitName, setDebugHitName] = useState<string | null>(null);
+  const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
@@ -51,6 +54,10 @@ export default function ImmersiveExperience() {
 
   const handleSelectPanel = useCallback(
     (panel: PanelKey) => {
+      if (!panelHitMapReady) {
+        pendingPanelRef.current = panel;
+        return;
+      }
       if (panel === "painting" && activePanel === "painting") {
         setPaintingRevealed((prev) => !prev);
         document.exitPointerLock?.();
@@ -61,7 +68,7 @@ export default function ImmersiveExperience() {
       setActiveDetail(null);
       document.exitPointerLock?.();
     },
-    [activePanel],
+    [activePanel, panelHitMapReady],
   );
 
   const handleSelectDetail = useCallback((detail: DetailKey) => {
@@ -102,6 +109,13 @@ export default function ImmersiveExperience() {
     window.addEventListener("pointerdown", markInteracted, { once: true });
     return () => window.removeEventListener("pointerdown", markInteracted);
   }, []);
+
+  useEffect(() => {
+    if (!panelHitMapReady || !pendingPanelRef.current) return;
+    const panel = pendingPanelRef.current;
+    pendingPanelRef.current = null;
+    handleSelectPanel(panel);
+  }, [handleSelectPanel, panelHitMapReady]);
 
   useEffect(() => {
     if (transitionImage) return;
@@ -155,6 +169,8 @@ export default function ImmersiveExperience() {
           onTransitionEnd={handleTransitionEnd}
           onTransitionStart={handleTransitionStart}
           onTransitionAnimating={handleTransitionAnimating}
+          onPanelHitMapReady={() => setPanelHitMapReady(true)}
+          onDebugHitName={setDebugHitName}
         />
       </div>
       {showUi && (
@@ -180,6 +196,11 @@ export default function ImmersiveExperience() {
           {activePanel && (
             <div className="pointer-events-auto absolute left-6 top-[9.5rem] rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-[11px] uppercase tracking-[0.28em] text-slate-300">
               Press Esc to return
+            </div>
+          )}
+          {debugHitName && (
+            <div className="pointer-events-auto absolute left-6 top-[12.5rem] rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2 text-xs text-slate-200">
+              Hit: {debugHitName}
             </div>
           )}
           <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
@@ -209,7 +230,7 @@ export default function ImmersiveExperience() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
-                {panelTitles[activePanel]}
+                {activePanel ? panelTitles[activePanel] : ""}
               </div>
               <div className="mt-2 text-xl font-semibold">{panel.title}</div>
             </div>
