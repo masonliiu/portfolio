@@ -12,7 +12,7 @@ import {
   type RefObject,
 } from "react";
 import * as THREE from "three";
-import Hotspots from "./Hotspots";
+import { MarquiseMarker } from "./Hotspots";
 import {
   detailHotspots,
   hotspots,
@@ -35,6 +35,7 @@ type SceneProps = {
   onTransitionAnimating?: (isAnimating: boolean) => void;
   onPanelHitMapReady?: () => void;
   onDebugHitName?: (value: string | null) => void;
+  glowActive?: Record<string, boolean>;
 };
 
 type Anchor = {
@@ -124,6 +125,14 @@ const panelSpotOffsets: Record<
 };
 
 type PanelHitMap = WeakMap<THREE.Object3D, PanelKey>;
+type GlowTarget = {
+  id: string;
+  geometry: THREE.BufferGeometry;
+  position: [number, number, number];
+  quaternion: [number, number, number, number];
+  scale: [number, number, number];
+  groupKey: string;
+};
 
 function findObjectByNameList(scene: THREE.Object3D, names: readonly string[]) {
   const matches = findObjectsByNameList(scene, names);
@@ -461,6 +470,7 @@ type RoomModelProps = {
   onAnchors: (anchors: AnchorMap) => void;
   onHotspots: (spots: Hotspot[]) => void;
   onDetailHotspots: (spots: DetailHotspot[]) => void;
+  onGlowTargets: (targets: GlowTarget[]) => void;
   onPaintingRef: (object: THREE.Object3D | null) => void;
   onPanelHitMap: (map: PanelHitMap) => void;
   onPanelHitMapReady: () => void;
@@ -597,6 +607,74 @@ function LaptopScreenTransition({
   );
 }
 
+function GlowOverlay({
+  geometry,
+  position,
+  quaternion,
+  scale,
+  active = false,
+}: {
+  geometry: THREE.BufferGeometry;
+  position: [number, number, number];
+  quaternion: [number, number, number, number];
+  scale: [number, number, number];
+  active?: boolean;
+}) {
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
+  const color = useMemo(() => new THREE.Color("#f59e0b"), []);
+
+  useFrame(() => {
+    if (!materialRef.current) return;
+    materialRef.current.uniforms.uStrength.value = active ? 0.6 : 0;
+  });
+
+  const uniforms = useMemo(
+    () => ({
+      uColor: { value: color },
+      uStrength: { value: 0 },
+    }),
+    [color],
+  );
+
+  return (
+    <mesh
+      geometry={geometry}
+      position={position}
+      quaternion={quaternion}
+      scale={scale}
+    >
+      <shaderMaterial
+        ref={materialRef}
+        uniforms={uniforms}
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        vertexShader={`
+          varying vec3 vNormal;
+          varying vec3 vViewDir;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vViewDir = normalize(-mvPosition.xyz);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `}
+        fragmentShader={`
+          uniform vec3 uColor;
+          uniform float uStrength;
+          varying vec3 vNormal;
+          varying vec3 vViewDir;
+          void main() {
+            float fresnel = pow(1.0 - max(dot(vNormal, vViewDir), 0.0), 1.6);
+            float strength = uStrength * (0.6 + fresnel * 0.6);
+            gl_FragColor = vec4(uColor, strength);
+          }
+        `}
+      />
+    </mesh>
+  );
+}
+
 function Laptop({
   position,
   rotation,
@@ -703,6 +781,7 @@ function RoomModel({
   onAnchors,
   onHotspots,
   onDetailHotspots,
+  onGlowTargets,
   onPaintingRef,
   onPanelHitMap,
   onPanelHitMapReady,
@@ -958,9 +1037,63 @@ function RoomModel({
       return spot;
     });
 
+    const shelfBookNames = panelObjectNameOverrides.shelf.filter(
+      (name) => name !== "Shelves",
+    );
+    const glowNames = [
+      ...detailObjectNameOverrides.resume,
+      ...detailObjectNameOverrides.experience,
+      ...detailObjectNameOverrides.photography,
+      ...panelObjectNameOverrides.painting,
+      ...shelfBookNames,
+    ];
+    const glowObjects = findObjectsByNameList(scene, glowNames);
+    const glowTargets: GlowTarget[] = [];
+    const glowGroups = [
+      { key: "desk-papers", names: [
+        ...detailObjectNameOverrides.resume,
+        ...detailObjectNameOverrides.experience,
+      ]},
+      { key: "photo-book", names: [...detailObjectNameOverrides.photography] },
+      { key: "painting", names: [...panelObjectNameOverrides.painting] },
+      { key: "shelf-books", names: [...shelfBookNames] },
+    ];
+    const matchGroup = (name: string) => {
+      const lowered = name.toLowerCase();
+      return (
+        glowGroups.find((group) =>
+          group.names.some((entry) => entry.toLowerCase() === lowered),
+        )?.key ?? null
+      );
+    };
+    glowObjects.forEach((obj) => {
+      const rootGroup = matchGroup(obj.name || "");
+      obj.traverse((child) => {
+        if (!(child as THREE.Mesh).isMesh) return;
+        const mesh = child as THREE.Mesh;
+        const groupKey = matchGroup(mesh.name || "") ?? rootGroup;
+        if (!groupKey) return;
+        const position = new THREE.Vector3();
+        const quaternion = new THREE.Quaternion();
+        const scale = new THREE.Vector3();
+        mesh.getWorldPosition(position);
+        mesh.getWorldQuaternion(quaternion);
+        mesh.getWorldScale(scale);
+        glowTargets.push({
+          id: mesh.uuid,
+          geometry: mesh.geometry,
+          position: [position.x, position.y, position.z],
+          quaternion: [quaternion.x, quaternion.y, quaternion.z, quaternion.w],
+          scale: [scale.x, scale.y, scale.z],
+          groupKey,
+        });
+      });
+    });
+
     onAnchors(nextAnchors);
     onHotspots(spots);
     onDetailHotspots(nextDetailSpots);
+    onGlowTargets(glowTargets);
     onPaintingRef(photoObj ?? null);
     onPanelHitMap(panelHitMap);
     onPanelHitMapReady();
@@ -968,6 +1101,7 @@ function RoomModel({
   }, [
     onAnchors,
     onDetailHotspots,
+    onGlowTargets,
     onHotspots,
     onPanelHitMap,
     onPanelHitMapReady,
@@ -993,6 +1127,7 @@ export default function Scene({
   onTransitionAnimating,
   onPanelHitMapReady,
   onDebugHitName,
+  glowActive,
 }: SceneProps) {
   const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
   const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
@@ -1013,7 +1148,85 @@ export default function Scene({
     size: [number, number];
   } | null>(null);
   const [panelHitMap, setPanelHitMap] = useState<PanelHitMap | null>(null);
+  const [glowTargets, setGlowTargets] = useState<GlowTarget[]>([]);
   const transitionStartRef = useRef(false);
+  const indicatorSpots = useMemo(() => {
+    const findDetail = (key: DetailKey) =>
+      sceneDetailHotspots.find((spot) => spot.detailKey === key);
+    const findPanel = (panel: PanelKey) =>
+      sceneHotspots.find((spot) => spot.panelKey === panel);
+    const average = (positions: [number, number, number][]) => {
+      const total = positions.reduce(
+        (acc, pos) => {
+          acc[0] += pos[0];
+          acc[1] += pos[1];
+          acc[2] += pos[2];
+          return acc;
+        },
+        [0, 0, 0] as [number, number, number],
+      );
+      return [
+        total[0] / positions.length,
+        total[1] / positions.length,
+        total[2] / positions.length,
+      ] as [number, number, number];
+    };
+
+    const resume = findDetail("resume");
+    const experience = findDetail("experience");
+    const photography = findDetail("photography");
+    const painting = findPanel("painting");
+    const shelfSpots = sceneDetailHotspots.filter(
+      (spot) => spot.panelKey === "shelf",
+    );
+
+    const indicators: Array<{
+      id: string;
+      position: [number, number, number];
+      radius: number;
+    }> = [];
+
+    if (resume && experience) {
+      indicators.push({
+        id: "desk-papers",
+        position: average([resume.position, experience.position]),
+        radius: Math.max(resume.radius, experience.radius) * 0.9,
+      });
+    } else if (resume) {
+      indicators.push({
+        id: "desk-papers",
+        position: resume.position,
+        radius: resume.radius * 0.9,
+      });
+    }
+
+    if (photography) {
+      indicators.push({
+        id: "photo-book",
+        position: photography.position,
+        radius: photography.radius * 0.9,
+      });
+    }
+
+    if (painting) {
+      indicators.push({
+        id: "gallery-wall",
+        position: painting.position,
+        radius: painting.radius * 0.8,
+      });
+    }
+
+    if (shelfSpots.length) {
+      indicators.push({
+        id: "shelf-books",
+        position: average(shelfSpots.map((spot) => spot.position)),
+        radius:
+          shelfSpots.reduce((max, spot) => Math.max(max, spot.radius), 0) * 0.8,
+      });
+    }
+
+    return indicators;
+  }, [sceneDetailHotspots, sceneHotspots]);
   const handleAnchors = useCallback((nextAnchors: AnchorMap) => {
     setSceneAnchors(nextAnchors);
   }, []);
@@ -1023,6 +1236,10 @@ export default function Scene({
   const handleDetailHotspots = useCallback((nextHotspots: DetailHotspot[]) => {
     setSceneDetailHotspots(nextHotspots);
   }, []);
+  const handleGlowTargets = useCallback((targets: GlowTarget[]) => {
+    setGlowTargets(targets);
+  }, []);
+
 
   useEffect(() => {
     if (!transitionImage) {
@@ -1137,11 +1354,22 @@ export default function Scene({
         shadow-bias={-0.0008}
       />
       <directionalLight position={[-3, 3, -2]} intensity={0.02} color="#c8a175" />
+      {glowTargets.map((target) => (
+        <GlowOverlay
+          key={target.id}
+          geometry={target.geometry}
+          position={target.position}
+          quaternion={target.quaternion}
+          scale={target.scale}
+          active={glowActive?.[target.groupKey] ?? false}
+        />
+      ))}
       <Suspense fallback={null}>
         <RoomModel
           onAnchors={handleAnchors}
           onHotspots={handleHotspots}
           onDetailHotspots={handleDetailHotspots}
+          onGlowTargets={handleGlowTargets}
           onPaintingRef={handlePaintingRef}
           onPanelHitMap={(map) => {
             setPanelHitMap(map);
@@ -1196,25 +1424,19 @@ export default function Scene({
           onDone={onTransitionEnd}
         />
       )}
-      <Hotspots activePanel={activePanel} spots={sceneHotspots} />
-      {activePanel && (
-        <group>
-          {sceneDetailHotspots
-            .filter((spot) => spot.panelKey === activePanel)
-            .map((spot) => (
-              <mesh key={spot.id} position={spot.position}>
-                <sphereGeometry args={[spot.radius, 36, 36]} />
-                <meshStandardMaterial
-                  color="#f8fafc"
-                  transparent
-                  opacity={1}
-                  emissive="#e2e8f0"
-                  emissiveIntensity={0.45}
-                />
-              </mesh>
-            ))}
-        </group>
-      )}
+      <group>
+        {indicatorSpots.map((spot) => (
+          <MarquiseMarker
+            key={spot.id}
+            id={spot.id}
+            position={spot.position}
+            radius={spot.radius * 0.8}
+            active
+            color="#eef2ff"
+            emissive="#a5b4fc"
+          />
+        ))}
+      </group>
       <Environment preset="sunset" />
     </Canvas>
   );

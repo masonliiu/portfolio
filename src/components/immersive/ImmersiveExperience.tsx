@@ -51,6 +51,12 @@ export default function ImmersiveExperience() {
   );
   const [transitionChecked, setTransitionChecked] = useState(false);
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const [glowActive, setGlowActive] = useState<Record<string, boolean>>(() => ({
+    "desk-papers": true,
+    "photo-book": true,
+    painting: true,
+    "shelf-books": true,
+  }));
 
   const handleSelectPanel = useCallback(
     (panel: PanelKey) => {
@@ -63,6 +69,9 @@ export default function ImmersiveExperience() {
         document.exitPointerLock?.();
         return;
       }
+      if (panel === "painting") {
+        setGlowActive((prev) => ({ ...prev, painting: false }));
+      }
       setPaintingRevealed(false);
       setActivePanel(panel);
       setActiveDetail(null);
@@ -71,10 +80,24 @@ export default function ImmersiveExperience() {
     [activePanel, panelHitMapReady],
   );
 
-  const handleSelectDetail = useCallback((detail: DetailKey) => {
-    setActiveDetail(detail);
-    document.exitPointerLock?.();
-  }, []);
+  const handleSelectDetail = useCallback(
+    (detail: DetailKey) => {
+      setActiveDetail(detail);
+      document.exitPointerLock?.();
+      if (detail === "resume" || detail === "experience") {
+        setGlowActive((prev) => ({ ...prev, "desk-papers": false }));
+        return;
+      }
+      if (detail === "photography") {
+        setGlowActive((prev) => ({ ...prev, "photo-book": false }));
+        return;
+      }
+      if (detail.startsWith("project-")) {
+        setGlowActive((prev) => ({ ...prev, "shelf-books": false }));
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -171,6 +194,7 @@ export default function ImmersiveExperience() {
           onTransitionAnimating={handleTransitionAnimating}
           onPanelHitMapReady={() => setPanelHitMapReady(true)}
           onDebugHitName={setDebugHitName}
+          glowActive={glowActive}
         />
       </div>
       {showUi && (
