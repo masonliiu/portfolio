@@ -782,8 +782,8 @@ function RoomModel({
 
     if (deskObj) {
       const { position, target } = buildAnchorFromObject(deskObj, roomCenter, {
-        forward: 0.557,
-        up: 0.7,
+        forward: 0.7,
+        up: 0.87,
         targetUp: 0.2,
         targetSide: -0.4,
         side: -0.34,
@@ -797,11 +797,11 @@ function RoomModel({
 
     if (photoObj) {
       const { position, target } = buildAnchorFromObject(photoObj, roomCenter, {
-        forward: 62,
-        up: 0.36,
-        targetUp: 25,
-        side: 0.1,
-        targetSide: 18,
+        forward: 1.83,
+        up: 0.5,
+        targetUp: 1.13,
+        side: 26,
+        targetSide: -1.1,
       });
       nextAnchors.painting = {
         ...nextAnchors.painting,
@@ -812,11 +812,11 @@ function RoomModel({
 
     if (shelfObj) {
       const { position, target } = buildAnchorFromObject(shelfObj, roomCenter, {
-        forward: 1.5,
-        up: 1.4,
-        targetUp: 2.5,
-        side: -2,
-        targetSide: 0,
+        forward: 0.6,
+        up: 0.4,
+        targetUp: 1.4,
+        side: -1,
+        targetSide: 0.6,
       });
       nextAnchors.shelf = {
         ...nextAnchors.shelf,
@@ -827,11 +827,11 @@ function RoomModel({
 
     if (tableObj) {
       const { position, target } = buildAnchorFromObject(tableObj, roomCenter, {
-        forward: 3.5,
-        up: -0.6,
+        forward: 0,
+        up: 10,
         targetUp: -15,
-        side: -0.05,
-        targetSide: 2.4,
+        side: 0.75,
+        targetSide: -4,
       });
       nextAnchors.table = {
         ...nextAnchors.table,
