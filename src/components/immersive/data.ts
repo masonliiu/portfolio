@@ -114,22 +114,15 @@ export const panelKeybinds: Record<PanelKey, string> = {
   shelf: "4",
 };
 
-export const panelTitles: Record<PanelKey, string> = {
-  desk: "Desk Papers",
-  table: "Photography Book",
-  painting: "Gallery Wall",
-  shelf: "Project Shelves",
-};
-
 export type PanelItem = {
   title: string;
-  description: string;
+  description?: string;
   detailKey?: DetailKey;
 };
 
 export type PanelContent = Record<
   PanelKey,
-  { title: string; items: PanelItem[] }
+  { title?: string; items: PanelItem[] }
 >;
 
 export const panelContent: PanelContent = {
@@ -138,12 +131,10 @@ export const panelContent: PanelContent = {
     items: [
       {
         title: "Resume",
-        description: "Tap to open a close-up of the resume.",
         detailKey: "resume",
       },
       {
         title: "Work Experience",
-        description: "Tap to open a close-up of experience highlights.",
         detailKey: "experience",
       },
     ],
@@ -153,7 +144,6 @@ export const panelContent: PanelContent = {
     items: [
       {
         title: "Photo Collection",
-        description: "Tap to open the photography book preview.",
         detailKey: "photography",
       },
     ],
@@ -172,17 +162,14 @@ export const panelContent: PanelContent = {
     items: [
       {
         title: "Project One",
-        description: "Tap the left book for project details.",
         detailKey: "project-one",
       },
       {
         title: "Project Two",
-        description: "Tap the center book for project details.",
         detailKey: "project-two",
       },
       {
         title: "Project Three",
-        description: "Tap the right book for project details.",
         detailKey: "project-three",
       },
     ],
@@ -191,30 +178,24 @@ export const panelContent: PanelContent = {
 
 export const detailContent: Record<
   DetailKey,
-  { title: string; description: string }
+  { title: string}
 > = {
   resume: {
     title: "Resume",
-    description: "Placeholder text for the resume close-up.",
   },
   experience: {
     title: "Work Experience",
-    description: "Placeholder text for experience highlights.",
   },
   photography: {
     title: "Photography",
-    description: "Placeholder text for the photography book preview.",
   },
   "project-one": {
     title: "Project One",
-    description: "Placeholder description for the first project.",
   },
   "project-two": {
     title: "Project Two",
-    description: "Placeholder description for the second project.",
   },
   "project-three": {
     title: "Project Three",
-    description: "Placeholder description for the third project.",
   },
 };

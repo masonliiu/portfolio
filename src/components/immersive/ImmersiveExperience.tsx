@@ -7,7 +7,6 @@ import {
   detailContent,
   panelContent,
   panelKeybinds,
-  panelTitles,
   type DetailKey,
   type PanelKey,
 } from "./data";
@@ -228,28 +227,19 @@ export default function ImmersiveExperience() {
             <div className="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
             <div className="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
           </div>
-          <div className="pointer-events-auto absolute left-6 top-6 max-w-xs rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-300">
-            Immersive Mode
-          </div>
           {!hasInteracted && (
-            <div className="pointer-events-auto absolute left-6 bottom-6 max-w-xs rounded-2xl border border-white/10 bg-slate-950/50 px-4 py-3 text-xs text-slate-200">
-              Click to lock and look around. Line up the crosshair with a glowing
-              object, then click. Press Escape to return to the couch.
+            <div className="pointer-events-auto absolute left-110 bottom-10 max-w-xs rounded-2xl border border-white/10 lowercase font-bold bg-slate-950/90 px-4 py-3 text-xs text-slate-200">
+              Click anywhere to tab in. Press on glowing objects to learn about me!
             </div>
           )}
-          <div className="pointer-events-auto absolute left-6 top-24 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-[11px] uppercase tracking-[0.28em] text-slate-300">
+          <div className="pointer-events-auto left-95 absolute bottom-1.5 rounded-2xl border border-white/10 bg-slate-950/90 px-4 py-3 text-[11px] font-extrabold lowercase tracking-[0.2em] text-slate-300">
             Hotkeys: [1] Desk · [2] Table · [3] Painting · [4] Shelves
           </div>
-          {activePanel && (
-            <div className="pointer-events-auto absolute left-6 top-[9.5rem] rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-[11px] uppercase tracking-[0.28em] text-slate-300">
-              Press Esc to return
-            </div>
-          )}
-          {debugHitName && (
+          {/* DEBUG - {debugHitName && (
             <div className="pointer-events-auto absolute left-6 top-[12.5rem] rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2 text-xs text-slate-200">
               Hit: {debugHitName}
             </div>
-          )}
+          )} */}
           <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
             {activePanel && (
               <button
@@ -258,14 +248,14 @@ export default function ImmersiveExperience() {
                   setActivePanel(null);
                   setPaintingRevealed(false);
                 }}
-                className="rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/60"
+                className="rounded-full border border-white/25 bg-white/30 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.3em] text-white transition hover:border-white/60"
               >
                 Return to couch
               </button>
             )}
             <Link
               href="/"
-              className="rounded-full border border-white/30 bg-white/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/60"
+              className="rounded-full border border-white/30 bg-slate-950/90 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.3em] text-white transition hover:border-white/60"
             >
               Exit immersive
             </Link>
@@ -273,16 +263,13 @@ export default function ImmersiveExperience() {
         </div>
       )}
       {showUi && panel && (
-        <div className="pointer-events-auto absolute bottom-6 left-1/2 w-[min(420px,90vw)] -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/70 p-5 text-slate-100 shadow-xl">
+        <div className="pointer-events-auto absolute bottom-13 left-1/2 w-[min(420px,90vw)] -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/90 p-5 text-slate-100 shadow-xl">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
-                {activePanel ? panelTitles[activePanel] : ""}
-              </div>
               <div className="mt-2 text-xl font-semibold">{panel.title}</div>
             </div>
             <button
-              className="rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+              className="rounded-full border border-white/20 px-3 py-1 text-[11px] font-extrabold tracking-[0.15em] text-slate-200 transition hover:border-white/40"
               type="button"
               onClick={() => {
                 setActivePanel(null);
@@ -326,13 +313,7 @@ export default function ImmersiveExperience() {
             >
               X
             </button>
-            <div className="text-[11px] uppercase tracking-[0.3em] text-slate-400">
-              Detail View
-            </div>
             <div className="mt-3 text-2xl font-semibold">{detail.title}</div>
-            <div className="mt-3 text-sm text-slate-300">
-              {detail.description}
-            </div>
             {activeDetail === "resume" ? (
               <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 <iframe
