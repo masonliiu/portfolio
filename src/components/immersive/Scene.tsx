@@ -62,6 +62,7 @@ type ObjectLabel = {
   maxWidth: number;
   anchorX?: "center" | "left" | "right";
   anchorY?: "top" | "middle" | "bottom";
+  followNormal?: boolean;
 };
 
 const defaultAnchors: AnchorMap = {
@@ -130,6 +131,9 @@ const detailObjectNameOverrides = {
   resume: ["Resume_Paper"],
   experience: ["Experience_Paper"],
   photography: ["Notebook"],
+  "project-one": ["Book0"],
+  "project-two": ["Book0.001"],
+  "project-three": ["Book0.002"],
 } as const;
 
 const panelSpotOffsets: Record<
@@ -239,6 +243,7 @@ function CameraRig({
   spots = hotspots,
   detailSpots = detailHotspots,
   indicatorSpots = [],
+  detailHitMap,
   onSelectDetail,
   panelHitMap,
   onDebugHitName,
@@ -254,6 +259,7 @@ function CameraRig({
   spots?: Hotspot[];
   detailSpots?: DetailHotspot[];
   indicatorSpots?: IndicatorSpot[];
+  detailHitMap?: WeakMap<THREE.Object3D, DetailKey>;
   onSelectDetail?: (detail: DetailKey) => void;
   panelHitMap?: PanelHitMap;
   onDebugHitName?: (value: string | null) => void;
@@ -265,6 +271,7 @@ function CameraRig({
   const targetPosition = useRef(new THREE.Vector3());
   const tempTarget = useRef(new THREE.Vector3());
   const raycaster = useRef(new THREE.Raycaster());
+  const mouseNdc = useRef(new THREE.Vector2(0, 0));
   const lookTarget = useRef({ yaw: 0, pitch: 0 });
   const lookOffset = useRef({ yaw: 0, pitch: 0 });
   const lookCurrent = useRef({ yaw: 0, pitch: 0 });
@@ -296,7 +303,13 @@ function CameraRig({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
-      if (inputLocked) return;
+      if (inputLocked) {
+        const rect = gl.domElement.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        mouseNdc.current.set(x, y);
+        return;
+      }
       if (!isLocked.current) return;
       const sensitivity = reducedMotion ? 0.0007 : 0.0008;
       lookTarget.current.yaw -= event.movementX * sensitivity;
@@ -321,18 +334,34 @@ function CameraRig({
     };
 
     const handleClick = () => {
-      if (!panelHitMap) return;
-      raycaster.current.setFromCamera(new THREE.Vector2(0, 0), camera);
+      const rayPoint = inputLocked ? mouseNdc.current : new THREE.Vector2(0, 0);
+      raycaster.current.setFromCamera(rayPoint, camera);
       const intersections = raycaster.current.intersectObjects(
         scene.children,
         true,
       );
-      for (const hit of intersections) {
-        const panel = findPanelFromObject(hit.object, panelHitMap ?? null);
-        if (panel) {
-          document.exitPointerLock?.();
-          onSelect(panel);
-          return;
+      if (activePanel && detailHitMap) {
+        for (const hit of intersections) {
+          const detailKey = detailHitMap.get(hit.object);
+          if (!detailKey) continue;
+          const panelMatch = detailSpots.find(
+            (spot) => spot.detailKey === detailKey,
+          )?.panelKey;
+          if (panelMatch && panelMatch === activePanel) {
+            document.exitPointerLock?.();
+            onSelectDetail?.(detailKey);
+            return;
+          }
+        }
+      }
+      if (panelHitMap) {
+        for (const hit of intersections) {
+          const panel = findPanelFromObject(hit.object, panelHitMap ?? null);
+          if (panel) {
+            document.exitPointerLock?.();
+            onSelect(panel);
+            return;
+          }
         }
       }
 
@@ -543,6 +572,7 @@ type RoomModelProps = {
   onLabels: (labels: ObjectLabel[]) => void;
   onPaintingRef: (object: THREE.Object3D | null) => void;
   onPanelHitMap: (map: PanelHitMap) => void;
+  onDetailHitMap: (map: WeakMap<THREE.Object3D, DetailKey>) => void;
   onPanelHitMapReady: () => void;
   onReady?: () => void;
 };
@@ -867,6 +897,7 @@ function RoomModel({
   onLabels,
   onPaintingRef,
   onPanelHitMap,
+  onDetailHitMap,
   onPanelHitMapReady,
   onReady,
 }: RoomModelProps) {
@@ -1120,6 +1151,37 @@ function RoomModel({
       return spot;
     });
 
+    const detailObjects: Partial<Record<DetailKey, THREE.Object3D>> = {
+      resume: findObjectByNameList(scene, detailObjectNameOverrides.resume) ?? undefined,
+      experience:
+        findObjectByNameList(scene, detailObjectNameOverrides.experience) ??
+        undefined,
+      photography:
+        findObjectByNameList(scene, detailObjectNameOverrides.photography) ??
+        undefined,
+      "project-one":
+        findObjectByNameList(scene, detailObjectNameOverrides["project-one"]) ??
+        undefined,
+      "project-two":
+        findObjectByNameList(scene, detailObjectNameOverrides["project-two"]) ??
+        undefined,
+      "project-three":
+        findObjectByNameList(scene, detailObjectNameOverrides["project-three"]) ??
+        undefined,
+    };
+
+    const detailHitMap = new WeakMap<THREE.Object3D, DetailKey>();
+    (Object.entries(detailObjects) as Array<[DetailKey, THREE.Object3D | undefined]>).forEach(
+      ([key, obj]) => {
+        if (!obj) return;
+        obj.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            detailHitMap.set(child, key);
+          }
+        });
+      },
+    );
+
     const shelfBookNames = panelObjectNameOverrides.shelf.filter(
       (name) => name !== "Shelves",
     );
@@ -1179,20 +1241,31 @@ function RoomModel({
       text: string,
       color: string,
       fontSize: number,
+      spinToObject = false,
     ) => {
       const box = new THREE.Box3().setFromObject(obj);
       const center = box.getCenter(new THREE.Vector3());
       const size = box.getSize(new THREE.Vector3());
+      const quat = obj.getWorldQuaternion(new THREE.Quaternion());
       const position: [number, number, number] = [
         center.x,
         box.max.y + 0.002,
         center.z,
       ];
+      const xAxis = new THREE.Vector3(1, 0, 0).applyQuaternion(quat);
+      const zAxis = new THREE.Vector3(0, 0, 1).applyQuaternion(quat);
+      const xHoriz = new THREE.Vector3(xAxis.x, 0, xAxis.z);
+      const zHoriz = new THREE.Vector3(zAxis.x, 0, zAxis.z);
+      const useAxis = xHoriz.lengthSq() >= zHoriz.lengthSq() ? xHoriz : zHoriz;
+      const spin = useAxis.lengthSq() > 0 ? Math.atan2(useAxis.z, useAxis.x) : 0;
+      const rotation: [number, number, number] = spinToObject
+        ? [-Math.PI / 2, spin, 0]
+        : [-Math.PI / 2, 0, 0];
       labels.push({
         id: `${obj.uuid}-label`,
         text,
         position,
-        rotation: [-Math.PI / 2, 0, 0],
+        rotation,
         color,
         fontSize,
         maxWidth: size.x * 0.9,
@@ -1234,21 +1307,21 @@ function RoomModel({
       detailObjectNameOverrides.resume,
     );
     if (resumeObj) {
-      placeFlatLabel(resumeObj, "Resume", "#111111", 0.045);
+      placeFlatLabel(resumeObj, "Resume", "#111111", 0.045, true);
     }
     const experienceObj = findObjectByNameList(
       scene,
       detailObjectNameOverrides.experience,
     );
     if (experienceObj) {
-      placeFlatLabel(experienceObj, "Work Experience", "#111111", 0.04);
+      placeFlatLabel(experienceObj, "Work Experience", "#111111", 0.04, true);
     }
     const photoObjLabel = findObjectByNameList(
       scene,
       detailObjectNameOverrides.photography,
     );
     if (photoObjLabel) {
-      placeFlatLabel(photoObjLabel, "Mason's\nPhotography", "#f8fafc", 0.05);
+      placeFlatLabel(photoObjLabel, "Mason's\nPhotography", "#f8fafc", 0.05, true);
     }
     const bookObjects = findObjectsByNameList(scene, shelfBookNames);
     const bookLabels = [
@@ -1269,17 +1342,19 @@ function RoomModel({
     onLabels(labels);
     onPaintingRef(photoObj ?? null);
     onPanelHitMap(panelHitMap);
+    onDetailHitMap(detailHitMap);
     onPanelHitMapReady();
     onReady?.();
   }, [
-  onAnchors,
-  onDetailHotspots,
-  onGlowTargets,
-  onLabels,
-  onHotspots,
-  onPanelHitMap,
-  onPanelHitMapReady,
-  onPaintingRef,
+    onAnchors,
+    onDetailHotspots,
+    onGlowTargets,
+    onLabels,
+    onHotspots,
+    onPanelHitMap,
+    onDetailHitMap,
+    onPanelHitMapReady,
+    onPaintingRef,
     scene,
   ]);
 
@@ -1328,7 +1403,11 @@ export default function Scene({
   const [panelHitMap, setPanelHitMap] = useState<PanelHitMap | null>(null);
   const [glowTargets, setGlowTargets] = useState<GlowTarget[]>([]);
   const [objectLabels, setObjectLabels] = useState<ObjectLabel[]>([]);
+  const [detailHitMap, setDetailHitMap] = useState<
+    WeakMap<THREE.Object3D, DetailKey> | null
+  >(null);
   const transitionStartRef = useRef(false);
+  const labelFont = "/fonts/JetBrainsMono-Regular.ttf";
   const indicatorSpots = useMemo(() => {
     const findDetail = (key: DetailKey) =>
       sceneDetailHotspots.find((spot) => spot.detailKey === key);
@@ -1425,6 +1504,12 @@ export default function Scene({
   const handleLabels = useCallback((labels: ObjectLabel[]) => {
     setObjectLabels(labels);
   }, []);
+  const handleDetailHitMap = useCallback(
+    (map: WeakMap<THREE.Object3D, DetailKey>) => {
+      setDetailHitMap(map);
+    },
+    [],
+  );
 
 
   useEffect(() => {
@@ -1557,6 +1642,7 @@ export default function Scene({
         detailSpots={sceneDetailHotspots}
         indicatorSpots={indicatorSpots}
         panelHitMap={panelHitMap ?? undefined}
+        detailHitMap={detailHitMap ?? undefined}
         onDebugHitName={onDebugHitName}
         onSettled={() => {
           setCameraSettled(true);
@@ -1598,6 +1684,7 @@ export default function Scene({
           onPanelHitMap={(map) => {
             setPanelHitMap(map);
           }}
+          onDetailHitMap={handleDetailHitMap}
           onPanelHitMapReady={() => {
             onPanelHitMapReady?.();
           }}
@@ -1618,6 +1705,7 @@ export default function Scene({
           color={label.color}
           fontSize={label.fontSize}
           maxWidth={label.maxWidth}
+          font={labelFont}
           anchorX={label.anchorX ?? "center"}
           anchorY={label.anchorY ?? "middle"}
         >
@@ -1634,6 +1722,7 @@ export default function Scene({
             fontSize={0.08}
             color="#e2e8f0"
             maxWidth={paintingPanel.size[0] * 0.8}
+            font={labelFont}
             anchorX="center"
             anchorY="middle"
             position={[0, 0.05, 0]}
@@ -1644,6 +1733,7 @@ export default function Scene({
             fontSize={0.035}
             color="#cbd5f5"
             maxWidth={paintingPanel.size[0] * 0.8}
+            font={labelFont}
             anchorX="center"
             anchorY="top"
             position={[0, -0.02, 0]}
