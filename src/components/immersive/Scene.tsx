@@ -46,6 +46,12 @@ type Anchor = {
 };
 
 type AnchorMap = Record<string, Anchor>;
+type IndicatorSpot = {
+  id: string;
+  panelKey: PanelKey;
+  position: [number, number, number];
+  radius: number;
+};
 
 const defaultAnchors: AnchorMap = {
   couch: {
@@ -221,6 +227,7 @@ function CameraRig({
   transitionPitch = 0,
   spots = hotspots,
   detailSpots = detailHotspots,
+  indicatorSpots = [],
   onSelectDetail,
   panelHitMap,
   onDebugHitName,
@@ -235,6 +242,7 @@ function CameraRig({
   transitionPitch?: number;
   spots?: Hotspot[];
   detailSpots?: DetailHotspot[];
+  indicatorSpots?: IndicatorSpot[];
   onSelectDetail?: (detail: DetailKey) => void;
   panelHitMap?: PanelHitMap;
   onDebugHitName?: (value: string | null) => void;
@@ -342,8 +350,9 @@ function CameraRig({
         return;
       }
 
-      let closest: { panelKey: PanelKey; distance: number } | null = null;
-      spots.forEach((spot) => {
+      let closestIndicator: { panelKey: PanelKey; distance: number } | null =
+        null;
+      indicatorSpots.forEach((spot) => {
         const spotPosition = new THREE.Vector3(...spot.position);
         const toSpot = spotPosition.clone().sub(raycaster.current.ray.origin);
         if (raycaster.current.ray.direction.dot(toSpot) <= 0) {
@@ -353,14 +362,43 @@ function CameraRig({
         if (distance <= spot.radius) {
           const originDistance =
             raycaster.current.ray.origin.distanceTo(spotPosition);
-          if (!closest || originDistance < closest.distance) {
-            closest = { panelKey: spot.panelKey, distance: originDistance };
+          if (!closestIndicator || originDistance < closestIndicator.distance) {
+            closestIndicator = {
+              panelKey: spot.panelKey,
+              distance: originDistance,
+            };
           }
         }
       });
-      if (closest) {
+      if (closestIndicator) {
         document.exitPointerLock?.();
-        onSelect(closest.panelKey);
+        onSelect(closestIndicator.panelKey);
+        return;
+      }
+
+      if (!panelHitMap) {
+        let closest: { panelKey: PanelKey; distance: number } | null = null;
+        spots.forEach((spot) => {
+          const spotPosition = new THREE.Vector3(...spot.position);
+          const toSpot = spotPosition
+            .clone()
+            .sub(raycaster.current.ray.origin);
+          if (raycaster.current.ray.direction.dot(toSpot) <= 0) {
+            return;
+          }
+          const distance = raycaster.current.ray.distanceToPoint(spotPosition);
+          if (distance <= spot.radius) {
+            const originDistance =
+              raycaster.current.ray.origin.distanceTo(spotPosition);
+            if (!closest || originDistance < closest.distance) {
+              closest = { panelKey: spot.panelKey, distance: originDistance };
+            }
+          }
+        });
+        if (closest) {
+          document.exitPointerLock?.();
+          onSelect(closest.panelKey);
+        }
       }
     };
 
@@ -517,11 +555,15 @@ type LaptopScreenTransitionProps = {
 function PaintingReveal({
   paintingRef,
   baseQuatRef,
+  baseWorldQuatRef,
   revealed,
+  rotationAxis,
 }: {
   paintingRef: RefObject<THREE.Object3D | null>;
   baseQuatRef: RefObject<THREE.Quaternion>;
+  baseWorldQuatRef: RefObject<THREE.Quaternion>;
   revealed: boolean;
+  rotationAxis: RefObject<THREE.Vector3>;
 }) {
   useFrame((_, delta) => {
     const painting = paintingRef.current;
@@ -529,10 +571,12 @@ function PaintingReveal({
     const baseQuat = baseQuatRef.current;
     const targetQuat = new THREE.Quaternion().copy(baseQuat);
     if (revealed) {
-      const revealQuat = new THREE.Quaternion().setFromEuler(
-        new THREE.Euler(-0.05, -1.2, 0),
+      const axisLocal = rotationAxis.current;
+      const revealQuat = new THREE.Quaternion().setFromAxisAngle(
+        axisLocal,
+        -1.05,
       );
-      targetQuat.multiply(revealQuat);
+      targetQuat.copy(baseQuat).multiply(revealQuat);
     }
     painting.quaternion.slerp(targetQuat, Math.min(delta * 3, 1));
   });
@@ -1168,9 +1212,10 @@ export default function Scene({
   const [transitionProgress, setTransitionProgress] = useState(0);
   const screenRef = useRef<THREE.Mesh | null>(null);
   const paintingRef = useRef<THREE.Object3D | null>(null);
-  const paintingMeshRef = useRef<THREE.Object3D | null>(null);
   const paintingPivotRef = useRef<THREE.Object3D | null>(null);
   const paintingBaseQuat = useRef(new THREE.Quaternion());
+  const paintingBaseWorldQuat = useRef(new THREE.Quaternion());
+  const paintingRotateAxis = useRef(new THREE.Vector3(0, 0, 1));
   const [paintingPanel, setPaintingPanel] = useState<{
     position: [number, number, number];
     rotation: [number, number, number];
@@ -1209,20 +1254,18 @@ export default function Scene({
       (spot) => spot.panelKey === "shelf",
     );
 
-    const indicators: Array<{
-      id: string;
-      position: [number, number, number];
-      radius: number;
-    }> = [];
+    const indicators: IndicatorSpot[] = [];
     if (resume && experience) {
       indicators.push({
         id: "desk-papers",
+        panelKey: "desk",
         position: average([resume.position, experience.position]),
         radius: Math.max(resume.radius, experience.radius) * 0.6,
       });
     } else if (resume) {
       indicators.push({
         id: "desk-papers",
+        panelKey: "desk",
         position: resume.position,
         radius: resume.radius * 0.5,
       });
@@ -1231,6 +1274,7 @@ export default function Scene({
     if (photography) {
       indicators.push({
         id: "photo-book",
+        panelKey: "table",
         position: photography.position,
         radius: photography.radius * 0.5,
       });
@@ -1242,6 +1286,7 @@ export default function Scene({
     if (painting) {
       indicators.push({
         id: "gallery-wall",
+        panelKey: "painting",
         position: add(painting.position, -0.6, 1.1, 0.4),
         radius: painting.radius * 0.4,
       });
@@ -1251,6 +1296,7 @@ export default function Scene({
       const shelfPos = average(shelfSpots.map((spot) => spot.position));
       indicators.push({
         id: "shelf-books",
+        panelKey: "shelf",
         position: add(shelfPos, 0, 0.25, 0.9),
         radius:
           shelfSpots.reduce((max, spot) => Math.max(max, spot.radius), 0) * 0.6,
@@ -1311,20 +1357,19 @@ export default function Scene({
   const handlePaintingRef = useCallback((painting: THREE.Object3D | null) => {
     if (!painting) {
       paintingRef.current = null;
-      paintingMeshRef.current = null;
+      paintingPivotRef.current = null;
       return;
     }
     const parent = painting.parent;
     if (!parent) return;
 
+    const box = new THREE.Box3().setFromObject(painting);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+
     let pivot = paintingPivotRef.current;
     if (!pivot) {
-      const box = new THREE.Box3().setFromObject(painting);
-      const topCenterWorld = new THREE.Vector3(
-        (box.min.x + box.max.x) * 0.5,
-        box.max.y,
-        (box.min.z + box.max.z) * 0.5,
-      );
+      const topCenterWorld = new THREE.Vector3(center.x, box.max.y, center.z);
       const topCenterLocal = parent.worldToLocal(topCenterWorld.clone());
       pivot = new THREE.Group();
       pivot.userData.isPaintingPivot = true;
@@ -1340,13 +1385,15 @@ export default function Scene({
       paintingPivotRef.current = pivot;
     }
 
-    paintingMeshRef.current = painting;
     paintingRef.current = pivot ?? painting;
     paintingBaseQuat.current.copy(paintingRef.current.quaternion);
+    paintingBaseWorldQuat.current.copy(
+      paintingRef.current.getWorldQuaternion(new THREE.Quaternion()),
+    );
+    paintingRotateAxis.current.copy(
+      new THREE.Vector3(1, 0, 0).applyQuaternion(paintingBaseQuat.current),
+    );
 
-    const box = new THREE.Box3().setFromObject(painting);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3());
     const quat = painting.getWorldQuaternion(new THREE.Quaternion());
     const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(quat).normalize();
     const position = center.clone().add(normal.multiplyScalar(-0.05));
@@ -1385,6 +1432,8 @@ export default function Scene({
       <PaintingReveal
         paintingRef={paintingRef}
         baseQuatRef={paintingBaseQuat}
+        baseWorldQuatRef={paintingBaseWorldQuat}
+        rotationAxis={paintingRotateAxis}
         revealed={paintingRevealed}
       />
       <CameraRig
@@ -1398,6 +1447,7 @@ export default function Scene({
         settleReset={settleReset}
         spots={sceneHotspots}
         detailSpots={sceneDetailHotspots}
+        indicatorSpots={indicatorSpots}
         panelHitMap={panelHitMap ?? undefined}
         onDebugHitName={onDebugHitName}
         onSettled={() => {
