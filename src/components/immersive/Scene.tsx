@@ -52,6 +52,17 @@ type IndicatorSpot = {
   position: [number, number, number];
   radius: number;
 };
+type ObjectLabel = {
+  id: string;
+  text: string;
+  position: [number, number, number];
+  rotation: [number, number, number];
+  color: string;
+  fontSize: number;
+  maxWidth: number;
+  anchorX?: "center" | "left" | "right";
+  anchorY?: "top" | "middle" | "bottom";
+};
 
 const defaultAnchors: AnchorMap = {
   couch: {
@@ -529,6 +540,7 @@ type RoomModelProps = {
   onHotspots: (spots: Hotspot[]) => void;
   onDetailHotspots: (spots: DetailHotspot[]) => void;
   onGlowTargets: (targets: GlowTarget[]) => void;
+  onLabels: (labels: ObjectLabel[]) => void;
   onPaintingRef: (object: THREE.Object3D | null) => void;
   onPanelHitMap: (map: PanelHitMap) => void;
   onPanelHitMapReady: () => void;
@@ -852,6 +864,7 @@ function RoomModel({
   onHotspots,
   onDetailHotspots,
   onGlowTargets,
+  onLabels,
   onPaintingRef,
   onPanelHitMap,
   onPanelHitMapReady,
@@ -1160,22 +1173,113 @@ function RoomModel({
       });
     });
 
+    const labels: ObjectLabel[] = [];
+    const placeFlatLabel = (
+      obj: THREE.Object3D,
+      text: string,
+      color: string,
+      fontSize: number,
+    ) => {
+      const box = new THREE.Box3().setFromObject(obj);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const position: [number, number, number] = [
+        center.x,
+        box.max.y + 0.002,
+        center.z,
+      ];
+      labels.push({
+        id: `${obj.uuid}-label`,
+        text,
+        position,
+        rotation: [-Math.PI / 2, 0, 0],
+        color,
+        fontSize,
+        maxWidth: size.x * 0.9,
+        anchorX: "center",
+        anchorY: "middle",
+      });
+    };
+    const placeSpineLabel = (
+      obj: THREE.Object3D,
+      text: string,
+      color: string,
+      fontSize: number,
+    ) => {
+      const box = new THREE.Box3().setFromObject(obj);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const quat = obj.getWorldQuaternion(new THREE.Quaternion());
+      const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(quat).normalize();
+      const position = center
+        .clone()
+        .add(normal.multiplyScalar(size.z * 0.52));
+      const rotation = new THREE.Euler().setFromQuaternion(quat);
+      rotation.z += Math.PI / 2;
+      labels.push({
+        id: `${obj.uuid}-spine`,
+        text,
+        position: [position.x, position.y, position.z],
+        rotation: [rotation.x, rotation.y, rotation.z],
+        color,
+        fontSize,
+        maxWidth: size.y * 0.9,
+        anchorX: "center",
+        anchorY: "middle",
+      });
+    };
+
+    const resumeObj = findObjectByNameList(
+      scene,
+      detailObjectNameOverrides.resume,
+    );
+    if (resumeObj) {
+      placeFlatLabel(resumeObj, "Resume", "#111111", 0.045);
+    }
+    const experienceObj = findObjectByNameList(
+      scene,
+      detailObjectNameOverrides.experience,
+    );
+    if (experienceObj) {
+      placeFlatLabel(experienceObj, "Work Experience", "#111111", 0.04);
+    }
+    const photoObjLabel = findObjectByNameList(
+      scene,
+      detailObjectNameOverrides.photography,
+    );
+    if (photoObjLabel) {
+      placeFlatLabel(photoObjLabel, "Mason's\nPhotography", "#f8fafc", 0.05);
+    }
+    const bookObjects = findObjectsByNameList(scene, shelfBookNames);
+    const bookLabels = [
+      { text: "Project One", index: 0 },
+      { text: "Project Two", index: 1 },
+      { text: "Project Three", index: 2 },
+    ];
+    bookLabels.forEach(({ text, index }) => {
+      const obj = bookObjects[index];
+      if (!obj) return;
+      placeSpineLabel(obj, text, "#111111", 0.04);
+    });
+
     onAnchors(nextAnchors);
     onHotspots(spots);
     onDetailHotspots(nextDetailSpots);
     onGlowTargets(glowTargets);
+    onLabels(labels);
     onPaintingRef(photoObj ?? null);
     onPanelHitMap(panelHitMap);
     onPanelHitMapReady();
     onReady?.();
   }, [
-    onAnchors,
-    onDetailHotspots,
-    onGlowTargets,
-    onHotspots,
-    onPanelHitMap,
-    onPanelHitMapReady,
-    onPaintingRef,
+  onAnchors,
+  onDetailHotspots,
+  onGlowTargets,
+  onLabels,
+  onHotspots,
+  onPanelHitMap,
+  onPanelHitMapReady,
+  onPaintingRef,
     scene,
   ]);
 
@@ -1223,6 +1327,7 @@ export default function Scene({
   } | null>(null);
   const [panelHitMap, setPanelHitMap] = useState<PanelHitMap | null>(null);
   const [glowTargets, setGlowTargets] = useState<GlowTarget[]>([]);
+  const [objectLabels, setObjectLabels] = useState<ObjectLabel[]>([]);
   const transitionStartRef = useRef(false);
   const indicatorSpots = useMemo(() => {
     const findDetail = (key: DetailKey) =>
@@ -1316,6 +1421,9 @@ export default function Scene({
   }, []);
   const handleGlowTargets = useCallback((targets: GlowTarget[]) => {
     setGlowTargets(targets);
+  }, []);
+  const handleLabels = useCallback((labels: ObjectLabel[]) => {
+    setObjectLabels(labels);
   }, []);
 
 
@@ -1485,6 +1593,7 @@ export default function Scene({
           onHotspots={handleHotspots}
           onDetailHotspots={handleDetailHotspots}
           onGlowTargets={handleGlowTargets}
+          onLabels={handleLabels}
           onPaintingRef={handlePaintingRef}
           onPanelHitMap={(map) => {
             setPanelHitMap(map);
@@ -1501,6 +1610,20 @@ export default function Scene({
         screenTexture={screenTexture}
         screenUnlit={transitionActive || transitionAnimating}
       />
+      {objectLabels.map((label) => (
+        <Text
+          key={label.id}
+          position={label.position}
+          rotation={label.rotation}
+          color={label.color}
+          fontSize={label.fontSize}
+          maxWidth={label.maxWidth}
+          anchorX={label.anchorX ?? "center"}
+          anchorY={label.anchorY ?? "middle"}
+        >
+          {label.text}
+        </Text>
+      ))}
       {paintingRevealed && paintingPanel && (
         <group position={paintingPanel.position} rotation={paintingPanel.rotation}>
           <mesh position={[0, 0, -0.01]}>
