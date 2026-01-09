@@ -70,12 +70,6 @@ export default function ImmersiveExperience() {
       }
       if (panel === "painting") {
         setGlowActive((prev) => ({ ...prev, painting: false }));
-      } else if (panel === "desk") {
-        setGlowActive((prev) => ({ ...prev, "desk-papers": false }));
-      } else if (panel === "table") {
-        setGlowActive((prev) => ({ ...prev, "photo-book": false }));
-      } else if (panel === "shelf") {
-        setGlowActive((prev) => ({ ...prev, "shelf-books": false }));
       }
       setPaintingRevealed(false);
       setActivePanel(panel);
@@ -180,6 +174,8 @@ export default function ImmersiveExperience() {
     "fixed inset-0 z-50 h-full w-full overflow-hidden text-white";
   const sceneClassName = "opacity-100";
   const showUi = transitionChecked && (!transitionImage || !transitionActive);
+  const showIntro = showUi && !hasInteracted;
+  const showHud = showUi && hasInteracted;
   const panel = activePanel ? panelContent[activePanel] : null;
   const detail = activeDetail ? detailContent[activeDetail] : null;
 
@@ -216,6 +212,9 @@ export default function ImmersiveExperience() {
           glowActive={glowActive}
         />
       </div>
+      {showIntro && (
+        <div className="pointer-events-none absolute inset-0 backdrop-blur-[3px]" />
+      )}
       {showUi && (
         <div
           className="pointer-events-none absolute inset-0"
@@ -227,80 +226,31 @@ export default function ImmersiveExperience() {
             <div className="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
             <div className="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
           </div>
-          {!hasInteracted && (
-            <div className="pointer-events-auto absolute left-110 bottom-10 max-w-xs rounded-2xl border border-white/10 lowercase font-bold bg-slate-950/90 px-4 py-3 text-xs text-slate-200">
+          {showIntro && (
+            <div className="pointer-events-auto absolute left-115 bottom-17 max-w-xs rounded-2xl border border-white/80 bg-slate-950/90 px-4 py-3 text-xs font-bold lowercase text-slate-100">
               Click anywhere to tab in. Press on glowing objects to learn about me!
             </div>
           )}
-          <div className="pointer-events-auto left-95 absolute bottom-1.5 rounded-2xl border border-white/10 bg-slate-950/90 px-4 py-3 text-[11px] font-extrabold lowercase tracking-[0.2em] text-slate-300">
-            Hotkeys: [1] Desk · [2] Table · [3] Painting · [4] Shelves
-          </div>
+          {showHud && (
+            <div className="pointer-events-auto left-95 absolute bottom-1.5 rounded-2xl border border-white/10 bg-slate-950/90 px-4 py-3 text-[11px] font-extrabold lowercase tracking-[0.2em] text-slate-300">
+              Hotkeys: [1] Desk · [2] Table · [3] Painting · [4] Shelves
+            </div>
+          )}
           {/* DEBUG - {debugHitName && (
             <div className="pointer-events-auto absolute left-6 top-[12.5rem] rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2 text-xs text-slate-200">
               Hit: {debugHitName}
             </div>
           )} */}
-          <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
-            {activePanel && (
-              <button
-                type="button"
-                onClick={() => {
-                  setActivePanel(null);
-                  setPaintingRevealed(false);
-                }}
-                className="rounded-full border border-white/25 bg-white/30 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.3em] text-white transition hover:border-white/60"
+          {showHud && (
+            <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
+              <Link
+                href="/"
+                className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)]"
               >
-                Return to couch
-              </button>
-            )}
-            <Link
-              href="/"
-              className="rounded-full border border-white/30 bg-slate-950/90 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.3em] text-white transition hover:border-white/60"
-            >
-              Exit immersive
-            </Link>
-          </div>
-        </div>
-      )}
-      {showUi && panel && (
-        <div className="pointer-events-auto absolute bottom-13 left-1/2 w-[min(420px,90vw)] -translate-x-1/2 rounded-2xl border border-white/10 bg-slate-950/90 p-5 text-slate-100 shadow-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="mt-2 text-xl font-semibold">{panel.title}</div>
+                exit immersive
+              </Link>
             </div>
-            <button
-              className="rounded-full border border-white/20 px-3 py-1 text-[11px] font-extrabold tracking-[0.15em] text-slate-200 transition hover:border-white/40"
-              type="button"
-              onClick={() => {
-                setActivePanel(null);
-                setPaintingRevealed(false);
-              }}
-            >
-              Close
-            </button>
-          </div>
-          <div className="mt-4 space-y-3 text-sm text-slate-200">
-            {panel.items.map((item) => (
-              <button
-                key={item.title}
-                type="button"
-                onClick={() => {
-                  if (item.detailKey) {
-                    setActiveDetail(item.detailKey);
-                    document.exitPointerLock?.();
-                  }
-                }}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:border-white/30"
-              >
-                <div className="text-sm font-semibold text-white">
-                  {item.title}
-                </div>
-                <div className="mt-1 text-xs text-slate-300">
-                  {item.description}
-                </div>
-              </button>
-            ))}
-          </div>
+          )}
         </div>
       )}
       {showUi && detail && (
