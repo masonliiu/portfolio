@@ -24,6 +24,7 @@ import {
 
 type SceneProps = {
   activePanel: PanelKey | null;
+  activeDetail?: DetailKey | null;
   onSelect: (panel: PanelKey) => void;
   onSelectDetail?: (detail: DetailKey) => void;
   paintingRevealed?: boolean;
@@ -214,6 +215,7 @@ function CameraRig({
   onSelect,
   anchors,
   reducedMotion = false,
+  inputLocked = false,
   onSettled,
   settleReset = 0,
   transitionPitch = 0,
@@ -227,6 +229,7 @@ function CameraRig({
   onSelect: (panel: PanelKey) => void;
   anchors: AnchorMap;
   reducedMotion?: boolean;
+  inputLocked?: boolean;
   onSettled?: () => void;
   settleReset?: number;
   transitionPitch?: number;
@@ -274,6 +277,7 @@ function CameraRig({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
+      if (inputLocked) return;
       if (!isLocked.current) return;
       const sensitivity = reducedMotion ? 0.0007 : 0.0008;
       lookTarget.current.yaw -= event.movementX * sensitivity;
@@ -291,6 +295,7 @@ function CameraRig({
     };
 
     const handlePointerDown = () => {
+      if (inputLocked) return;
       if (document.pointerLockElement !== gl.domElement) {
         gl.domElement.requestPointerLock();
       }
@@ -369,7 +374,22 @@ function CameraRig({
       gl.domElement.removeEventListener("pointerdown", handlePointerDown);
       gl.domElement.removeEventListener("click", handleClick);
     };
-  }, [camera, gl, onSelect, reducedMotion]);
+  }, [camera, gl, inputLocked, onSelect, reducedMotion]);
+
+  useEffect(() => {
+    if (inputLocked) {
+      document.exitPointerLock?.();
+      document.body.style.cursor = "auto";
+      gl.domElement.style.cursor = "auto";
+    } else {
+      document.body.style.cursor = "none";
+      gl.domElement.style.cursor = "none";
+    }
+    return () => {
+      document.body.style.cursor = "";
+      gl.domElement.style.cursor = "";
+    };
+  }, [gl, inputLocked]);
 
   const lastDebugName = useRef<string | null>(null);
 
@@ -625,7 +645,13 @@ function GlowOverlay({
 
   useFrame(() => {
     if (!materialRef.current) return;
-    materialRef.current.uniforms.uStrength.value = active ? 0.6 : 0;
+    if (!active) {
+      materialRef.current.uniforms.uStrength.value = 0;
+      return;
+    }
+    const t = performance.now() * 0.001;
+    const pulse = Math.max(0, Math.sin(t * Math.PI));
+    materialRef.current.uniforms.uStrength.value = 0.15 + pulse * 0.85;
   });
 
   const uniforms = useMemo(
@@ -1116,6 +1142,7 @@ useGLTF.preload("/models/office.glb");
 
 export default function Scene({
   activePanel,
+  activeDetail,
   onSelect,
   onSelectDetail,
   paintingRevealed = false,
@@ -1141,6 +1168,8 @@ export default function Scene({
   const [transitionProgress, setTransitionProgress] = useState(0);
   const screenRef = useRef<THREE.Mesh | null>(null);
   const paintingRef = useRef<THREE.Object3D | null>(null);
+  const paintingMeshRef = useRef<THREE.Object3D | null>(null);
+  const paintingPivotRef = useRef<THREE.Object3D | null>(null);
   const paintingBaseQuat = useRef(new THREE.Quaternion());
   const [paintingPanel, setPaintingPanel] = useState<{
     position: [number, number, number];
@@ -1280,9 +1309,41 @@ export default function Scene({
   }, [onTransitionAnimating, transitionAnimating]);
 
   const handlePaintingRef = useCallback((painting: THREE.Object3D | null) => {
-    paintingRef.current = painting;
-    if (!painting) return;
-    paintingBaseQuat.current.copy(painting.quaternion);
+    if (!painting) {
+      paintingRef.current = null;
+      paintingMeshRef.current = null;
+      return;
+    }
+    const parent = painting.parent;
+    if (!parent) return;
+
+    let pivot = paintingPivotRef.current;
+    if (!pivot) {
+      const box = new THREE.Box3().setFromObject(painting);
+      const topCenterWorld = new THREE.Vector3(
+        (box.min.x + box.max.x) * 0.5,
+        box.max.y,
+        (box.min.z + box.max.z) * 0.5,
+      );
+      const topCenterLocal = parent.worldToLocal(topCenterWorld.clone());
+      pivot = new THREE.Group();
+      pivot.userData.isPaintingPivot = true;
+      pivot.position.copy(topCenterLocal);
+      pivot.quaternion.copy(painting.quaternion);
+      pivot.scale.copy(painting.scale);
+      parent.add(pivot);
+      pivot.updateMatrixWorld(true);
+      pivot.attach(painting);
+      paintingPivotRef.current = pivot;
+    } else if (painting.parent?.userData?.isPaintingPivot) {
+      pivot = painting.parent;
+      paintingPivotRef.current = pivot;
+    }
+
+    paintingMeshRef.current = painting;
+    paintingRef.current = pivot ?? painting;
+    paintingBaseQuat.current.copy(paintingRef.current.quaternion);
+
     const box = new THREE.Box3().setFromObject(painting);
     const center = box.getCenter(new THREE.Vector3());
     const size = box.getSize(new THREE.Vector3());
@@ -1331,6 +1392,7 @@ export default function Scene({
         onSelect={onSelect}
         onSelectDetail={onSelectDetail}
         reducedMotion={reducedMotion}
+        inputLocked={Boolean(activePanel) || Boolean(activeDetail)}
         anchors={sceneAnchors}
         transitionPitch={-0.65 * transitionProgress}
         settleReset={settleReset}

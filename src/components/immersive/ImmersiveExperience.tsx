@@ -71,6 +71,12 @@ export default function ImmersiveExperience() {
       }
       if (panel === "painting") {
         setGlowActive((prev) => ({ ...prev, painting: false }));
+      } else if (panel === "desk") {
+        setGlowActive((prev) => ({ ...prev, "desk-papers": false }));
+      } else if (panel === "table") {
+        setGlowActive((prev) => ({ ...prev, "photo-book": false }));
+      } else if (panel === "shelf") {
+        setGlowActive((prev) => ({ ...prev, "shelf-books": false }));
       }
       setPaintingRevealed(false);
       setActivePanel(panel);
@@ -178,11 +184,14 @@ export default function ImmersiveExperience() {
   const panel = activePanel ? panelContent[activePanel] : null;
   const detail = activeDetail ? detailContent[activeDetail] : null;
 
+  const immersiveCursor = activePanel || activeDetail ? "auto" : "none";
+
   return (
-    <div className={rootClassName}>
+    <div className={rootClassName} style={{ cursor: immersiveCursor }}>
       <div className={`absolute inset-0 transition-opacity duration-300 ${sceneClassName}`}>
         <Scene
           activePanel={activePanel}
+          activeDetail={activeDetail}
           onSelect={handleSelectPanel}
           onSelectDetail={handleSelectDetail}
           paintingRevealed={paintingRevealed}
@@ -198,7 +207,10 @@ export default function ImmersiveExperience() {
         />
       </div>
       {showUi && (
-        <div className="pointer-events-none absolute inset-0">
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ cursor: immersiveCursor }}
+        >
           <div className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 opacity-80">
             <div className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-white/80" />
             <div className="absolute left-1/2 bottom-0 h-2 w-px -translate-x-1/2 bg-white/80" />
