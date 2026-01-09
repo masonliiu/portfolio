@@ -118,6 +118,7 @@ export type PanelItem = {
   title: string;
   description?: string;
   detailKey?: DetailKey;
+  href?: string;
 };
 
 export type PanelContent = Record<

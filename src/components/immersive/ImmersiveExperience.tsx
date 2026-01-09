@@ -36,6 +36,7 @@ export default function ImmersiveExperience() {
   const [paintingRevealed, setPaintingRevealed] = useState(false);
   const [panelHitMapReady, setPanelHitMapReady] = useState(false);
   const [debugHitName, setDebugHitName] = useState<string | null>(null);
+  const [pointerLocked, setPointerLocked] = useState(false);
   const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
@@ -79,6 +80,13 @@ export default function ImmersiveExperience() {
     [activePanel, panelHitMapReady],
   );
 
+  const returnToCouch = useCallback(() => {
+    setActivePanel(null);
+    setActiveDetail(null);
+    setPaintingRevealed(false);
+    window.dispatchEvent(new Event("immersive:request-pointer-lock"));
+  }, []);
+
   const handleSelectDetail = useCallback(
     (detail: DetailKey) => {
       setActiveDetail(detail);
@@ -104,10 +112,12 @@ export default function ImmersiveExperience() {
       if (key === "escape") {
         if (activeDetail) {
           setActiveDetail(null);
+          window.dispatchEvent(new Event("immersive:request-pointer-lock"));
           return;
         }
         setPaintingRevealed(false);
         setActivePanel(null);
+        window.dispatchEvent(new Event("immersive:request-pointer-lock"));
         return;
       }
       if (key === "x" && activeDetail) {
@@ -130,6 +140,16 @@ export default function ImmersiveExperience() {
     const markInteracted = () => setHasInteracted(true);
     window.addEventListener("pointerdown", markInteracted, { once: true });
     return () => window.removeEventListener("pointerdown", markInteracted);
+  }, []);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent<{ locked: boolean }>).detail;
+      setPointerLocked(Boolean(detail?.locked));
+    };
+    window.addEventListener("immersive:pointer-lock", handler as EventListener);
+    return () =>
+      window.removeEventListener("immersive:pointer-lock", handler as EventListener);
   }, []);
 
   useEffect(() => {
@@ -176,10 +196,13 @@ export default function ImmersiveExperience() {
   const showUi = transitionChecked && (!transitionImage || !transitionActive);
   const showIntro = showUi && !hasInteracted;
   const showHud = showUi && hasInteracted;
+  const showCrosshair =
+    showUi && pointerLocked && !activePanel && !activeDetail && !showIntro;
   const panel = activePanel ? panelContent[activePanel] : null;
   const detail = activeDetail ? detailContent[activeDetail] : null;
 
-  const immersiveCursor = activePanel || activeDetail ? "auto" : "none";
+  const immersiveCursor =
+    showIntro || !pointerLocked ? "auto" : "none";
 
   const rootStyle: React.CSSProperties = {
     cursor: immersiveCursor,
@@ -200,6 +223,7 @@ export default function ImmersiveExperience() {
           activeDetail={activeDetail}
           onSelect={handleSelectPanel}
           onSelectDetail={handleSelectDetail}
+          onReturnToCouch={returnToCouch}
           paintingRevealed={paintingRevealed}
           reducedMotion={prefersReducedMotion}
           transitionImage={transitionImage}
@@ -220,12 +244,14 @@ export default function ImmersiveExperience() {
           className="pointer-events-none absolute inset-0"
           style={{ cursor: immersiveCursor }}
         >
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 opacity-80">
-            <div className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-white/80" />
-            <div className="absolute left-1/2 bottom-0 h-2 w-px -translate-x-1/2 bg-white/80" />
-            <div className="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
-            <div className="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
-          </div>
+          {showCrosshair && (
+            <div className="pointer-events-none absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 opacity-80">
+              <div className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-white/80" />
+              <div className="absolute left-1/2 bottom-0 h-2 w-px -translate-x-1/2 bg-white/80" />
+              <div className="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
+              <div className="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
+            </div>
+          )}
           {showIntro && (
             <div className="pointer-events-auto absolute left-115 bottom-17 max-w-xs rounded-2xl border border-white/80 bg-slate-950/90 px-4 py-3 text-xs font-bold lowercase text-slate-100">
               Click anywhere to tab in. Press on glowing objects to learn about me!

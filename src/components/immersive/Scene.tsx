@@ -27,6 +27,7 @@ type SceneProps = {
   activeDetail?: DetailKey | null;
   onSelect: (panel: PanelKey) => void;
   onSelectDetail?: (detail: DetailKey) => void;
+  onReturnToCouch?: () => void;
   paintingRevealed?: boolean;
   reducedMotion?: boolean;
   transitionImage?: string | null;
@@ -234,6 +235,7 @@ function findPanelFromObject(
 function CameraRig({
   activePanel,
   onSelect,
+  onReturnToCouch,
   anchors,
   reducedMotion = false,
   inputLocked = false,
@@ -250,6 +252,7 @@ function CameraRig({
 }: {
   activePanel: PanelKey | null;
   onSelect: (panel: PanelKey) => void;
+  onReturnToCouch?: () => void;
   anchors: AnchorMap;
   reducedMotion?: boolean;
   inputLocked?: boolean;
@@ -297,6 +300,11 @@ function CameraRig({
   useEffect(() => {
     const handlePointerLock = () => {
       isLocked.current = document.pointerLockElement === gl.domElement;
+      window.dispatchEvent(
+        new CustomEvent("immersive:pointer-lock", {
+          detail: { locked: isLocked.current },
+        }),
+      );
       if (!isLocked.current) {
         lookOffset.current = { yaw: 0, pitch: 0 };
       }
@@ -340,19 +348,33 @@ function CameraRig({
         scene.children,
         true,
       );
-      if (activePanel && detailHitMap) {
-        for (const hit of intersections) {
-          const detailKey = detailHitMap.get(hit.object);
-          if (!detailKey) continue;
-          const panelMatch = detailSpots.find(
-            (spot) => spot.detailKey === detailKey,
-          )?.panelKey;
-          if (panelMatch && panelMatch === activePanel) {
-            document.exitPointerLock?.();
-            onSelectDetail?.(detailKey);
-            return;
+      if (activePanel) {
+        if (detailHitMap) {
+          for (const hit of intersections) {
+            const detailKey = detailHitMap.get(hit.object);
+            if (!detailKey) continue;
+            const panelMatch = detailSpots.find(
+              (spot) => spot.detailKey === detailKey,
+            )?.panelKey;
+            if (panelMatch && panelMatch === activePanel) {
+              document.exitPointerLock?.();
+              onSelectDetail?.(detailKey);
+              return;
+            }
           }
         }
+        if (panelHitMap) {
+          for (const hit of intersections) {
+            const panel = findPanelFromObject(hit.object, panelHitMap ?? null);
+            if (panel && panel === activePanel) {
+              document.exitPointerLock?.();
+              onSelect(panel);
+              return;
+            }
+          }
+        }
+        onReturnToCouch?.();
+        return;
       }
       if (panelHitMap) {
         for (const hit of intersections) {
@@ -386,7 +408,9 @@ function CameraRig({
       }
       if (closestDetail) {
         document.exitPointerLock?.();
-        onSelectDetail?.(closestDetail.key);
+        onSelectDetail?.(
+          (closestDetail as { key: DetailKey }).key,
+        );
         return;
       }
 
@@ -412,7 +436,9 @@ function CameraRig({
       });
       if (closestIndicator) {
         document.exitPointerLock?.();
-        onSelect(closestIndicator.panelKey);
+        onSelect(
+          (closestIndicator as { panelKey: PanelKey }).panelKey,
+        );
         return;
       }
 
@@ -437,7 +463,9 @@ function CameraRig({
         });
         if (closest) {
           document.exitPointerLock?.();
-          onSelect(closest.panelKey);
+          onSelect(
+            (closest as { panelKey: PanelKey }).panelKey,
+          );
         }
       }
     };
@@ -452,22 +480,23 @@ function CameraRig({
       gl.domElement.removeEventListener("pointerdown", handlePointerDown);
       gl.domElement.removeEventListener("click", handleClick);
     };
-  }, [camera, gl, inputLocked, onSelect, reducedMotion]);
+  }, [activePanel, camera, detailHitMap, gl, inputLocked, onReturnToCouch, onSelect, onSelectDetail, reducedMotion]);
+
+  useEffect(() => {
+    const requestLock = () => {
+      if (gl.domElement.requestPointerLock) {
+        gl.domElement.requestPointerLock();
+      }
+    };
+    window.addEventListener("immersive:request-pointer-lock", requestLock);
+    return () => window.removeEventListener("immersive:request-pointer-lock", requestLock);
+  }, [gl]);
 
   useEffect(() => {
     if (inputLocked) {
       document.exitPointerLock?.();
-      document.body.style.cursor = "auto";
-      gl.domElement.style.cursor = "auto";
-    } else {
-      document.body.style.cursor = "none";
-      gl.domElement.style.cursor = "none";
     }
-    return () => {
-      document.body.style.cursor = "";
-      gl.domElement.style.cursor = "";
-    };
-  }, [gl, inputLocked]);
+  }, [inputLocked]);
 
   const lastDebugName = useRef<string | null>(null);
 
@@ -1367,6 +1396,7 @@ export default function Scene({
   activePanel,
   activeDetail,
   onSelect,
+  onReturnToCouch,
   onSelectDetail,
   paintingRevealed = false,
   reducedMotion,
@@ -1609,7 +1639,7 @@ export default function Scene({
     const position = couchPos.clone().add(offset);
     return {
       position: [position.x, position.y, position.z] as [number, number, number],
-      rotation: [0, 1.56, 0],
+      rotation: [0, 1.56, 0] as [number, number, number],
       scale: 1,
     };
   }, [sceneAnchors]);
@@ -1632,6 +1662,7 @@ export default function Scene({
       <CameraRig
         activePanel={activePanel}
         onSelect={onSelect}
+        onReturnToCouch={onReturnToCouch}
         onSelectDetail={onSelectDetail}
         reducedMotion={reducedMotion}
         inputLocked={Boolean(activePanel) || Boolean(activeDetail)}
