@@ -37,8 +37,10 @@ export default function ImmersiveExperience() {
   const [panelHitMapReady, setPanelHitMapReady] = useState(false);
   const [debugHitName, setDebugHitName] = useState<string | null>(null);
   const [pointerLocked, setPointerLocked] = useState(false);
+  const [pointerLockPending, setPointerLockPending] = useState(false);
   const [showExitPrompt, setShowExitPrompt] = useState(false);
   const lastEscapeRef = useRef(0);
+  const suppressExitPromptRef = useRef(false);
   const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
@@ -68,6 +70,7 @@ export default function ImmersiveExperience() {
       }
       if (panel === "painting" && activePanel === "painting") {
         setPaintingRevealed((prev) => !prev);
+        suppressExitPromptRef.current = true;
         document.exitPointerLock?.();
         window.dispatchEvent(new Event("immersive:release-pointer-lock"));
         return;
@@ -78,22 +81,29 @@ export default function ImmersiveExperience() {
       setPaintingRevealed(false);
       setActivePanel(panel);
       setActiveDetail(null);
+      suppressExitPromptRef.current = true;
       document.exitPointerLock?.();
       window.dispatchEvent(new Event("immersive:release-pointer-lock"));
     },
     [activePanel, panelHitMapReady],
   );
 
+  const requestPointerLock = useCallback(() => {
+    setPointerLockPending(true);
+    window.dispatchEvent(new Event("immersive:request-pointer-lock"));
+  }, []);
+
   const returnToCouch = useCallback(() => {
     setActivePanel(null);
     setActiveDetail(null);
     setPaintingRevealed(false);
-    window.dispatchEvent(new Event("immersive:request-pointer-lock"));
-  }, []);
+    requestPointerLock();
+  }, [requestPointerLock]);
 
   const handleSelectDetail = useCallback(
     (detail: DetailKey) => {
       setActiveDetail(detail);
+      suppressExitPromptRef.current = true;
       document.exitPointerLock?.();
       window.dispatchEvent(new Event("immersive:release-pointer-lock"));
       if (detail === "resume" || detail === "experience") {
@@ -114,22 +124,29 @@ export default function ImmersiveExperience() {
   const handleEnterImmersive = useCallback(() => {
     setHasInteracted(true);
     setShowExitPrompt(false);
-    window.dispatchEvent(new Event("immersive:request-pointer-lock"));
-  }, []);
+    requestPointerLock();
+  }, [requestPointerLock]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
       if (key === "escape") {
         if (event.repeat) return;
-        const now = Date.now();
-        if (now - lastEscapeRef.current < 450) return;
-        lastEscapeRef.current = now;
+        lastEscapeRef.current = Date.now();
       }
       if (key === "escape") {
         if (showExitPrompt) {
           setShowExitPrompt(false);
-          window.dispatchEvent(new Event("immersive:request-pointer-lock"));
+          requestPointerLock();
+          return;
+        }
+        if (activePanel || activeDetail) {
+          setActiveDetail(null);
+          setPaintingRevealed(false);
+          setActivePanel(null);
+          setShowExitPrompt(false);
+          suppressExitPromptRef.current = true;
+          requestPointerLock();
           return;
         }
         setActiveDetail(null);
@@ -159,12 +176,28 @@ export default function ImmersiveExperience() {
   useEffect(() => {
     const handler = (event: Event) => {
       const detail = (event as CustomEvent<{ locked: boolean }>).detail;
-      setPointerLocked(Boolean(detail?.locked));
+      const locked = Boolean(detail?.locked);
+      setPointerLocked(locked);
+      setPointerLockPending(false);
+      if (!locked) {
+        if (suppressExitPromptRef.current) {
+          suppressExitPromptRef.current = false;
+          return;
+        }
+        if (
+          hasInteracted &&
+          !activePanel &&
+          !activeDetail &&
+          !showExitPrompt
+        ) {
+          setShowExitPrompt(true);
+        }
+      }
     };
     window.addEventListener("immersive:pointer-lock", handler as EventListener);
     return () =>
       window.removeEventListener("immersive:pointer-lock", handler as EventListener);
-  }, []);
+  }, [activeDetail, activePanel, hasInteracted, requestPointerLock, showExitPrompt]);
 
   useEffect(() => {
     if (!panelHitMapReady || !pendingPanelRef.current) return;
@@ -212,7 +245,7 @@ export default function ImmersiveExperience() {
   const showHud = showUi && hasInteracted && !showExitPrompt;
   const showCrosshair =
     showUi &&
-    pointerLocked &&
+    (pointerLocked || pointerLockPending) &&
     !activePanel &&
     !activeDetail &&
     !showIntro &&
@@ -221,7 +254,9 @@ export default function ImmersiveExperience() {
   const detail = activeDetail ? detailContent[activeDetail] : null;
 
   const immersiveCursor =
-    showIntro || showExitPrompt || !pointerLocked ? "auto" : "none";
+    showIntro || showExitPrompt || (!pointerLocked && !pointerLockPending)
+      ? "auto"
+      : "none";
 
   const rootStyle: React.CSSProperties = {
     cursor: immersiveCursor,
