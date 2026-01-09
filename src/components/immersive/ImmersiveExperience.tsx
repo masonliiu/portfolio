@@ -178,7 +178,7 @@ export default function ImmersiveExperience() {
   }, []);
 
   const rootClassName =
-    "fixed inset-0 z-50 h-full w-full overflow-hidden bg-black text-white";
+    "fixed inset-0 z-50 h-full w-full overflow-hidden text-white";
   const sceneClassName = "opacity-100";
   const showUi = transitionChecked && (!transitionImage || !transitionActive);
   const panel = activePanel ? panelContent[activePanel] : null;
@@ -186,8 +186,19 @@ export default function ImmersiveExperience() {
 
   const immersiveCursor = activePanel || activeDetail ? "auto" : "none";
 
+  const rootStyle: React.CSSProperties = {
+    cursor: immersiveCursor,
+    backgroundColor: "var(--color-base, #1e1e2e)",
+  };
+  if (transitionImage) {
+    rootStyle.backgroundImage = `url(${transitionImage})`;
+    rootStyle.backgroundRepeat = "no-repeat";
+    rootStyle.backgroundPosition = "top left";
+    rootStyle.backgroundSize = "100% 100%";
+  }
+
   return (
-    <div className={rootClassName} style={{ cursor: immersiveCursor }}>
+    <div className={rootClassName} style={rootStyle}>
       <div className={`absolute inset-0 transition-opacity duration-300 ${sceneClassName}`}>
         <Scene
           activePanel={activePanel}
@@ -322,9 +333,19 @@ export default function ImmersiveExperience() {
             <div className="mt-3 text-sm text-slate-300">
               {detail.description}
             </div>
-            <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-xs text-slate-300">
-              Placeholder content area for the document or project preview.
-            </div>
+            {activeDetail === "resume" ? (
+              <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+                <iframe
+                  title="Resume"
+                  src="/resume.pdf#view=FitH"
+                  className="h-[60vh] w-full"
+                />
+              </div>
+            ) : (
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-xs text-slate-300">
+                Placeholder content area for the document or project preview.
+              </div>
+            )}
             <div className="mt-6 text-[11px] uppercase tracking-[0.3em] text-slate-400">
               Press X to close
             </div>
