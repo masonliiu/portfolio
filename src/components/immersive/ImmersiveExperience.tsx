@@ -37,6 +37,8 @@ export default function ImmersiveExperience() {
   const [panelHitMapReady, setPanelHitMapReady] = useState(false);
   const [debugHitName, setDebugHitName] = useState<string | null>(null);
   const [pointerLocked, setPointerLocked] = useState(false);
+  const [showExitPrompt, setShowExitPrompt] = useState(false);
+  const lastEscapeRef = useRef(0);
   const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
@@ -67,6 +69,7 @@ export default function ImmersiveExperience() {
       if (panel === "painting" && activePanel === "painting") {
         setPaintingRevealed((prev) => !prev);
         document.exitPointerLock?.();
+        window.dispatchEvent(new Event("immersive:release-pointer-lock"));
         return;
       }
       if (panel === "painting") {
@@ -76,6 +79,7 @@ export default function ImmersiveExperience() {
       setActivePanel(panel);
       setActiveDetail(null);
       document.exitPointerLock?.();
+      window.dispatchEvent(new Event("immersive:release-pointer-lock"));
     },
     [activePanel, panelHitMapReady],
   );
@@ -91,6 +95,7 @@ export default function ImmersiveExperience() {
     (detail: DetailKey) => {
       setActiveDetail(detail);
       document.exitPointerLock?.();
+      window.dispatchEvent(new Event("immersive:release-pointer-lock"));
       if (detail === "resume" || detail === "experience") {
         setGlowActive((prev) => ({ ...prev, "desk-papers": false }));
         return;
@@ -106,18 +111,33 @@ export default function ImmersiveExperience() {
     [],
   );
 
+  const handleEnterImmersive = useCallback(() => {
+    setHasInteracted(true);
+    setShowExitPrompt(false);
+    window.dispatchEvent(new Event("immersive:request-pointer-lock"));
+  }, []);
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
       if (key === "escape") {
-        if (activeDetail) {
-          setActiveDetail(null);
+        if (event.repeat) return;
+        const now = Date.now();
+        if (now - lastEscapeRef.current < 450) return;
+        lastEscapeRef.current = now;
+      }
+      if (key === "escape") {
+        if (showExitPrompt) {
+          setShowExitPrompt(false);
           window.dispatchEvent(new Event("immersive:request-pointer-lock"));
           return;
         }
+        setActiveDetail(null);
         setPaintingRevealed(false);
         setActivePanel(null);
-        window.dispatchEvent(new Event("immersive:request-pointer-lock"));
+        document.exitPointerLock?.();
+        window.dispatchEvent(new Event("immersive:release-pointer-lock"));
+        setShowExitPrompt(true);
         return;
       }
       if (key === "x" && activeDetail) {
@@ -134,13 +154,7 @@ export default function ImmersiveExperience() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeDetail, handleSelectPanel]);
-
-  useEffect(() => {
-    const markInteracted = () => setHasInteracted(true);
-    window.addEventListener("pointerdown", markInteracted, { once: true });
-    return () => window.removeEventListener("pointerdown", markInteracted);
-  }, []);
+  }, [activeDetail, handleSelectPanel, showExitPrompt]);
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -195,14 +209,19 @@ export default function ImmersiveExperience() {
   const sceneClassName = "opacity-100";
   const showUi = transitionChecked && (!transitionImage || !transitionActive);
   const showIntro = showUi && !hasInteracted;
-  const showHud = showUi && hasInteracted;
+  const showHud = showUi && hasInteracted && !showExitPrompt;
   const showCrosshair =
-    showUi && pointerLocked && !activePanel && !activeDetail && !showIntro;
+    showUi &&
+    pointerLocked &&
+    !activePanel &&
+    !activeDetail &&
+    !showIntro &&
+    !showExitPrompt;
   const panel = activePanel ? panelContent[activePanel] : null;
   const detail = activeDetail ? detailContent[activeDetail] : null;
 
   const immersiveCursor =
-    showIntro || !pointerLocked ? "auto" : "none";
+    showIntro || showExitPrompt || !pointerLocked ? "auto" : "none";
 
   const rootStyle: React.CSSProperties = {
     cursor: immersiveCursor,
@@ -236,9 +255,6 @@ export default function ImmersiveExperience() {
           glowActive={glowActive}
         />
       </div>
-      {showIntro && (
-        <div className="pointer-events-none absolute inset-0 backdrop-blur-[3px]" />
-      )}
       {showUi && (
         <div
           className="pointer-events-none absolute inset-0"
@@ -250,11 +266,6 @@ export default function ImmersiveExperience() {
               <div className="absolute left-1/2 bottom-0 h-2 w-px -translate-x-1/2 bg-white/80" />
               <div className="absolute left-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
               <div className="absolute right-0 top-1/2 h-px w-2 -translate-y-1/2 bg-white/80" />
-            </div>
-          )}
-          {showIntro && (
-            <div className="pointer-events-auto absolute left-115 bottom-17 max-w-xs rounded-2xl border border-white/80 bg-slate-950/90 px-4 py-3 text-xs font-bold lowercase text-slate-100">
-              Click anywhere to tab in. Press on glowing objects to learn about me!
             </div>
           )}
           {showHud && (
@@ -277,6 +288,49 @@ export default function ImmersiveExperience() {
               </Link>
             </div>
           )}
+        </div>
+      )}
+      {(showIntro || showExitPrompt) && (
+        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center backdrop-blur-[3px]">
+          <div className="w-[min(440px,88vw)] rounded-3xl border border-white/15 bg-slate-950/90 p-8 text-slate-100 shadow-2xl">
+            {showIntro ? (
+              <>
+                <div className="text-xl font-semibold">Immersive Mode</div>
+                <p className="mt-3 text-sm text-slate-300">
+                  Press on glowing objects to learn about me.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleEnterImmersive}
+                  className="mt-6 w-full rounded-full border border-white/25 bg-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50"
+                >
+                  Enter immersive
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-xl font-semibold">Immersive paused</div>
+                <p className="mt-3 text-sm text-slate-300">
+                  Resume the scene or exit immersive mode.
+                </p>
+                <div className="mt-6 flex flex-col gap-3">
+                  <button
+                    type="button"
+                    onClick={handleEnterImmersive}
+                    className="w-full rounded-full border border-white/25 bg-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50"
+                  >
+                    Resume
+                  </button>
+                  <Link
+                    href="/"
+                    className="w-full rounded-full border border-white/20 px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+                  >
+                    Exit immersive
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
       {showUi && detail && (

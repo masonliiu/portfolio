@@ -28,6 +28,7 @@ type SceneProps = {
   onSelect: (panel: PanelKey) => void;
   onSelectDetail?: (detail: DetailKey) => void;
   onReturnToCouch?: () => void;
+  forceLook?: boolean;
   paintingRevealed?: boolean;
   reducedMotion?: boolean;
   transitionImage?: string | null;
@@ -239,6 +240,7 @@ function CameraRig({
   anchors,
   reducedMotion = false,
   inputLocked = false,
+  forceLook = false,
   onSettled,
   settleReset = 0,
   transitionPitch = 0,
@@ -256,6 +258,7 @@ function CameraRig({
   anchors: AnchorMap;
   reducedMotion?: boolean;
   inputLocked?: boolean;
+  forceLook?: boolean;
   onSettled?: () => void;
   settleReset?: number;
   transitionPitch?: number;
@@ -311,11 +314,18 @@ function CameraRig({
     };
 
     const handleMouseMove = (event: MouseEvent) => {
+      const rect = gl.domElement.getBoundingClientRect();
+      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       if (inputLocked) {
-        const rect = gl.domElement.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         mouseNdc.current.set(x, y);
+        return;
+      }
+      if (!isLocked.current && forceLook) {
+        mouseNdc.current.set(x, y);
+        lookTarget.current.yaw = -mouseNdc.current.x * lookLimits.current.yaw;
+        lookTarget.current.pitch =
+          -mouseNdc.current.y * lookLimits.current.pitch;
         return;
       }
       if (!isLocked.current) return;
@@ -488,8 +498,15 @@ function CameraRig({
         gl.domElement.requestPointerLock();
       }
     };
+    const releaseLock = () => {
+      document.exitPointerLock?.();
+    };
     window.addEventListener("immersive:request-pointer-lock", requestLock);
-    return () => window.removeEventListener("immersive:request-pointer-lock", requestLock);
+    window.addEventListener("immersive:release-pointer-lock", releaseLock);
+    return () => {
+      window.removeEventListener("immersive:request-pointer-lock", requestLock);
+      window.removeEventListener("immersive:release-pointer-lock", releaseLock);
+    };
   }, [gl]);
 
   useEffect(() => {
@@ -542,7 +559,7 @@ function CameraRig({
       "YXZ",
     );
 
-    const lookScale = allowLook && isLocked.current ? 1 : 0;
+    const lookScale = allowLook && (isLocked.current || forceLook) ? 1 : 0;
     const offsetDamping = reducedMotion ? 1 : 6;
     lookOffset.current.yaw = THREE.MathUtils.damp(
       lookOffset.current.yaw,
@@ -1398,6 +1415,7 @@ export default function Scene({
   onSelect,
   onReturnToCouch,
   onSelectDetail,
+  forceLook = false,
   paintingRevealed = false,
   reducedMotion,
   transitionImage,
@@ -1666,6 +1684,7 @@ export default function Scene({
         onSelectDetail={onSelectDetail}
         reducedMotion={reducedMotion}
         inputLocked={Boolean(activePanel) || Boolean(activeDetail)}
+        forceLook={Boolean(forceLook)}
         anchors={sceneAnchors}
         transitionPitch={-0.65 * transitionProgress}
         settleReset={settleReset}
