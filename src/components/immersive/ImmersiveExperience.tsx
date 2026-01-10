@@ -46,6 +46,7 @@ export default function ImmersiveExperience() {
   const suppressExitPromptRef = useRef(false);
   const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [photoPage, setPhotoPage] = useState(0);
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return (
@@ -270,6 +271,16 @@ export default function ImmersiveExperience() {
     { title: "Landscape", gradient: "from-lime-300 via-green-500 to-emerald-500" },
     { title: "Midnight Drive", gradient: "from-slate-800 via-slate-600 to-slate-400" },
   ];
+  const photosPerPage = 4;
+  const photoPages = Math.max(
+    1,
+    Math.ceil(photographyGallery.length / photosPerPage),
+  );
+  const currentPhotoPage = Math.min(photoPage, photoPages - 1);
+  const photoPageItems = photographyGallery.slice(
+    currentPhotoPage * photosPerPage,
+    (currentPhotoPage + 1) * photosPerPage,
+  );
 
   const immersiveCursor =
     showIntro || showExitPrompt || (!pointerLocked && !pointerLockPending)
@@ -395,16 +406,31 @@ export default function ImmersiveExperience() {
                 : "w-[min(720px,92vw)]"
             }`}
           >
-            <button
-              type="button"
-              onClick={() => setActiveDetail(null)}
-              className="absolute right-6 top-6 rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
-            >
-              X
-            </button>
-            <div className="mt-3 text-2xl font-semibold">{detailTitle}</div>
+            {isPhotographyDetail || isResumeDetail ? (
+              <div className="flex items-center justify-between gap-4">
+                <div className="text-2xl font-semibold">{detailTitle}</div>
+                <button
+                  type="button"
+                  onClick={() => setActiveDetail(null)}
+                  className="rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+                >
+                  X
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setActiveDetail(null)}
+                  className="absolute right-6 top-6 rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+                >
+                  X
+                </button>
+                <div className="mt-3 text-2xl font-semibold">{detailTitle}</div>
+              </>
+            )}
             {isResumeDetail ? (
-              <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+              <div className="mt-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 <iframe
                   title="Resume"
                   src="/resume.pdf#view=FitH"
@@ -413,68 +439,97 @@ export default function ImmersiveExperience() {
               </div>
             ) : null}
             {isPhotographyDetail ? (
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                {photographyGallery.map((photo) => (
-                  <div
-                    key={photo.title}
-                    className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+              <div className="mt-6">
+                <div className="-m-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPhotoPage((prev) => Math.max(prev - 1, 0))
+                    }
+                    className="absolute -left-1 top-1/2 -translate-x-full -translate-y-1/2 rounded-full border border-white/20 bg-slate-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-white/40"
                   >
-                    <div
-                      className={`aspect-[4/3] w-full bg-gradient-to-br ${photo.gradient}`}
-                    />
-                    <div className="px-4 py-3 text-xs text-slate-200">
-                      {photo.title}
+                    ◀
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPhotoPage((prev) => Math.min(prev + 1, photoPages - 1))
+                    }
+                    className="absolute -right-1 top-1/2 translate-x-full -translate-y-1/2 rounded-full border border-white/20 bg-slate-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-white/40"
+                  >
+                    ▶
+                  </button>
+                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {photoPageItems.map((photo) => (
+                        <div
+                          key={photo.title}
+                          className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+                        >
+                          <div
+                            className={`aspect-[4/3] w-full bg-gradient-to-br ${photo.gradient}`}
+                          />
+                          <div className="px-4 py-3 text-xs text-slate-200">
+                            {photo.title}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-4 text-center text-[11px] uppercase tracking-[0.3em] text-slate-400">
+                      Page {currentPhotoPage + 1} / {photoPages}
                     </div>
                   </div>
-                ))}
+                </div>
               </div>
             ) : null}
             {isProjectDetail ? (
-              <div className="mt-6 grid gap-4">
-                {immersiveProjects.map((project) => (
-                  <div
-                    key={project.slug}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-5"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <div className="text-lg font-semibold text-white">
-                          {project.title}
+              <div className="mt-6 max-h-[60vh] overflow-y-auto pr-2">
+                <div className="grid gap-4">
+                  {immersiveProjects.map((project) => (
+                    <div
+                      key={project.slug}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-5"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <div className="text-lg font-semibold text-white">
+                            {project.title}
+                          </div>
+                          <div className="text-xs text-slate-300">
+                            {project.repo} · {project.createdAt}
+                          </div>
                         </div>
-                        <div className="text-xs text-slate-300">
-                          {project.repo} · {project.createdAt}
+                        <div className="text-xs uppercase tracking-[0.25em] text-slate-400">
+                          {project.stars ?? "—"} ★
                         </div>
                       </div>
-                      <div className="text-xs uppercase tracking-[0.25em] text-slate-400">
-                        {project.stars ?? "—"} ★
+                      <p className="mt-3 text-sm text-slate-200">
+                        {project.summary}
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                        {project.tags.slice(0, 6).map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-full border border-white/10 px-2 py-1"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200">
+                        {project.links.map((link) => (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
+                          >
+                            {link.label}
+                          </a>
+                        ))}
                       </div>
                     </div>
-                    <p className="mt-3 text-sm text-slate-200">
-                      {project.summary}
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-400">
-                      {project.tags.slice(0, 6).map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full border border-white/10 px-2 py-1"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200">
-                      {project.links.map((link) => (
-                        <a
-                          key={link.href}
-                          href={link.href}
-                          className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
-                        >
-                          {link.label}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             ) : null}
             {!isResumeDetail && !isPhotographyDetail && !isProjectDetail ? (

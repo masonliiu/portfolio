@@ -199,7 +199,7 @@ export const detailContent: Record<
   },
   "project-two": {
     title: immersiveProjects[1]?.title ?? "Project Two",
-  },
+  }, 
   "project-three": {
     title: immersiveProjects[2]?.title ?? "Project Three",
   },
