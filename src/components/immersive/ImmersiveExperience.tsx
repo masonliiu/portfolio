@@ -406,7 +406,7 @@ export default function ImmersiveExperience() {
                 : "w-[min(720px,92vw)]"
             }`}
           >
-            {isPhotographyDetail || isResumeDetail ? (
+            {isPhotographyDetail || isResumeDetail || isProjectDetail ? (
               <div className="flex items-center justify-between gap-4">
                 <div className="text-2xl font-semibold">{detailTitle}</div>
                 <button
@@ -430,7 +430,7 @@ export default function ImmersiveExperience() {
               </>
             )}
             {isResumeDetail ? (
-              <div className="mt-2 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 <iframe
                   title="Resume"
                   src="/resume.pdf#view=FitH"
@@ -553,10 +553,7 @@ export default function ImmersiveExperience() {
             >
               Close
             </button>
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
-              Gallery Wall
-            </div>
-            <div className="mt-3 text-2xl font-semibold">About Me</div>
+            <div className="-mt-1.5 text-2xl font-semibold">About Me</div>
             <div className="mt-5 space-y-4 text-sm text-slate-200">
               {aboutMeParagraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
