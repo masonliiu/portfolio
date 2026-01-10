@@ -4,12 +4,15 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Scene from "./Scene";
 import {
+  aboutMeLinks,
+  aboutMeParagraphs,
   detailContent,
   panelContent,
   panelKeybinds,
   type DetailKey,
   type PanelKey,
 } from "./data";
+import { projects } from "@/lib/projects";
 import {
   IMMERSIVE_SNAPSHOT_KEY,
   IMMERSIVE_SNAPSHOT_LAST_KEY,
@@ -137,6 +140,7 @@ export default function ImmersiveExperience() {
       if (key === "escape") {
         if (showExitPrompt) {
           setShowExitPrompt(false);
+          suppressExitPromptRef.current = true;
           requestPointerLock();
           return;
         }
@@ -146,7 +150,7 @@ export default function ImmersiveExperience() {
           setActivePanel(null);
           setShowExitPrompt(false);
           suppressExitPromptRef.current = true;
-          requestPointerLock();
+          setPointerLockPending(false);
           return;
         }
         setActiveDetail(null);
@@ -252,6 +256,20 @@ export default function ImmersiveExperience() {
     !showExitPrompt;
   const panel = activePanel ? panelContent[activePanel] : null;
   const detail = activeDetail ? detailContent[activeDetail] : null;
+  const isProjectDetail = Boolean(activeDetail?.startsWith("project-"));
+  const isResumeDetail = activeDetail === "resume";
+  const isPhotographyDetail = activeDetail === "photography";
+  const immersiveProjects = projects;
+  const showPaintingAbout = activePanel === "painting" && paintingRevealed;
+  const detailTitle = isProjectDetail ? "Projects" : detail?.title;
+  const photographyGallery = [
+    { title: "Golden Hour", gradient: "from-amber-300 via-orange-400 to-rose-500" },
+    { title: "City Dusk", gradient: "from-slate-700 via-indigo-600 to-purple-500" },
+    { title: "Motion Blur", gradient: "from-emerald-300 via-teal-500 to-sky-500" },
+    { title: "Studio Light", gradient: "from-rose-200 via-pink-300 to-amber-200" },
+    { title: "Landscape", gradient: "from-lime-300 via-green-500 to-emerald-500" },
+    { title: "Midnight Drive", gradient: "from-slate-800 via-slate-600 to-slate-400" },
+  ];
 
   const immersiveCursor =
     showIntro || showExitPrompt || (!pointerLocked && !pointerLockPending)
@@ -370,7 +388,13 @@ export default function ImmersiveExperience() {
       )}
       {showUi && detail && (
         <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-black/50 p-6">
-          <div className="relative w-[min(540px,92vw)] rounded-3xl border border-white/15 bg-slate-950/90 p-8 text-slate-100 shadow-2xl">
+          <div
+            className={`relative rounded-3xl border border-white/15 bg-slate-950/90 p-8 text-slate-100 shadow-2xl ${
+              isResumeDetail
+                ? "w-[min(960px,95vw)]"
+                : "w-[min(720px,92vw)]"
+            }`}
+          >
             <button
               type="button"
               onClick={() => setActiveDetail(null)}
@@ -378,22 +402,121 @@ export default function ImmersiveExperience() {
             >
               X
             </button>
-            <div className="mt-3 text-2xl font-semibold">{detail.title}</div>
-            {activeDetail === "resume" ? (
+            <div className="mt-3 text-2xl font-semibold">{detailTitle}</div>
+            {isResumeDetail ? (
               <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
                 <iframe
                   title="Resume"
                   src="/resume.pdf#view=FitH"
-                  className="h-[60vh] w-full"
+                  className="h-[75vh] w-full"
                 />
               </div>
-            ) : (
+            ) : null}
+            {isPhotographyDetail ? (
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {photographyGallery.map((photo) => (
+                  <div
+                    key={photo.title}
+                    className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+                  >
+                    <div
+                      className={`aspect-[4/3] w-full bg-gradient-to-br ${photo.gradient}`}
+                    />
+                    <div className="px-4 py-3 text-xs text-slate-200">
+                      {photo.title}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {isProjectDetail ? (
+              <div className="mt-6 grid gap-4">
+                {immersiveProjects.map((project) => (
+                  <div
+                    key={project.slug}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-5"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <div className="text-lg font-semibold text-white">
+                          {project.title}
+                        </div>
+                        <div className="text-xs text-slate-300">
+                          {project.repo} · {project.createdAt}
+                        </div>
+                      </div>
+                      <div className="text-xs uppercase tracking-[0.25em] text-slate-400">
+                        {project.stars ?? "—"} ★
+                      </div>
+                    </div>
+                    <p className="mt-3 text-sm text-slate-200">
+                      {project.summary}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-400">
+                      {project.tags.slice(0, 6).map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border border-white/10 px-2 py-1"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200">
+                      {project.links.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
+                        >
+                          {link.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {!isResumeDetail && !isPhotographyDetail && !isProjectDetail ? (
               <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-xs text-slate-300">
                 Placeholder content area for the document or project preview.
               </div>
-            )}
+            ) : null}
             <div className="mt-6 text-[11px] uppercase tracking-[0.3em] text-slate-400">
               Press X to close
+            </div>
+          </div>
+        </div>
+      )}
+      {showUi && showPaintingAbout && (
+        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center bg-black/50 p-6">
+          <div className="relative w-[min(720px,92vw)] rounded-3xl border border-white/15 bg-slate-950/90 p-8 text-slate-100 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setPaintingRevealed(false)}
+              className="absolute right-6 top-6 rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+            >
+              Close
+            </button>
+            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+              Gallery Wall
+            </div>
+            <div className="mt-3 text-2xl font-semibold">About Me</div>
+            <div className="mt-5 space-y-4 text-sm text-slate-200">
+              {aboutMeParagraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3 text-xs text-slate-200">
+              {aboutMeLinks.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
           </div>
         </div>

@@ -14,6 +14,7 @@ import {
 import * as THREE from "three";
 import { MarquiseMarker } from "./Hotspots";
 import {
+  aboutMeParagraphs,
   detailHotspots,
   hotspots,
   type DetailHotspot,
@@ -21,6 +22,7 @@ import {
   type Hotspot,
   type PanelKey,
 } from "./data";
+import { projects } from "@/lib/projects";
 
 type SceneProps = {
   activePanel: PanelKey | null;
@@ -1370,11 +1372,10 @@ function RoomModel({
       placeFlatLabel(photoObjLabel, "Mason's\nPhotography", "#f8fafc", 0.05, true);
     }
     const bookObjects = findObjectsByNameList(scene, shelfBookNames);
-    const bookLabels = [
-      { text: "Project One", index: 0 },
-      { text: "Project Two", index: 1 },
-      { text: "Project Three", index: 2 },
-    ];
+    const bookLabels = projects.slice(0, 3).map((project, index) => ({
+      text: project.title,
+      index,
+    }));
     bookLabels.forEach(({ text, index }) => {
       const obj = bookObjects[index];
       if (!obj) return;
@@ -1788,8 +1789,7 @@ export default function Scene({
             anchorY="top"
             position={[0, -0.02, 0]}
           >
-            Placeholder bio copy goes here. Replace with a short, confident
-            summary.
+            {aboutMeParagraphs.join("\n\n")}
           </Text>
         </group>
       )}

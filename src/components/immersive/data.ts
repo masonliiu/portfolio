@@ -1,3 +1,5 @@
+import { projects } from "@/lib/projects";
+
 export type PanelKey = "desk" | "table" | "painting" | "shelf";
 
 export type DetailKey =
@@ -126,6 +128,8 @@ export type PanelContent = Record<
   { title?: string; items: PanelItem[] }
 >;
 
+const immersiveProjects = projects.slice(0, 3);
+
 export const panelContent: PanelContent = {
   desk: {
     title: "Desk Papers",
@@ -162,15 +166,15 @@ export const panelContent: PanelContent = {
     title: "Projects",
     items: [
       {
-        title: "Project One",
+        title: immersiveProjects[0]?.title ?? "Project One",
         detailKey: "project-one",
       },
       {
-        title: "Project Two",
+        title: immersiveProjects[1]?.title ?? "Project Two",
         detailKey: "project-two",
       },
       {
-        title: "Project Three",
+        title: immersiveProjects[2]?.title ?? "Project Three",
         detailKey: "project-three",
       },
     ],
@@ -179,7 +183,7 @@ export const panelContent: PanelContent = {
 
 export const detailContent: Record<
   DetailKey,
-  { title: string}
+  { title: string }
 > = {
   resume: {
     title: "Resume",
@@ -191,12 +195,25 @@ export const detailContent: Record<
     title: "Photography",
   },
   "project-one": {
-    title: "Project One",
+    title: immersiveProjects[0]?.title ?? "Project One",
   },
   "project-two": {
-    title: "Project Two",
+    title: immersiveProjects[1]?.title ?? "Project Two",
   },
   "project-three": {
-    title: "Project Three",
+    title: immersiveProjects[2]?.title ?? "Project Three",
   },
 };
+
+export const aboutMeParagraphs = [
+  "Hey! I'm Mason Liu - a Computer Science student at UTD based in Dallas, Texas. I specialize in full-stack development, with thorough experience in game development and low-level systems programming.",
+  "Recently, I've been working on a wide variety of projects. Some very product-focused, others more technical, but all driven by my desire to build things from scratch that I'm genuinely proud to put out publicly.",
+  "Outside of software, I spend time playing virtually all sports, exploring photography, and expanding my music palette. If you want to collaborate or chat, feel free to reach out.",
+];
+
+export const aboutMeLinks = [
+  { label: "GitHub", href: "https://github.com/masonliiu" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/masonliiu/" },
+  { label: "Email", href: "mailto:liumasn@gmail.com" },
+  { label: "Instagram", href: "https://instagram.com/mason_liuu" },
+];
