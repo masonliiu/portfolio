@@ -518,13 +518,15 @@ export default function ImmersiveExperience() {
                       </div>
                       <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200">
                         {project.links.map((link) => (
-                          <a
-                            key={link.href}
-                            href={link.href}
-                            className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
-                          >
-                            {link.label}
-                          </a>
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
+                        >
+                          {link.label}
+                        </a>
                         ))}
                       </div>
                     </div>
@@ -564,6 +566,8 @@ export default function ImmersiveExperience() {
                 <a
                   key={link.href}
                   href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
                   className="underline decoration-white/40 underline-offset-4 hover:decoration-white"
                 >
                   {link.label}
