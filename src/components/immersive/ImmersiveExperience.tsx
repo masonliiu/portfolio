@@ -361,12 +361,12 @@ export default function ImmersiveExperience() {
               <>
                 <div className="text-xl font-semibold">Immersive Mode</div>
                 <p className="mt-3 text-sm text-slate-300">
-                  Press on glowing objects to learn about me.
+                  Press on glowing objects to learn stuff about me!
                 </p>
                 <button
                   type="button"
                   onClick={handleEnterImmersive}
-                  className="mt-6 w-full rounded-full border border-white/25 bg-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50"
+                  className="mt-6 w-full rounded-full border border-white/25 bg-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50 bg-slate-1500"
                 >
                   Enter immersive
                 </button>
@@ -374,7 +374,7 @@ export default function ImmersiveExperience() {
             ) : (
               <>
                 <div className="text-xl font-semibold">Immersive paused</div>
-                <p className="mt-3 text-sm text-slate-300">
+                <p className="mt-3 text-sm text-slate-300 bg-slate-1500">
                   Resume the scene or exit immersive mode.
                 </p>
                 <div className="mt-6 flex flex-col gap-3">
@@ -407,7 +407,7 @@ export default function ImmersiveExperience() {
             }`}
           >
             {isPhotographyDetail || isResumeDetail || isProjectDetail ? (
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-4 bg-slate-1500">
                 <div className="text-2xl font-semibold">{detailTitle}</div>
                 <button
                   type="button"
@@ -430,7 +430,7 @@ export default function ImmersiveExperience() {
               </>
             )}
             {isResumeDetail ? (
-              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-white/5">
+              <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-slate-1500">
                 <iframe
                   title="Resume"
                   src="/resume.pdf#view=FitH"
@@ -459,7 +459,7 @@ export default function ImmersiveExperience() {
                   >
                     ▶
                   </button>
-                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3">
+                  <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 bg-slate-1500">
                     <div className="grid gap-4 sm:grid-cols-2">
                       {photoPageItems.map((photo) => (
                         <div
@@ -516,7 +516,7 @@ export default function ImmersiveExperience() {
                           </span>
                         ))}
                       </div>
-                      <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200">
+                      <div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200 bg-slate-1500">
                         {project.links.map((link) => (
                         <a
                           key={link.href}
@@ -535,7 +535,7 @@ export default function ImmersiveExperience() {
               </div>
             ) : null}
             {!isResumeDetail && !isPhotographyDetail && !isProjectDetail ? (
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-xs text-slate-300">
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-xs text-slate-300 bg-slate-1500">
                 Placeholder content area for the document or project preview.
               </div>
             ) : null}
@@ -556,7 +556,7 @@ export default function ImmersiveExperience() {
               Close
             </button>
             <div className="-mt-1.5 text-2xl font-semibold">About Me</div>
-            <div className="mt-5 space-y-4 text-sm text-slate-200">
+            <div className="mt-5 space-y-4 text-sm text-slate-200 bg-slate-1500">
               {aboutMeParagraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
