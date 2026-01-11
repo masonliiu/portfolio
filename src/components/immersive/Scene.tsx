@@ -715,7 +715,9 @@ function LaptopScreenTransition({
     const ease = t * t * (3 - 2 * t);
     onProgress?.(ease);
 
-    const vFov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov);
+    const vFov = THREE.MathUtils.degToRad(
+      (camera as THREE.PerspectiveCamera).fov,
+    );
     const distance = 0.28;
     const height = 2 * Math.tan(vFov / 2) * distance;
     const width = height * (size.width / size.height);
@@ -744,9 +746,8 @@ function LaptopScreenTransition({
     );
     overlayRef.current.scale.lerpVectors(startScale.current, endScale.current, ease);
 
-    tempOpacity.current = 1;
     const material = overlayRef.current.material as THREE.MeshBasicMaterial;
-    material.opacity = tempOpacity.current;
+    material.opacity = 1;
 
     if (t >= 1 && !done.current) {
       done.current = true;
@@ -807,7 +808,9 @@ function LaptopScreenExitTransition({
     const screenHeight = geometry.parameters.height * tempScale.current.y;
     startScale.current.set(screenWidth, screenHeight, 1);
 
-    const vFov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov);
+    const vFov = THREE.MathUtils.degToRad(
+      (camera as THREE.PerspectiveCamera).fov,
+    );
     const distance = 0.28;
     const height = 2 * Math.tan(vFov / 2) * distance;
     const width = height * (size.width / size.height);
@@ -847,6 +850,7 @@ function LaptopScreenExitTransition({
     </mesh>
   );
 }
+
 
 function GlowOverlay({
   geometry,
@@ -1126,10 +1130,10 @@ function RoomModel({
     if (photoObj) {
       const { position, target } = buildAnchorFromObject(photoObj, roomCenter, {
         forward: 1.83,
-        up: 0.5,
-        targetUp: 1.13,
+        up: 0.25,
+        targetUp: 1.25,
         side: 26,
-        targetSide: -1.1,
+        targetSide: 0,
       });
       nextAnchors.painting = {
         ...nextAnchors.painting,

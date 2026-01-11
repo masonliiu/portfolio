@@ -76,13 +76,11 @@ export default function ImmersiveExperience() {
       }
       if (panel === "painting" && activePanel === "painting") {
         setPaintingRevealed((prev) => !prev);
+        setGlowActive((prev) => ({ ...prev, painting: false }));
         suppressExitPromptRef.current = true;
         document.exitPointerLock?.();
         window.dispatchEvent(new Event("immersive:release-pointer-lock"));
         return;
-      }
-      if (panel === "painting") {
-        setGlowActive((prev) => ({ ...prev, painting: false }));
       }
       setPaintingRevealed(false);
       setActivePanel(panel);
