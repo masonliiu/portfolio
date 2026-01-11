@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Text, useGLTF, useTexture } from "@react-three/drei";
+import { Environment, Text, useGLTF } from "@react-three/drei";
 import {
   Suspense,
   useCallback,
@@ -1036,10 +1036,6 @@ function RoomModel({
   onPanelHitMapReady,
   onReady,
 }: RoomModelProps) {
-  const [paintingTexture, frameTexture] = useTexture([
-    "/large1.jpg",
-    "/small1.jpg",
-  ]);
   const { scene } = useGLTF("/models/office.glb");
   const handled = useRef(false);
 
@@ -1094,37 +1090,6 @@ function RoomModel({
     registerPanelMeshesForList(tableObjects, "table");
     registerPanelMeshesForList(photoObjects, "painting");
     registerPanelMeshesForList(shelfObjects, "shelf");
-
-    const applyTexture = (
-      root: THREE.Object3D | null,
-      texture: THREE.Texture | null | undefined,
-    ) => {
-      if (!root || !texture) return;
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.flipY = false;
-      root.traverse((child) => {
-        if (!("isMesh" in child)) return;
-        const mesh = child as THREE.Mesh;
-        const materials = Array.isArray(mesh.material)
-          ? mesh.material
-          : [mesh.material];
-        materials.forEach((material) => {
-          if (!material || !("map" in material)) return;
-          material.map = texture;
-          material.needsUpdate = true;
-          if ("color" in material) {
-            material.color?.set("#ffffff");
-          }
-        });
-      });
-    };
-
-    applyTexture(photoObj, paintingTexture);
-    const framePlane =
-      scene.getObjectByName("Plane029_1") ??
-      scene.getObjectByName("Plane029") ??
-      scene.getObjectByName("Frame");
-    applyTexture(framePlane, frameTexture);
 
     const nextAnchors: AnchorMap = { ...defaultAnchors };
     if (couchObj) {
@@ -1515,7 +1480,6 @@ function RoomModel({
     onPanelHitMapReady();
     onReady?.();
   }, [
-    frameTexture,
     onAnchors,
     onDetailHotspots,
     onGlowTargets,
@@ -1525,7 +1489,6 @@ function RoomModel({
     onDetailHitMap,
     onPanelHitMapReady,
     onPaintingRef,
-    paintingTexture,
     scene,
   ]);
 
