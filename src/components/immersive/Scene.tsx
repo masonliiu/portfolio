@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Text, useGLTF } from "@react-three/drei";
+import { Environment, Text, useGLTF, useTexture } from "@react-three/drei";
 import {
   Suspense,
   useCallback,
@@ -35,9 +35,11 @@ type SceneProps = {
   reducedMotion?: boolean;
   transitionImage?: string | null;
   transitionActive?: boolean;
+  exitTransitionActive?: boolean;
   onTransitionEnd?: () => void;
   onTransitionStart?: () => void;
   onTransitionAnimating?: (isAnimating: boolean) => void;
+  onExitTransitionEnd?: () => void;
   onPanelHitMapReady?: () => void;
   onDebugHitName?: (value: string | null) => void;
   glowActive?: Record<string, boolean>;
@@ -642,6 +644,13 @@ type LaptopScreenTransitionProps = {
   onProgress?: (progress: number) => void;
 };
 
+type LaptopScreenExitTransitionProps = {
+  screenRef: RefObject<THREE.Mesh | null>;
+  texture: THREE.Texture;
+  onDone?: () => void;
+  onActive?: (isActive: boolean) => void;
+};
+
 function PaintingReveal({
   paintingRef,
   baseQuatRef,
@@ -738,6 +747,84 @@ function LaptopScreenTransition({
     tempOpacity.current = 1;
     const material = overlayRef.current.material as THREE.MeshBasicMaterial;
     material.opacity = tempOpacity.current;
+
+    if (t >= 1 && !done.current) {
+      done.current = true;
+      onActive?.(false);
+      onDone?.();
+    }
+  });
+
+  return (
+    <mesh ref={overlayRef} renderOrder={10}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        map={texture}
+        toneMapped={false}
+        transparent
+        opacity={1}
+        depthTest={false}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+function LaptopScreenExitTransition({
+  screenRef,
+  texture,
+  onDone,
+  onActive,
+}: LaptopScreenExitTransitionProps) {
+  const overlayRef = useRef<THREE.Mesh>(null);
+  const { camera, size } = useThree();
+  const elapsed = useRef(0);
+  const done = useRef(false);
+  const startPos = useRef(new THREE.Vector3());
+  const endPos = useRef(new THREE.Vector3());
+  const startQuat = useRef(new THREE.Quaternion());
+  const endQuat = useRef(new THREE.Quaternion());
+  const startScale = useRef(new THREE.Vector3());
+  const endScale = useRef(new THREE.Vector3());
+  const tempDirection = useRef(new THREE.Vector3());
+  const tempScale = useRef(new THREE.Vector3());
+
+  useFrame((state, delta) => {
+    if (!overlayRef.current || !screenRef.current || done.current) return;
+
+    onActive?.(true);
+    elapsed.current += delta;
+    const duration = 1.6;
+    const t = Math.min(Math.max(elapsed.current / duration, 0), 1);
+    const ease = t * t * (3 - 2 * t);
+
+    screenRef.current.getWorldPosition(startPos.current);
+    screenRef.current.getWorldQuaternion(startQuat.current);
+    screenRef.current.getWorldScale(tempScale.current);
+
+    const geometry = screenRef.current.geometry as THREE.PlaneGeometry;
+    const screenWidth = geometry.parameters.width * tempScale.current.x;
+    const screenHeight = geometry.parameters.height * tempScale.current.y;
+    startScale.current.set(screenWidth, screenHeight, 1);
+
+    const vFov = THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov);
+    const distance = 0.28;
+    const height = 2 * Math.tan(vFov / 2) * distance;
+    const width = height * (size.width / size.height);
+    camera.getWorldDirection(tempDirection.current);
+    endPos.current
+      .copy(camera.position)
+      .add(tempDirection.current.multiplyScalar(distance));
+    endQuat.current.copy(camera.quaternion);
+    endScale.current.set(width, height, 1);
+
+    overlayRef.current.position.lerpVectors(startPos.current, endPos.current, ease);
+    overlayRef.current.quaternion.slerpQuaternions(
+      startQuat.current,
+      endQuat.current,
+      ease,
+    );
+    overlayRef.current.scale.lerpVectors(startScale.current, endScale.current, ease);
 
     if (t >= 1 && !done.current) {
       done.current = true;
@@ -949,6 +1036,10 @@ function RoomModel({
   onPanelHitMapReady,
   onReady,
 }: RoomModelProps) {
+  const [paintingTexture, frameTexture] = useTexture([
+    "/large1.jpg",
+    "/small1.jpg",
+  ]);
   const { scene } = useGLTF("/models/office.glb");
   const handled = useRef(false);
 
@@ -1003,6 +1094,37 @@ function RoomModel({
     registerPanelMeshesForList(tableObjects, "table");
     registerPanelMeshesForList(photoObjects, "painting");
     registerPanelMeshesForList(shelfObjects, "shelf");
+
+    const applyTexture = (
+      root: THREE.Object3D | null,
+      texture: THREE.Texture | null | undefined,
+    ) => {
+      if (!root || !texture) return;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.flipY = false;
+      root.traverse((child) => {
+        if (!("isMesh" in child)) return;
+        const mesh = child as THREE.Mesh;
+        const materials = Array.isArray(mesh.material)
+          ? mesh.material
+          : [mesh.material];
+        materials.forEach((material) => {
+          if (!material || !("map" in material)) return;
+          material.map = texture;
+          material.needsUpdate = true;
+          if ("color" in material) {
+            material.color?.set("#ffffff");
+          }
+        });
+      });
+    };
+
+    applyTexture(photoObj, paintingTexture);
+    const framePlane =
+      scene.getObjectByName("Plane029_1") ??
+      scene.getObjectByName("Plane029") ??
+      scene.getObjectByName("Frame");
+    applyTexture(framePlane, frameTexture);
 
     const nextAnchors: AnchorMap = { ...defaultAnchors };
     if (couchObj) {
@@ -1393,6 +1515,7 @@ function RoomModel({
     onPanelHitMapReady();
     onReady?.();
   }, [
+    frameTexture,
     onAnchors,
     onDetailHotspots,
     onGlowTargets,
@@ -1402,6 +1525,7 @@ function RoomModel({
     onDetailHitMap,
     onPanelHitMapReady,
     onPaintingRef,
+    paintingTexture,
     scene,
   ]);
 
@@ -1421,9 +1545,11 @@ export default function Scene({
   reducedMotion,
   transitionImage,
   transitionActive = false,
+  exitTransitionActive = false,
   onTransitionEnd,
   onTransitionStart,
   onTransitionAnimating,
+  onExitTransitionEnd,
   onPanelHitMapReady,
   onDebugHitName,
   glowActive,
@@ -1434,6 +1560,7 @@ export default function Scene({
     useState<DetailHotspot[]>(detailHotspots);
   const [screenTexture, setScreenTexture] = useState<THREE.Texture | null>(null);
   const [transitionAnimating, setTransitionAnimating] = useState(false);
+  const [exitTransitionAnimating, setExitTransitionAnimating] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [cameraSettled, setCameraSettled] = useState(false);
   const [settleReset, setSettleReset] = useState(0);
@@ -1573,6 +1700,15 @@ export default function Scene({
       setScreenTexture(texture);
     });
   }, [transitionImage]);
+
+  useEffect(() => {
+    if (!exitTransitionActive || !onExitTransitionEnd) return;
+    if (screenTexture) return;
+    const timer = window.setTimeout(() => {
+      onExitTransitionEnd();
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [exitTransitionActive, onExitTransitionEnd, screenTexture]);
 
   useEffect(() => {
     if (!transitionActive || !screenTexture || !sceneReady || !cameraSettled) {
@@ -1746,7 +1882,12 @@ export default function Scene({
         {...laptopTransform}
         screenRef={screenRef}
         screenTexture={screenTexture}
-        screenUnlit={transitionActive || transitionAnimating}
+        screenUnlit={
+          transitionActive ||
+          transitionAnimating ||
+          exitTransitionActive ||
+          exitTransitionAnimating
+        }
       />
       {objectLabels.map((label) => (
         <Text
@@ -1800,6 +1941,14 @@ export default function Scene({
           onActive={setTransitionAnimating}
           onProgress={setTransitionProgress}
           onDone={onTransitionEnd}
+        />
+      )}
+      {exitTransitionActive && screenTexture && (
+        <LaptopScreenExitTransition
+          screenRef={screenRef}
+          texture={screenTexture}
+          onActive={setExitTransitionAnimating}
+          onDone={onExitTransitionEnd}
         />
       )}
       <group>

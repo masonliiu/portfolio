@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Scene from "./Scene";
 import {
@@ -42,11 +42,13 @@ export default function ImmersiveExperience() {
   const [pointerLocked, setPointerLocked] = useState(false);
   const [pointerLockPending, setPointerLockPending] = useState(false);
   const [showExitPrompt, setShowExitPrompt] = useState(false);
+  const [exitTransitionActive, setExitTransitionActive] = useState(false);
   const lastEscapeRef = useRef(0);
   const suppressExitPromptRef = useRef(false);
   const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [photoPage, setPhotoPage] = useState(0);
+  const router = useRouter();
   const [transitionImage, setTransitionImage] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return (
@@ -130,6 +132,17 @@ export default function ImmersiveExperience() {
     setShowExitPrompt(false);
     requestPointerLock();
   }, [requestPointerLock]);
+
+  const handleExitImmersive = useCallback(() => {
+    if (exitTransitionActive) return;
+    setShowExitPrompt(false);
+    setActiveDetail(null);
+    setActivePanel(null);
+    setPaintingRevealed(false);
+    document.exitPointerLock?.();
+    window.dispatchEvent(new Event("immersive:release-pointer-lock"));
+    setExitTransitionActive(true);
+  }, [exitTransitionActive]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -242,10 +255,17 @@ export default function ImmersiveExperience() {
     window.dispatchEvent(new Event("immersive:hide-snapshot"));
   }, []);
 
+  const handleExitTransitionEnd = useCallback(() => {
+    router.push("/");
+  }, [router]);
+
   const rootClassName =
     "fixed inset-0 z-50 h-full w-full overflow-hidden text-white";
   const sceneClassName = "opacity-100";
-  const showUi = transitionChecked && (!transitionImage || !transitionActive);
+  const showUi =
+    transitionChecked &&
+    (!transitionImage || !transitionActive) &&
+    !exitTransitionActive;
   const showIntro = showUi && !hasInteracted;
   const showHud = showUi && hasInteracted && !showExitPrompt;
   const showCrosshair =
@@ -311,9 +331,11 @@ export default function ImmersiveExperience() {
           reducedMotion={prefersReducedMotion}
           transitionImage={transitionImage}
           transitionActive={transitionActive}
+          exitTransitionActive={exitTransitionActive}
           onTransitionEnd={handleTransitionEnd}
           onTransitionStart={handleTransitionStart}
           onTransitionAnimating={handleTransitionAnimating}
+          onExitTransitionEnd={handleExitTransitionEnd}
           onPanelHitMapReady={() => setPanelHitMapReady(true)}
           onDebugHitName={setDebugHitName}
           glowActive={glowActive}
@@ -344,12 +366,13 @@ export default function ImmersiveExperience() {
           )} */}
           {showHud && (
             <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
-              <Link
-                href="/"
+              <button
+                type="button"
+                onClick={handleExitImmersive}
                 className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)]"
               >
                 exit immersive
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -385,12 +408,13 @@ export default function ImmersiveExperience() {
                   >
                     Resume
                   </button>
-                  <Link
-                    href="/"
+                  <button
+                    type="button"
+                    onClick={handleExitImmersive}
                     className="w-full rounded-full border border-white/20 px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
                   >
                     Exit immersive
-                  </Link>
+                  </button>
                 </div>
               </>
             )}
