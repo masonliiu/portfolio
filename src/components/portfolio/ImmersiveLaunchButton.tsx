@@ -24,7 +24,7 @@ export default function ImmersiveLaunchButton({
 
   const preloadRoom = async () => {
     try {
-      const response = await fetch("/models/office.glb", { cache: "force-cache" });
+      const response = await fetch("/models/finalroom.glb", { cache: "force-cache" });
       if (response.ok) {
         await response.arrayBuffer();
       }

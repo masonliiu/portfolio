@@ -1036,7 +1036,7 @@ function RoomModel({
   onPanelHitMapReady,
   onReady,
 }: RoomModelProps) {
-  const { scene } = useGLTF("/models/office.glb");
+  const { scene } = useGLTF("/models/finalroom.glb");
   const handled = useRef(false);
 
   useEffect(() => {
@@ -1495,7 +1495,7 @@ function RoomModel({
   return <primitive object={scene} />;
 }
 
-useGLTF.preload("/models/office.glb");
+useGLTF.preload("/models/finalroom.glb");
 
 export default function Scene({
   activePanel,
