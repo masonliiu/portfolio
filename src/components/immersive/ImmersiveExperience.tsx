@@ -367,7 +367,7 @@ export default function ImmersiveExperience() {
               <button
                 type="button"
                 onClick={handleExitImmersive}
-                className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)]"
+                className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] bg-slate-60"
               >
                 exit immersive
               </button>
@@ -380,24 +380,20 @@ export default function ImmersiveExperience() {
           <div className="w-[min(440px,88vw)] rounded-3xl border border-white/15 bg-slate-950/90 p-8 text-slate-100 shadow-2xl">
             {showIntro ? (
               <>
-                <div className="text-xl font-semibold">Immersive Mode</div>
-                <p className="mt-3 text-sm text-slate-300">
+                <div className="text-md text-slate-100">
                   Press on glowing objects to learn stuff about me!
-                </p>
+                </div>
                 <button
                   type="button"
                   onClick={handleEnterImmersive}
                   className="mt-6 w-full rounded-full border border-white/25 bg-white/10 px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:border-white/50 bg-slate-1500"
                 >
-                  Enter immersive
+                  Enter 
                 </button>
               </>
             ) : (
               <>
-                <div className="text-xl font-semibold">Immersive paused</div>
-                <p className="mt-3 text-sm text-slate-300 bg-slate-1500">
-                  Resume the scene or exit immersive mode.
-                </p>
+                <div className="text-xl font-semibold">Paused</div>
                 <div className="mt-6 flex flex-col gap-3">
                   <button
                     type="button"
@@ -434,7 +430,7 @@ export default function ImmersiveExperience() {
                 <button
                   type="button"
                   onClick={() => setActiveDetail(null)}
-                  className="rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-[11px] leading-none text-slate-200 transition hover:border-white/40"
                 >
                   X
                 </button>
@@ -444,7 +440,7 @@ export default function ImmersiveExperience() {
                 <button
                   type="button"
                   onClick={() => setActiveDetail(null)}
-                  className="absolute right-6 top-6 rounded-full border border-white/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-white/40"
+                  className="absolute right-6 top-6 flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-[11px] leading-none text-slate-200 transition hover:border-white/40"
                 >
                   X
                 </button>
@@ -468,7 +464,7 @@ export default function ImmersiveExperience() {
                     onClick={() =>
                       setPhotoPage((prev) => Math.max(prev - 1, 0))
                     }
-                    className="absolute -left-1 top-1/2 -translate-x-full -translate-y-1/2 rounded-full border border-white/20 bg-slate-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-white/40"
+                    className="absolute -left-1 top-1/2 flex h-9 w-9 -translate-x-full -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-slate-950/70 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-white/40"
                   >
                     ◀
                   </button>
@@ -477,7 +473,7 @@ export default function ImmersiveExperience() {
                     onClick={() =>
                       setPhotoPage((prev) => Math.min(prev + 1, photoPages - 1))
                     }
-                    className="absolute -right-1 top-1/2 translate-x-full -translate-y-1/2 rounded-full border border-white/20 bg-slate-950/70 px-3 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-white/40"
+                    className="absolute -right-1 top-1/2 flex h-9 w-9 translate-x-full -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-slate-950/70 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 transition hover:border-white/40"
                   >
                     ▶
                   </button>
