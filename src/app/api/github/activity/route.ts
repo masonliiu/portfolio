@@ -187,6 +187,7 @@ export async function GET() {
           };
           return {
             item: {
+              url,
               repository: { full_name: repoMap.get(url) ?? USERNAME },
               commit: { message: detail.commit.message },
               html_url: detail.html_url,
