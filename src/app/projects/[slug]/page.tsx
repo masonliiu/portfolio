@@ -34,12 +34,12 @@ export default async function ProjectDetailPage({
   return (
     <div className="page-shell max-w-6xl">
       <div className="scroll-blur" />
-      <div className="mt-6 flex flex-col items-center gap-6 text-center">
+      <div className="mt-6 flex flex-col items-start gap-6 text-left">
         <div
           className="terminal-preview terminal-preview--catalog w-[25rem] max-w-xl"
           style={{ viewTransitionName: `project-${project.slug}` }}
         >
-        <div className="terminal-window">
+        <div className="terminal-window text-left">
             <div className="terminal-window__top">
               <div className="terminal-window__controls">
                 <span className="terminal-dot terminal-dot--red" />
@@ -67,14 +67,14 @@ export default async function ProjectDetailPage({
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-start gap-3">
           <h1 className="text-3xl font-extrabold tracking-tight">
             {project.title}
           </h1>
           <span className="text-sm text-[var(--color-subtext1)]">
             {project.createdAt}
           </span>
-          <div className="flex flex-wrap items-center justify-center gap-3 text-[var(--color-subtext1)]">
+          <div className="flex flex-wrap items-center gap-3 text-[var(--color-subtext1)]">
             {project.links.map((link) => {
               const label = link.label.toLowerCase();
               const isGithub = label.includes("github");
