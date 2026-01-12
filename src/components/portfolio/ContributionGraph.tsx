@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 
 type Day = {
   date: string;
@@ -200,6 +201,11 @@ export default function ContributionGraph() {
     return levelColors[3];
   };
 
+  const gridStyle = {
+    "--cell-size": `${cellSize}px`,
+    "--cell-gap": `${cellGap}px`,
+  } as CSSProperties;
+
   return (
     <section className="terminal-card p-4">
       <div className="flex items-center justify-between">
@@ -229,10 +235,7 @@ export default function ContributionGraph() {
             ref={gridRef}
             className="flex flex-col"
             onMouseLeave={() => setTooltip(null)}
-            style={{
-              "--cell-size": `${cellSize}px`,
-              "--cell-gap": `${cellGap}px`,
-            }}
+            style={gridStyle}
           >
             <div
               className="grid text-[10px] text-[var(--color-subtext1)]"
