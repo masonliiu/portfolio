@@ -24,7 +24,9 @@ export default async function ProjectDetailPage({
       <section className="section-block" data-reveal>
         <div className="section-center space-y-6">
           <p className="section-kicker">Project</p>
-          <h1 className="section-title">{project.title}</h1>
+          <h1 className="section-title outline-fill" data-fill data-blob-target>
+            {project.title}
+          </h1>
           <p className="section-subtitle">{project.summary}</p>
           <div className="flex flex-wrap gap-4 text-[11px] uppercase tracking-[0.3em] text-[var(--muted-2)]">
             <span>{project.createdAt}</span>

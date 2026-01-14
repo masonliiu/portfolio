@@ -12,10 +12,10 @@ export default function ProjectsList() {
     <section className="section-block" data-reveal>
       <div className="section-center space-y-4">
         <p className="section-kicker">Projects archive</p>
-        <h1 className="section-title">A catalogue of experiments.</h1>
-        <p className="section-subtitle">
-          Full-stack products, systems research, and interaction prototypes.
-        </p>
+        <h1 className="section-title outline-fill" data-fill data-blob-target>
+          Projects.
+        </h1>
+        <p className="section-subtitle">Full-stack products and systems work.</p>
       </div>
 
       <div className="work-list mt-10">

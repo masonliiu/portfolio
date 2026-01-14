@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer className="page-shell footer">
-      <div className="flex flex-col items-center gap-4 text-center">
+      <div className="flex flex-col items-start gap-4 text-left">
         <span>© {new Date().getFullYear()} Mason Liu</span>
         <div className="flex flex-wrap items-center gap-4">
           <a href="mailto:liumasn@gmail.com" data-magnet data-cursor="Email">
