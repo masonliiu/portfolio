@@ -22,7 +22,7 @@ export default async function ProjectDetailPage({
   return (
     <main className="page-shell">
       <section className="section-block" data-reveal>
-        <div className="space-y-6">
+        <div className="section-center space-y-6">
           <p className="section-kicker">Project</p>
           <h1 className="section-title">{project.title}</h1>
           <p className="section-subtitle">{project.summary}</p>
@@ -42,6 +42,8 @@ export default async function ProjectDetailPage({
                 href={link.href}
                 target="_blank"
                 rel="noreferrer"
+                data-magnet
+                data-cursor="Open"
               >
                 {link.label}
               </a>
@@ -74,7 +76,7 @@ export default async function ProjectDetailPage({
         </div>
       </section>
 
-      <Link className="work-meta inline-flex" href="/projects">
+      <Link className="work-meta inline-flex" href="/projects" data-magnet data-cursor="Back">
         Back to projects →
       </Link>
     </main>

@@ -9,7 +9,6 @@ import SplitType from "split-type";
 
 export default function MotionOrchestrator() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
   const isImmersive = pathname.startsWith("/immersive");
 
   useEffect(() => {
@@ -23,34 +22,44 @@ export default function MotionOrchestrator() {
 
     const lenis = new Lenis({
       lerp: 0.08,
-      duration: 1.15,
+      duration: 1.1,
       smoothWheel: true,
       smoothTouch: true,
       syncTouch: true,
       syncTouchLerp: 0.08,
-      touchMultiplier: 1.2,
+      touchMultiplier: 1.15,
       touchInertiaExponent: 32,
-      wheelMultiplier: 1.1,
+      wheelMultiplier: 1.05,
       normalizeWheel: true,
       easing: (t) => 1 - Math.pow(1 - t, 3),
-      orientation: isHome ? "horizontal" : "vertical",
-      gestureOrientation: isHome ? "both" : "vertical",
     });
 
     (window as Window & { __lenis?: Lenis }).__lenis = lenis;
 
     const root = document.documentElement;
-    root.dataset.scrollAxis = isHome ? "horizontal" : "vertical";
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
 
     lenis.on("scroll", ({ progress, velocity, direction, scroll, limit }) => {
       const percent = limit === 0 ? 0 : progress * 100;
       root.style.setProperty("--scroll-progress", `${percent.toFixed(2)}%`);
       root.style.setProperty("--scroll-velocity", velocity.toFixed(3));
       root.style.setProperty("--scroll-offset", `${scroll.toFixed(2)}px`);
-      root.dataset.scrollDir =
-        direction > 0 ? (isHome ? "forward" : "down") : isHome ? "back" : "up";
+      root.dataset.scrollDir = direction > 0 ? "down" : "up";
       ScrollTrigger.update();
     });
+
+    const initialHash = window.location.hash;
+    if (initialHash) {
+      const target = document.querySelector(initialHash);
+      if (target) {
+        lenis.scrollTo(target, { offset: -120, immediate: true });
+      }
+    } else {
+      lenis.scrollTo(0, { immediate: true });
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
 
     const handleAnchor = (event: Event) => {
       const target = event.currentTarget as HTMLAnchorElement;
@@ -62,11 +71,7 @@ export default function MotionOrchestrator() {
       const element = document.querySelector(hash);
       if (!element) return;
       event.preventDefault();
-      lenis.scrollTo(element, {
-        offset: isHome ? -140 : -80,
-        duration: 1.15,
-        lerp: 0.08,
-      });
+      lenis.scrollTo(element, { offset: -120, duration: 1.1, lerp: 0.08 });
     };
 
     const anchorLinks = Array.from(
@@ -96,12 +101,11 @@ export default function MotionOrchestrator() {
       lenis.destroy();
       delete (window as Window & { __lenis?: Lenis }).__lenis;
       root.removeAttribute("data-scroll-dir");
-      root.removeAttribute("data-scroll-axis");
       root.style.removeProperty("--scroll-progress");
       root.style.removeProperty("--scroll-velocity");
       root.style.removeProperty("--scroll-offset");
     };
-  }, [isHome, isImmersive]);
+  }, [isImmersive, pathname]);
 
   useEffect(() => {
     if (isImmersive) return;
@@ -116,17 +120,15 @@ export default function MotionOrchestrator() {
     revealTargets.forEach((target) => {
       gsap.fromTo(
         target,
-        { opacity: 0, x: isHome ? 60 : 0, y: isHome ? 0 : 40 },
+        { opacity: 0, y: 40 },
         {
           opacity: 1,
-          x: 0,
           y: 0,
           duration: 0.8,
           ease: "power2.out",
           scrollTrigger: {
             trigger: target,
-            start: isHome ? "left 75%" : "top 80%",
-            horizontal: isHome,
+            start: "top 80%",
           },
         }
       );
@@ -135,7 +137,7 @@ export default function MotionOrchestrator() {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [isHome, isImmersive]);
+  }, [isImmersive, pathname]);
 
   useEffect(() => {
     if (isImmersive) return;

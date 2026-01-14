@@ -7,7 +7,7 @@ export default function ProjectsPage() {
     <>
       <main className="page-shell">
         <ProjectsList />
-        <Link className="work-meta mt-10 inline-flex" href="/">
+        <Link className="work-meta mt-10 inline-flex" href="/" data-magnet data-cursor="Home">
           Back home →
         </Link>
       </main>

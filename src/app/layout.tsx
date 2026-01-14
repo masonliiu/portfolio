@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Space_Grotesk } from "next/font/google";
+import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 import RouteHeader from "@/components/portfolio/RouteHeader";
@@ -8,7 +8,7 @@ import MotionOrchestrator from "@/components/portfolio/MotionOrchestrator";
 import CursorController from "@/components/portfolio/CursorController";
 import { ViewTransitions } from "next-view-transitions";
 
-const instrumentSerif = Instrument_Serif({
+const bebasNeue = Bebas_Neue({
   weight: ["400"],
   subsets: ["latin"],
   variable: "--font-display",
@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="root-theme" suppressHydrationWarning>
       <body
-        className={`${instrumentSerif.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${bebasNeue.variable} ${spaceGrotesk.variable} antialiased`}
       >
         <MotionOrchestrator />
         <CursorController />

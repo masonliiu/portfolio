@@ -10,12 +10,11 @@ export default function ProjectsList() {
 
   return (
     <section className="section-block" data-reveal>
-      <div className="space-y-4">
+      <div className="section-center space-y-4">
         <p className="section-kicker">Projects archive</p>
         <h1 className="section-title">A catalogue of experiments.</h1>
         <p className="section-subtitle">
-          Full-stack products, systems research, and interaction prototypes. Each
-          project includes context, architecture highlights, and outcomes.
+          Full-stack products, systems research, and interaction prototypes.
         </p>
       </div>
 
@@ -26,6 +25,8 @@ export default function ProjectsList() {
             href={`/projects/${project.slug}`}
             className="work-row"
             data-reveal
+            data-magnet
+            data-cursor="Open"
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
