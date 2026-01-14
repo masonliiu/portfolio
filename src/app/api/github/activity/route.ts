@@ -241,7 +241,7 @@ export async function GET() {
         },
       }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "GitHub activity unavailable" },
       { status: 500 }

@@ -7,7 +7,6 @@ import {
   aboutMeLinks,
   aboutMeParagraphs,
   detailContent,
-  panelContent,
   panelKeybinds,
   type DetailKey,
   type PanelKey,
@@ -38,7 +37,6 @@ export default function ImmersiveExperience() {
   const [activeDetail, setActiveDetail] = useState<DetailKey | null>(null);
   const [paintingRevealed, setPaintingRevealed] = useState(false);
   const [panelHitMapReady, setPanelHitMapReady] = useState(false);
-  const [debugHitName, setDebugHitName] = useState<string | null>(null);
   const [pointerLocked, setPointerLocked] = useState(false);
   const [pointerLockPending, setPointerLockPending] = useState(false);
   const [showExitPrompt, setShowExitPrompt] = useState(false);
@@ -48,8 +46,9 @@ export default function ImmersiveExperience() {
   const pendingPanelRef = useRef<PanelKey | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [photoPage, setPhotoPage] = useState(0);
+  const [sceneReady, setSceneReady] = useState(false);
   const router = useRouter();
-  const [transitionImage, setTransitionImage] = useState<string | null>(() => {
+  const [transitionImage] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return (
       sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY) ??
@@ -59,7 +58,7 @@ export default function ImmersiveExperience() {
   const [transitionActive, setTransitionActive] = useState(
     Boolean(transitionImage),
   );
-  const [transitionChecked, setTransitionChecked] = useState(false);
+  const transitionChecked = true;
   const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [glowActive, setGlowActive] = useState<Record<string, boolean>>(() => ({
     "desk-papers": true,
@@ -187,7 +186,7 @@ export default function ImmersiveExperience() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeDetail, handleSelectPanel, showExitPrompt]);
+  }, [activeDetail, activePanel, handleSelectPanel, requestPointerLock, showExitPrompt]);
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -222,22 +221,9 @@ export default function ImmersiveExperience() {
     handleSelectPanel(panel);
   }, [handleSelectPanel, panelHitMapReady]);
 
-  useEffect(() => {
-    if (transitionImage) return;
-    const stored =
-      sessionStorage.getItem(IMMERSIVE_SNAPSHOT_KEY) ??
-      localStorage.getItem(IMMERSIVE_SNAPSHOT_LAST_KEY);
-    if (stored) {
-      setTransitionImage(stored);
-      setTransitionActive(true);
-    }
-    setTransitionChecked(true);
-  }, [transitionImage]);
-
   const handleTransitionEnd = useCallback(() => {
     window.dispatchEvent(new Event("immersive:ready"));
     setTransitionActive(false);
-    setTransitionChecked(true);
     window.setTimeout(() => {
       sessionStorage.removeItem(IMMERSIVE_SNAPSHOT_KEY);
       sessionStorage.removeItem(IMMERSIVE_SNAPSHOT_META_KEY);
@@ -266,6 +252,7 @@ export default function ImmersiveExperience() {
     !exitTransitionActive;
   const showIntro = showUi && !hasInteracted;
   const showHud = showUi && hasInteracted && !showExitPrompt;
+  const showLoading = showUi && !sceneReady;
   const showCrosshair =
     showUi &&
     (pointerLocked || pointerLockPending) &&
@@ -273,7 +260,6 @@ export default function ImmersiveExperience() {
     !activeDetail &&
     !showIntro &&
     !showExitPrompt;
-  const panel = activePanel ? panelContent[activePanel] : null;
   const detail = activeDetail ? detailContent[activeDetail] : null;
   const isProjectDetail = Boolean(activeDetail?.startsWith("project-"));
   const isResumeDetail = activeDetail === "resume";
@@ -335,8 +321,8 @@ export default function ImmersiveExperience() {
           onTransitionAnimating={handleTransitionAnimating}
           onExitTransitionEnd={handleExitTransitionEnd}
           onPanelHitMapReady={() => setPanelHitMapReady(true)}
-          onDebugHitName={setDebugHitName}
           glowActive={glowActive}
+          onSceneReady={() => setSceneReady(true)}
         />
       </div>
       {showUi && (
@@ -357,22 +343,24 @@ export default function ImmersiveExperience() {
               Hotkeys: [1] Desk · [2] Table · [3] Painting · [4] Shelves
             </div>
           )}
-          {/* DEBUG - {debugHitName && (
-            <div className="pointer-events-auto absolute left-6 top-[12.5rem] rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2 text-xs text-slate-200">
-              Hit: {debugHitName}
-            </div>
-          )} */}
           {showHud && (
             <div className="pointer-events-auto absolute right-6 top-6 flex flex-col gap-3">
               <button
                 type="button"
                 onClick={handleExitImmersive}
-                className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] bg-slate-60"
+                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white/40"
               >
                 exit immersive
               </button>
             </div>
           )}
+        </div>
+      )}
+      {showLoading && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="rounded-2xl border border-white/10 bg-slate-950/80 px-6 py-4 text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-200">
+            Loading room...
+          </div>
         </div>
       )}
       {(showIntro || showExitPrompt) && (

@@ -1,17 +1,17 @@
 import AboutContent from "@/components/portfolio/AboutContent";
 import { Link } from "next-view-transitions";
+import Footer from "@/components/portfolio/Footer";
 
 export default function AboutPage() {
   return (
-    <div className="page-shell">
-      <div className="scroll-blur" />
-      <AboutContent />
-      <Link
-        className="mt-10 inline-flex items-center gap-2 text-xs font-semibold lowercase tracking-[0.3em] text-[var(--color-subtext1)] clickable"
-        href="/"
-      >
-        Back home
-      </Link>
-    </div>
+    <>
+      <main className="page-shell">
+        <AboutContent />
+        <Link className="work-meta mt-10 inline-flex" href="/">
+          Back home →
+        </Link>
+      </main>
+      <Footer />
+    </>
   );
 }

@@ -13,7 +13,7 @@ type ApiResponse = {
   days: Day[];
 };
 
-const DEFAULT_COLORS = ["#2a2740", "#4b4470", "#6d6698", "#9a94c7"];
+const DEFAULT_COLORS = ["#e3dbcf", "#cfb8a3", "#b8907a", "#8f6752"];
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -90,7 +90,7 @@ export default function ContributionGraph() {
   const gridRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [levelColors, setLevelColors] = useState(DEFAULT_COLORS);
-  const [offColor, setOffColor] = useState("var(--color-surface0)");
+  const [offColor, setOffColor] = useState("var(--soft-line)");
   const [cellSize, setCellSize] = useState(10);
   const [cellGap, setCellGap] = useState(2);
 
@@ -110,7 +110,7 @@ export default function ContributionGraph() {
     const weeksList: Day[][] = [];
     const monthStarts: number[] = [];
 
-    let current = new Date(startDate);
+    const current = new Date(startDate);
     let weekIndex = 0;
 
     while (current <= endDate) {
@@ -171,14 +171,12 @@ export default function ContributionGraph() {
     const root = document.documentElement;
     const compute = () => {
       const styles = getComputedStyle(root);
-      const accentRaw =
-        styles.getPropertyValue("--current-accent-color").trim() ||
-        styles.getPropertyValue("--color-accent").trim();
-      const surfaceRaw = styles.getPropertyValue("--color-surface0").trim();
+      const accentRaw = styles.getPropertyValue("--accent").trim();
+      const surfaceRaw = styles.getPropertyValue("--soft-line").trim();
       const accent = resolveCssVar(styles, accentRaw);
       const surface = resolveCssVar(styles, surfaceRaw);
       setLevelColors(buildRamp(accent));
-      setOffColor(surface || "var(--color-surface0)");
+      setOffColor(surface || "var(--soft-line)");
     };
     compute();
     const observer = new MutationObserver(compute);
@@ -207,25 +205,25 @@ export default function ContributionGraph() {
   } as CSSProperties;
 
   return (
-    <section className="terminal-card p-4">
+    <section className="signal-item">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold">Github</h3>
+        <h3 className="section-kicker">Contribution cadence</h3>
         <a
-          className="text-xs text-[var(--color-subtext1)]"
+          className="work-meta"
           href="https://github.com/masonliiu"
           target="_blank"
           rel="noreferrer"
         >
-          View profile
+          View profile →
         </a>
       </div>
       {status === "loading" ? (
-        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--muted-2)]">
           Loading contributions...
         </p>
       ) : null}
       {status === "error" ? (
-        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--muted-2)]">
           Contributions unavailable right now.
         </p>
       ) : null}
@@ -238,7 +236,7 @@ export default function ContributionGraph() {
             style={gridStyle}
           >
             <div
-              className="grid text-[10px] text-[var(--color-subtext1)]"
+              className="grid text-[10px] text-[var(--muted-2)]"
               style={{
                 gridTemplateColumns: `repeat(${weeks.length}, var(--cell-size))`,
                 columnGap: "var(--cell-gap)",
@@ -272,7 +270,7 @@ export default function ContributionGraph() {
                     <button
                       key={day.date}
                       type="button"
-                      className="rounded-[3px] border border-[var(--color-surface1)]"
+                      className="border border-[var(--soft-line)]"
                       style={{
                         width: "var(--cell-size)",
                         height: "var(--cell-size)",
@@ -297,7 +295,7 @@ export default function ContributionGraph() {
           </div>
           {tooltip ? (
             <div
-              className="pointer-events-none absolute -translate-x-1/2 -translate-y-full rounded-md border border-[var(--color-surface1)] bg-[var(--color-crust)] px-2 py-1 text-[10px] text-[var(--color-subtext1)] shadow-lg"
+              className="pointer-events-none absolute -translate-x-1/2 -translate-y-full border border-[var(--line)] bg-[var(--paper)] px-2 py-1 text-[10px] text-[var(--muted-2)]"
               style={{ left: tooltip.x, top: tooltip.y - 8 }}
             >
               {tooltip.text}
@@ -305,11 +303,11 @@ export default function ContributionGraph() {
           ) : null}
         </div>
       ) : null}
-      <div className="mt-3 flex items-center justify-center gap-2 text-xs text-[var(--color-subtext1)]">
+      <div className="mt-3 flex items-center justify-center gap-2 text-xs text-[var(--muted-2)]">
         <span>Less</span>
         <div className="flex items-center gap-1">
           <span
-            className="rounded-[3px] border border-[var(--color-surface1)]"
+            className="border border-[var(--soft-line)]"
             style={{
               backgroundColor: offColor,
               width: `${Math.max(cellSize - 1, 6)}px`,
@@ -319,7 +317,7 @@ export default function ContributionGraph() {
           {levelColors.map((color) => (
             <span
               key={color}
-              className="rounded-[3px] border border-[var(--color-surface1)]"
+              className="border border-[var(--soft-line)]"
               style={{
                 backgroundColor: color,
                 width: `${Math.max(cellSize - 1, 6)}px`,

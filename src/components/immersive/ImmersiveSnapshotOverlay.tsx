@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   IMMERSIVE_SNAPSHOT_KEY,
   IMMERSIVE_SNAPSHOT_LAST_KEY,
@@ -18,24 +18,13 @@ type SnapshotMeta = {
 export default function ImmersiveSnapshotOverlay() {
   const pathname = usePathname();
   const isImmersive = pathname.startsWith("/immersive");
-  const [hasMounted, setHasMounted] = useState(false);
-  const [snapshot, setSnapshot] = useState<string | null>(null);
-  const [decodedSnapshot, setDecodedSnapshot] = useState<string | null>(null);
-  const [meta, setMeta] = useState<SnapshotMeta | null>(null);
-  const [visible, setVisible] = useState(Boolean(snapshot));
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hasMounted) return;
-    if (!isImmersive) {
-      setSnapshot(null);
-      setDecodedSnapshot(null);
-      setMeta(null);
-      setVisible(false);
-      return;
+  const { snapshot, meta } = useMemo(() => {
+    if (!isImmersive || typeof window === "undefined") {
+      return { snapshot: null, meta: null } as {
+        snapshot: string | null;
+        meta: SnapshotMeta | null;
+      };
     }
 
     const storedSnapshot =
@@ -45,49 +34,31 @@ export default function ImmersiveSnapshotOverlay() {
       sessionStorage.getItem(IMMERSIVE_SNAPSHOT_META_KEY) ??
       localStorage.getItem(IMMERSIVE_SNAPSHOT_LAST_META_KEY);
 
-    if (storedSnapshot) {
-      setSnapshot(storedSnapshot);
-      setVisible(true);
-    }
-
+    let parsedMeta: SnapshotMeta | null = null;
     if (storedMeta) {
       try {
-        setMeta(JSON.parse(storedMeta) as SnapshotMeta);
+        parsedMeta = JSON.parse(storedMeta) as SnapshotMeta;
       } catch {
-        setMeta(null);
+        parsedMeta = null;
       }
     }
-  }, [hasMounted, isImmersive]);
+
+    return { snapshot: storedSnapshot, meta: parsedMeta };
+  }, [isImmersive]);
 
   useEffect(() => {
-    if (!snapshot) {
-      setDecodedSnapshot(null);
+    const root = document.documentElement;
+    const body = document.body;
+
+    if (!isImmersive) {
+      root.classList.remove("immersive-mode", "immersive-ready", "snapshot-locked", "snapshot-hidden");
+      body.classList.remove("immersive-mode", "immersive-ready", "snapshot-locked");
+      root.style.removeProperty("--snapshot-scrollbar");
+      root.style.removeProperty("--snapshot-width");
+      root.style.removeProperty("--snapshot-height");
       return;
     }
-    let cancelled = false;
-    const image = new Image();
-    image.decoding = "sync";
-    image.src = snapshot;
-    image
-      .decode()
-      .then(() => {
-        if (!cancelled) {
-          setDecodedSnapshot(snapshot);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setDecodedSnapshot(snapshot);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [snapshot]);
 
-  useEffect(() => {
-    if (!isImmersive) return;
-    const root = document.documentElement;
     const scrollbarWidth = meta?.scrollbarWidth ?? 0;
     root.style.setProperty("--snapshot-scrollbar", `${scrollbarWidth}px`);
     if (meta?.width) {
@@ -96,91 +67,43 @@ export default function ImmersiveSnapshotOverlay() {
     if (meta?.height) {
       root.style.setProperty("--snapshot-height", `${meta.height}px`);
     }
-    root.classList.add("immersive-mode");
-    document.body.classList.add("immersive-mode");
+
+    root.classList.add("immersive-mode", "snapshot-locked");
+    body.classList.add("immersive-mode", "snapshot-locked");
+    root.classList.remove("snapshot-hidden");
+
+    const handleReady = () => {
+      root.classList.add("immersive-ready");
+      body.classList.add("immersive-ready");
+    };
+    const handleHide = () => {
+      root.classList.add("snapshot-hidden");
+    };
+
+    window.addEventListener("immersive:ready", handleReady);
+    window.addEventListener("immersive:hide-snapshot", handleHide);
+
     return () => {
+      window.removeEventListener("immersive:ready", handleReady);
+      window.removeEventListener("immersive:hide-snapshot", handleHide);
+      root.classList.remove("immersive-mode", "immersive-ready", "snapshot-locked", "snapshot-hidden");
+      body.classList.remove("immersive-mode", "immersive-ready", "snapshot-locked");
       root.style.removeProperty("--snapshot-scrollbar");
       root.style.removeProperty("--snapshot-width");
       root.style.removeProperty("--snapshot-height");
-      root.classList.remove("immersive-mode");
-      root.classList.remove("immersive-ready");
-      document.body.classList.remove("immersive-mode");
-      document.body.classList.remove("immersive-ready");
     };
-  }, [isImmersive, meta?.scrollbarWidth]);
+  }, [isImmersive, meta?.height, meta?.scrollbarWidth, meta?.width]);
 
-  useEffect(() => {
-    if (!isImmersive) return;
-    const root = document.documentElement;
-    if (visible) {
-      root.classList.add("snapshot-locked");
-      document.body.classList.add("snapshot-locked");
-    } else {
-      root.classList.remove("snapshot-locked");
-      document.body.classList.remove("snapshot-locked");
-    }
-    return () => {
-      root.classList.remove("snapshot-locked");
-      document.body.classList.remove("snapshot-locked");
-    };
-  }, [isImmersive, visible]);
-
-  useEffect(() => {
-    if (!isImmersive) return;
-    const root = document.documentElement;
-    const handleReady = () => {
-      root.classList.add("immersive-ready");
-      document.body.classList.add("immersive-ready");
-    };
-    window.addEventListener("immersive:ready", handleReady);
-    return () => {
-      window.removeEventListener("immersive:ready", handleReady);
-    };
-  }, [isImmersive]);
-
-  useEffect(() => {
-    if (!isImmersive) return;
-    const handleHide = () => {
-      setVisible(false);
-    };
-    window.addEventListener("immersive:hide-snapshot", handleHide);
-    return () => {
-      window.removeEventListener("immersive:hide-snapshot", handleHide);
-    };
-  }, [isImmersive]);
-
-  const overlayImage = decodedSnapshot ?? snapshot;
-  if (!hasMounted || !isImmersive || !visible || !overlayImage) {
+  if (!isImmersive || !snapshot) {
     return null;
   }
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[60]"
+      className="snapshot-overlay"
       style={{
-        backgroundColor: "var(--color-base, #1e1e2e)",
-        backgroundImage: `url("${overlayImage}")`,
-        backgroundSize: "100% 100%",
-        backgroundPosition: "top left",
-        backgroundRepeat: "no-repeat",
+        backgroundImage: `url("${snapshot}")`,
       }}
-    >
-      <img
-        src={overlayImage}
-        alt=""
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: meta ? `${meta.width}px` : "100%",
-          height: meta ? `${meta.height}px` : "100%",
-          display: "block",
-          maxWidth: "none",
-          maxHeight: "none",
-        }}
-        decoding="sync"
-        loading="eager"
-      />
-    </div>
+    />
   );
 }

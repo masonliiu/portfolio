@@ -89,33 +89,33 @@ export default function GitHubActivity() {
   );
 
   return (
-    <section className="terminal-card p-4">
-      <div className="flex items-center justify-between text-base">
-        <h3 className="font-semibold">Recent Commits</h3>
+    <section className="signal-item">
+      <div className="flex items-center justify-between">
+        <h3 className="section-kicker">Recent commits</h3>
         <a
           href="https://github.com/masonliiu"
           target="_blank"
           rel="noreferrer"
-          className="text-xs text-[var(--color-accent)]"
+          className="work-meta"
         >
-          View on GitHub
+          View on GitHub →
         </a>
       </div>
       {status === "loading" ? (
-        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--muted-2)]">
           Loading GitHub activity...
         </p>
       ) : null}
       {status === "error" ? (
-        <p className="mt-2 text-sm text-[var(--color-subtext1)]">
+        <p className="mt-2 text-sm text-[var(--muted-2)]">
           GitHub activity unavailable right now.
         </p>
       ) : null}
       {status === "ready" ? (
         <>
-          <ul className="mt-3 space-y-2 text-sm text-[var(--color-subtext0)]">
+          <ul className="mt-3 space-y-2 text-sm text-[var(--muted)]">
             {commits.length === 0 ? (
-              <li className="text-sm text-[var(--color-subtext1)]">
+              <li className="text-sm text-[var(--muted-2)]">
                 No recent public commits.
               </li>
             ) : (
@@ -128,18 +128,18 @@ export default function GitHubActivity() {
                     rel="noreferrer"
                     title={`${commit.repo}: ${commit.message}`}
                   >
-                    <span className="flex-shrink-0 font-semibold text-[var(--color-text)]">
+                    <span className="flex-shrink-0 font-semibold text-[var(--ink)]">
                       {commit.repo.split("/")[1]}:
                     </span>
                     <span className="min-w-0 flex-1 truncate">
                       {commit.message}
                     </span>
-                    <span className="flex-shrink-0 text-xs">
-                      <span className="text-emerald-400">
+                    <span className="flex-shrink-0 text-xs text-[var(--muted-2)]">
+                      <span>
                         +{commit.additions.toLocaleString()}
                       </span>{" "}
                       /{" "}
-                      <span className="text-rose-400">
+                      <span>
                         -{commit.deletions.toLocaleString()}
                       </span>
                     </span>
@@ -152,7 +152,7 @@ export default function GitHubActivity() {
             <div className="relative mt-3">
               <div
                 ref={barRef}
-                className="flex h-2.5 overflow-hidden rounded bg-[var(--color-surface0)]"
+                className="flex h-1.5 overflow-hidden bg-[var(--soft-line)]"
                 onMouseLeave={() => setLangTooltip(null)}
               >
                 {languages.map((lang) => (
@@ -183,7 +183,7 @@ export default function GitHubActivity() {
               </div>
               {langTooltip ? (
                 <span
-                  className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-6 rounded-md border border-[var(--color-surface1)] bg-[var(--color-crust)] px-2 py-1 text-[10px] text-[var(--color-subtext1)] shadow-lg"
+                  className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-6 border border-[var(--line)] bg-[var(--paper)] px-2 py-1 text-[10px] text-[var(--muted-2)]"
                   style={{ left: langTooltip.x, top: 0 }}
                 >
                   {langTooltip.text}

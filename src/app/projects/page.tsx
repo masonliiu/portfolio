@@ -1,10 +1,17 @@
 import ProjectsList from "@/components/portfolio/ProjectsList";
+import Footer from "@/components/portfolio/Footer";
+import { Link } from "next-view-transitions";
 
 export default function ProjectsPage() {
   return (
-    <div className="page-shell projects-shell">
-      <div className="scroll-blur" />
-      <ProjectsList />
-    </div>
+    <>
+      <main className="page-shell">
+        <ProjectsList />
+        <Link className="work-meta mt-10 inline-flex" href="/">
+          Back home →
+        </Link>
+      </main>
+      <Footer />
+    </>
   );
 }

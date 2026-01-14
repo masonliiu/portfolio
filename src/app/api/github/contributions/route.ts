@@ -97,7 +97,7 @@ export async function GET() {
         },
       }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "GitHub contributions unavailable" },
       { status: 500 }

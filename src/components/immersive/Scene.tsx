@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Text, useGLTF } from "@react-three/drei";
+import { Text, useGLTF } from "@react-three/drei";
 import {
   Suspense,
   useCallback,
@@ -43,6 +43,7 @@ type SceneProps = {
   onPanelHitMapReady?: () => void;
   onDebugHitName?: (value: string | null) => void;
   glowActive?: Record<string, boolean>;
+  onSceneReady?: () => void;
 };
 
 type Anchor = {
@@ -302,7 +303,7 @@ function CameraRig({
     lookOffset.current = { yaw: 0, pitch: 0 };
     lookCurrent.current = { yaw: 0, pitch: 0 };
     lookLimits.current = anchor.lookRange;
-  }, [anchorName]);
+  }, [anchor.lookRange, anchorName]);
 
   useEffect(() => {
     const handlePointerLock = () => {
@@ -494,7 +495,23 @@ function CameraRig({
       gl.domElement.removeEventListener("pointerdown", handlePointerDown);
       gl.domElement.removeEventListener("click", handleClick);
     };
-  }, [activePanel, camera, detailHitMap, gl, inputLocked, onReturnToCouch, onSelect, onSelectDetail, reducedMotion]);
+  }, [
+    activePanel,
+    camera,
+    detailHitMap,
+    detailSpots,
+    forceLook,
+    gl,
+    indicatorSpots,
+    inputLocked,
+    onReturnToCouch,
+    onSelect,
+    onSelectDetail,
+    panelHitMap,
+    reducedMotion,
+    scene.children,
+    spots,
+  ]);
 
   useEffect(() => {
     const requestLock = () => {
@@ -654,13 +671,11 @@ type LaptopScreenExitTransitionProps = {
 function PaintingReveal({
   paintingRef,
   baseQuatRef,
-  baseWorldQuatRef,
   revealed,
   rotationAxis,
 }: {
   paintingRef: RefObject<THREE.Object3D | null>;
   baseQuatRef: RefObject<THREE.Quaternion>;
-  baseWorldQuatRef: RefObject<THREE.Quaternion>;
   revealed: boolean;
   rotationAxis: RefObject<THREE.Vector3>;
 }) {
@@ -702,7 +717,6 @@ function LaptopScreenTransition({
   const endScale = useRef(new THREE.Vector3());
   const tempDirection = useRef(new THREE.Vector3());
   const tempScale = useRef(new THREE.Vector3());
-  const tempOpacity = useRef(1);
 
   useFrame((state, delta) => {
     if (!overlayRef.current || !screenRef.current || done.current) return;
@@ -1493,6 +1507,7 @@ function RoomModel({
     onDetailHitMap,
     onPanelHitMapReady,
     onPaintingRef,
+    onReady,
     scene,
   ]);
 
@@ -1520,23 +1535,29 @@ export default function Scene({
   onPanelHitMapReady,
   onDebugHitName,
   glowActive,
+  onSceneReady,
 }: SceneProps) {
   const [sceneAnchors, setSceneAnchors] = useState<AnchorMap>(defaultAnchors);
   const [sceneHotspots, setSceneHotspots] = useState<Hotspot[]>(hotspots);
   const [sceneDetailHotspots, setSceneDetailHotspots] =
     useState<DetailHotspot[]>(detailHotspots);
-  const [screenTexture, setScreenTexture] = useState<THREE.Texture | null>(null);
+  const screenTexture = useMemo(() => {
+    if (!transitionImage) return null;
+    const texture = new THREE.TextureLoader().load(transitionImage);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    return texture;
+  }, [transitionImage]);
   const [transitionAnimating, setTransitionAnimating] = useState(false);
   const [exitTransitionAnimating, setExitTransitionAnimating] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   const [cameraSettled, setCameraSettled] = useState(false);
-  const [settleReset, setSettleReset] = useState(0);
+  const settleReset = 0;
   const [transitionProgress, setTransitionProgress] = useState(0);
   const screenRef = useRef<THREE.Mesh | null>(null);
   const paintingRef = useRef<THREE.Object3D | null>(null);
   const paintingPivotRef = useRef<THREE.Object3D | null>(null);
   const paintingBaseQuat = useRef(new THREE.Quaternion());
-  const paintingBaseWorldQuat = useRef(new THREE.Quaternion());
   const paintingRotateAxis = useRef(new THREE.Vector3(0, 0, 1));
   const [paintingPanel, setPaintingPanel] = useState<{
     position: [number, number, number];
@@ -1656,19 +1677,6 @@ export default function Scene({
 
 
   useEffect(() => {
-    if (!transitionImage) {
-      setScreenTexture(null);
-      return;
-    }
-    const loader = new THREE.TextureLoader();
-    loader.load(transitionImage, (texture) => {
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.needsUpdate = true;
-      setScreenTexture(texture);
-    });
-  }, [transitionImage]);
-
-  useEffect(() => {
     if (!exitTransitionActive || !onExitTransitionEnd) return;
     if (screenTexture) return;
     const timer = window.setTimeout(() => {
@@ -1685,15 +1693,6 @@ export default function Scene({
     transitionStartRef.current = true;
     onTransitionStart?.();
   }, [cameraSettled, onTransitionStart, screenTexture, sceneReady, transitionActive]);
-
-  useEffect(() => {
-    if (transitionActive) {
-      setCameraSettled(false);
-      setSettleReset((value) => value + 1);
-      transitionStartRef.current = false;
-      setTransitionProgress(0);
-    }
-  }, [transitionActive]);
 
   useEffect(() => {
     onTransitionAnimating?.(transitionAnimating);
@@ -1732,9 +1731,6 @@ export default function Scene({
 
     paintingRef.current = pivot ?? painting;
     paintingBaseQuat.current.copy(paintingRef.current.quaternion);
-    paintingBaseWorldQuat.current.copy(
-      paintingRef.current.getWorldQuaternion(new THREE.Quaternion()),
-    );
     paintingRotateAxis.current.copy(
       new THREE.Vector3(1, 0, 0).applyQuaternion(paintingBaseQuat.current),
     );
@@ -1770,6 +1766,8 @@ export default function Scene({
     <Canvas
       shadows
       camera={{ position: cameraPosition, fov: 44 }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: false, powerPreference: "high-performance" }}
       className="h-full w-full"
     >
       <color attach="background" args={["#b29a7c"]} />
@@ -1777,7 +1775,6 @@ export default function Scene({
       <PaintingReveal
         paintingRef={paintingRef}
         baseQuatRef={paintingBaseQuat}
-        baseWorldQuatRef={paintingBaseWorldQuat}
         rotationAxis={paintingRotateAxis}
         revealed={paintingRevealed}
       />
@@ -1790,7 +1787,7 @@ export default function Scene({
         inputLocked={Boolean(activePanel) || Boolean(activeDetail)}
         forceLook={Boolean(forceLook)}
         anchors={sceneAnchors}
-        transitionPitch={-0.65 * transitionProgress}
+        transitionPitch={transitionActive ? -0.65 * transitionProgress : 0}
         settleReset={settleReset}
         spots={sceneHotspots}
         detailSpots={sceneDetailHotspots}
@@ -1813,7 +1810,7 @@ export default function Scene({
         intensity={0.1}
         color="#e0b172"
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[512, 512]}
         shadow-bias={-0.0008}
       />
       <directionalLight position={[-3, 3, -2]} intensity={0.02} color="#c8a175" />
@@ -1842,7 +1839,10 @@ export default function Scene({
           onPanelHitMapReady={() => {
             onPanelHitMapReady?.();
           }}
-          onReady={() => setSceneReady(true)}
+          onReady={() => {
+            setSceneReady(true);
+            onSceneReady?.();
+          }}
         />
       </Suspense>
       <Laptop
@@ -1931,7 +1931,6 @@ export default function Scene({
           />
         ))}
       </group>
-      <Environment preset="sunset" />
     </Canvas>
   );
 }

@@ -1,82 +1,54 @@
 "use client";
 
 import { Link as TransitionLink } from "next-view-transitions";
-import { usePathname } from "next/navigation";
 import ImmersiveLaunchButton from "./ImmersiveLaunchButton";
 
-function buildSegments(pathname: string) {
-  const segments = pathname.split("/").filter(Boolean);
-  return segments.map((segment, index) => ({
-    label: segment,
-    href: `/${segments.slice(0, index + 1).join("/")}`,
-  }));
-}
-
 export default function TerminalHeader() {
-  const pathname = usePathname();
-  const segments = buildSegments(pathname);
+  const navItems = [
+    { label: "About", href: "/about" },
+    { label: "Projects", href: "/projects" },
+    { label: "Photography", href: "/photography" },
+    { label: "Resume", href: "/resume.pdf", external: true },
+    { label: "Contact", href: "/#contact" },
+  ];
 
   return (
-    <header className="sticky top-0 z-30 bg-transparent backdrop-blur header-mask">
-      <div className="page-shell header-shell relative flex items-center">
-        <nav
-          aria-label="Breadcrumbs"
-          className="header-breadcrumbs flex items-center gap-1 text-sm"
+    <header className="sticky top-0 z-30 border-b border-[var(--soft-line)] bg-[rgba(244,240,232,0.92)] backdrop-blur">
+      <div className="page-shell flex items-center justify-between py-4">
+        <TransitionLink
+          className="text-xs uppercase tracking-[0.4em] text-[var(--muted-2)]"
+          href="/"
         >
-          <TransitionLink
-            className="wiggle header-tilde text-[var(--color-accent)]"
-            href="/"
-          >
-            ~
-          </TransitionLink>
-          <span className="text-[var(--color-overlay1)]">/</span>
-          {segments.map((segment, index) => (
-            <span key={segment.href} className="flex items-center gap-1">
-              {index === segments.length - 1 ? (
-                <span className="text-[var(--color-text)]">{segment.label}</span>
-              ) : (
-                <TransitionLink className="header-link" href={segment.href}>
-                  {segment.label}
-                </TransitionLink>
-              )}
-
-              {index >= 0 ? (
-                <span className="text-[var(--color-overlay1)]">/</span>
-              ) : null}
-            </span>
-          ))}
-          <span className="cursor-blink" aria-hidden="true" />
-        </nav>
-        <div className="header-nav ml-auto flex items-center gap-6 text-[var(--color-subtext1)]">
+          Mason Liu
+        </TransitionLink>
+        <nav className="flex items-center gap-6 text-[11px] uppercase tracking-[0.3em] text-[var(--muted-2)]">
           <div className="hidden items-center gap-6 md:flex">
-            <TransitionLink className="header-link nav-link" href="/about">
-              About
-            </TransitionLink>
-            <TransitionLink className="header-link nav-link" href="/projects">
-              Projects
-            </TransitionLink>
-            <TransitionLink
-              className="header-link nav-link"
-              href="/photography"
-            >
-              Photography
-            </TransitionLink>
-            <a
-              className="header-link nav-link"
-              href="/resume.pdf"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Resume
-            </a>
-            <a className="header-link" href="#contact">
-              Contact
-            </a>
+            {navItems.map((item) =>
+              item.external ? (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition hover:text-[var(--accent)]"
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <TransitionLink
+                  key={item.label}
+                  href={item.href}
+                  className="transition hover:text-[var(--accent)]"
+                >
+                  {item.label}
+                </TransitionLink>
+              )
+            )}
           </div>
-          <ImmersiveLaunchButton className="header-link rounded-full border border-[color-mix(in srgb,var(--color-surface0) 60%,transparent)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-[var(--color-text)] transition">
+          <ImmersiveLaunchButton className="text-[11px] uppercase tracking-[0.3em] text-[var(--accent)]">
             Immersive
           </ImmersiveLaunchButton>
-        </div>
+        </nav>
       </div>
     </header>
   );

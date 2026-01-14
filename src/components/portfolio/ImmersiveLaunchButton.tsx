@@ -2,7 +2,7 @@
 
 import { toPng } from "html-to-image";
 import { useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import {
   IMMERSIVE_SNAPSHOT_KEY,
   IMMERSIVE_SNAPSHOT_META_KEY,
@@ -21,8 +21,11 @@ export default function ImmersiveLaunchButton({
 }: ImmersiveLaunchButtonProps) {
   const router = useRouter();
   const [isCapturing, setIsCapturing] = useState(false);
+  const hasPrefetched = useRef(false);
 
-  const preloadRoom = async () => {
+  const preloadRoom = useCallback(async () => {
+    if (hasPrefetched.current) return;
+    hasPrefetched.current = true;
     try {
       const response = await fetch("/models/finalroom.glb", { cache: "force-cache" });
       if (response.ok) {
@@ -31,7 +34,23 @@ export default function ImmersiveLaunchButton({
     } catch {
       // Preload failures should not block navigation.
     }
-  };
+  }, []);
+
+  const schedulePreload = useCallback(() => {
+    if (hasPrefetched.current) return;
+    if (typeof window === "undefined") return;
+    if ("requestIdleCallback" in window) {
+      (window as Window & {
+        requestIdleCallback: (cb: IdleRequestCallback, opts?: IdleRequestOptions) => number;
+      }).requestIdleCallback(() => {
+        void preloadRoom();
+      }, { timeout: 2500 });
+      return;
+    }
+    window.setTimeout(() => {
+      void preloadRoom();
+    }, 1200);
+  }, [preloadRoom]);
 
   const captureSnapshot = async () => {
     const nextRoot = document.getElementById("__next");
@@ -58,7 +77,7 @@ export default function ImmersiveLaunchButton({
       cacheBust: true,
       skipFonts: true,
       fontEmbedCSS: "",
-      pixelRatio: window.devicePixelRatio,
+      pixelRatio: Math.min(window.devicePixelRatio, 1.5),
       width: viewportWidth,
       height: viewportHeight,
       style: {
@@ -87,24 +106,26 @@ export default function ImmersiveLaunchButton({
     if (isCapturing) return;
     setIsCapturing(true);
 
-    try {
-      const [{ dataUrl, width, height, scrollbarWidth }] = await Promise.all([
-        captureSnapshot(),
-        preloadRoom(),
-      ]);
-      sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
-      sessionStorage.setItem(
-        IMMERSIVE_SNAPSHOT_META_KEY,
-        JSON.stringify({ width, height, scrollbarWidth }),
-      );
-      localStorage.setItem(IMMERSIVE_SNAPSHOT_LAST_KEY, dataUrl);
-      localStorage.setItem(
-        IMMERSIVE_SNAPSHOT_LAST_META_KEY,
-        JSON.stringify({ width, height, scrollbarWidth }),
-      );
-    } catch (error) {
-      console.error("Failed to capture immersive snapshot", error);
-    }
+    void preloadRoom();
+    void captureSnapshot()
+      .then(({ dataUrl, width, height, scrollbarWidth }) => {
+        sessionStorage.setItem(IMMERSIVE_SNAPSHOT_KEY, dataUrl);
+        sessionStorage.setItem(
+          IMMERSIVE_SNAPSHOT_META_KEY,
+          JSON.stringify({ width, height, scrollbarWidth }),
+        );
+        localStorage.setItem(IMMERSIVE_SNAPSHOT_LAST_KEY, dataUrl);
+        localStorage.setItem(
+          IMMERSIVE_SNAPSHOT_LAST_META_KEY,
+          JSON.stringify({ width, height, scrollbarWidth }),
+        );
+      })
+      .catch((error) => {
+        console.error("Failed to capture immersive snapshot", error);
+      })
+      .finally(() => {
+        setIsCapturing(false);
+      });
 
     router.push("/immersive");
   };
@@ -113,6 +134,8 @@ export default function ImmersiveLaunchButton({
     <button
       type="button"
       onClick={handleClick}
+      onPointerEnter={schedulePreload}
+      onFocus={schedulePreload}
       className={className}
       disabled={isCapturing}
     >
