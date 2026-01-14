@@ -44,6 +44,7 @@ const photoPlaceholders = [
 
 export default function HomePage() {
   const stageRef = useRef<HTMLDivElement>(null);
+  const blobLabelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -64,6 +65,8 @@ export default function HomePage() {
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
       let size = 220;
+      let label = "Explore";
+      let labelOpacity = 0;
       for (const target of targets) {
         const targetRect = target.getBoundingClientRect();
         const centerX = targetRect.left + targetRect.width / 2;
@@ -74,16 +77,25 @@ export default function HomePage() {
         );
         if (distance < 160) {
           size = 360;
+          label = target.dataset.blobLabel ?? label;
+          labelOpacity = 1;
           break;
         }
       }
       stage.style.setProperty("--blob-x", `${x}px`);
       stage.style.setProperty("--blob-y", `${y}px`);
       stage.style.setProperty("--blob-size", `${size}px`);
+      stage.style.setProperty("--blob-opacity", "1");
+      stage.style.setProperty("--blob-label-opacity", `${labelOpacity}`);
+      if (blobLabelRef.current) {
+        blobLabelRef.current.textContent = label;
+      }
     };
 
     const hideBlob = () => {
       stage.style.setProperty("--blob-size", "0px");
+      stage.style.setProperty("--blob-opacity", "0");
+      stage.style.setProperty("--blob-label-opacity", "0");
     };
 
     stage.addEventListener("pointermove", updateBlob);
@@ -102,7 +114,7 @@ export default function HomePage() {
         <div className="hero-stack">
           <div className="hero-text hero-text--front" data-hero>
             {heroLines.map((line) => (
-              <span key={line} data-blob-target>
+              <span key={line} data-blob-target data-blob-label={line}>
                 {line}
               </span>
             ))}
@@ -113,6 +125,9 @@ export default function HomePage() {
             ))}
           </div>
           <div className="hero-blob" aria-hidden="true" />
+          <div className="hero-blob__label" ref={blobLabelRef} aria-hidden="true">
+            Explore
+          </div>
         </div>
         <p className="hero-subline">
           Full-stack builder focused on tactile UI, reliable systems, and
@@ -146,7 +161,9 @@ export default function HomePage() {
 
       <section className="section-block section-center" id="about" data-reveal>
         <p className="section-kicker">About</p>
-        <h2 className="section-title">A builder with a design pulse.</h2>
+        <h2 className="section-title outline-fill" data-fill>
+          A builder with a design pulse.
+        </h2>
         <p className="section-subtitle">
           I craft full-stack products with a bias for clarity, motion, and
           systems that stay fast under pressure.
@@ -155,6 +172,21 @@ export default function HomePage() {
           {aboutChips.map((chip) => (
             <span key={chip}>{chip}</span>
           ))}
+        </div>
+      </section>
+
+      <section className="section-block section-center collage-section" data-reveal>
+        <p className="section-kicker">Texture</p>
+        <h2 className="section-title outline-fill" data-fill>
+          Digital craft with real-world grain.
+        </h2>
+        <p className="section-subtitle">
+          Layered imagery, motion, and contrast to keep the interface cinematic.
+        </p>
+        <div className="image-collage" aria-hidden="true">
+          <div className="image-card image-card--wide" />
+          <div className="image-card image-card--portrait" />
+          <div className="image-card image-card--small" />
         </div>
       </section>
 

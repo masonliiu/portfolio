@@ -117,8 +117,9 @@ export default function MotionOrchestrator() {
     gsap.registerPlugin(ScrollTrigger);
 
     const revealTargets = gsap.utils.toArray<HTMLElement>("[data-reveal]");
+    const triggers: ScrollTrigger[] = [];
     revealTargets.forEach((target) => {
-      gsap.fromTo(
+      const tween = gsap.fromTo(
         target,
         { opacity: 0, y: 40 },
         {
@@ -132,10 +133,46 @@ export default function MotionOrchestrator() {
           },
         }
       );
+      if (tween.scrollTrigger) {
+        triggers.push(tween.scrollTrigger);
+      }
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      triggers.forEach((trigger) => trigger.kill());
+    };
+  }, [isImmersive, pathname]);
+
+  useEffect(() => {
+    if (isImmersive) return;
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefersReducedMotion) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const fillTargets = gsap.utils.toArray<HTMLElement>("[data-fill]");
+    const triggers: ScrollTrigger[] = [];
+    fillTargets.forEach((target) => {
+      target.style.setProperty("--fill-progress", "0%");
+      const trigger = ScrollTrigger.create({
+        trigger: target,
+        start: "top 85%",
+        end: "top 25%",
+        scrub: true,
+        onUpdate: (self) => {
+          target.style.setProperty(
+            "--fill-progress",
+            `${Math.round(self.progress * 100)}%`
+          );
+        },
+      });
+      triggers.push(trigger);
+    });
+
+    return () => {
+      triggers.forEach((trigger) => trigger.kill());
     };
   }, [isImmersive, pathname]);
 
