@@ -18,6 +18,9 @@
   --color-surface0: #1f1d25;
   --color-text: #f5f2ee;
 
+  --scroll-progress: 0%;
+  --scroll-velocity: 0;
+
   --page-x: clamp(1.4rem, 4vw, 5rem);
   --page-y: clamp(2.4rem, 4vw, 4.2rem);
 }
@@ -34,8 +37,8 @@ body {
   color: var(--ink);
   overflow-x: hidden;
   background:
-    radial-gradient(1200px 800px at 85% -10%, rgba(255, 77, 45, 0.18), transparent 60%),
-    radial-gradient(900px 700px at 8% 70%, rgba(47, 107, 255, 0.15), transparent 58%),
+    radial-gradient(1200px 800px at calc(85% - var(--scroll-progress)) -10%, rgba(255, 77, 45, 0.18), transparent 60%),
+    radial-gradient(900px 700px at calc(8% + var(--scroll-progress)) 70%, rgba(47, 107, 255, 0.15), transparent 58%),
     linear-gradient(180deg, #f7f3ec 0%, #f2eee6 35%, #f4f0e8 100%);
 }
 
@@ -418,5 +421,176 @@ body.immersive-ready {
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
     animation: none;
+  }
+
+  .horizontal-pin {
+    overflow-x: auto;
+  }
+
+  .horizontal-track {
+    transform: none !important;
+  }
+}
+
+.reveal-stage {
+  position: relative;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: clamp(2.5rem, 6vw, 4rem) 0;
+  overflow: hidden;
+  --blob-x: 50%;
+  --blob-y: 50%;
+  --blob-size: 0px;
+}
+
+.reveal-front {
+  position: relative;
+  z-index: 2;
+}
+
+.reveal-back {
+  position: absolute;
+  inset: 0;
+  padding: clamp(2.5rem, 6vw, 4rem) 0;
+  color: var(--ink);
+  background:
+    radial-gradient(320px 240px at 80% 20%, rgba(255, 77, 45, 0.35), transparent 65%),
+    radial-gradient(400px 280px at 20% 80%, rgba(47, 107, 255, 0.25), transparent 60%);
+  mask-image: radial-gradient(circle var(--blob-size) at var(--blob-x) var(--blob-y), black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle var(--blob-size) at var(--blob-x) var(--blob-y), black 0%, transparent 70%);
+  transition: mask-size 0.3s ease;
+  pointer-events: none;
+}
+
+.reveal-back__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 5rem);
+  line-height: 1;
+}
+
+.reveal-back p {
+  max-width: 28rem;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+.reveal-back__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
+.work-focus {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.work-focus__list {
+  display: grid;
+  gap: 1.5rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+}
+
+.work-focus__item {
+  display: grid;
+  gap: 0.4rem;
+  text-align: left;
+  border-bottom: 1px solid var(--soft-line);
+  padding-bottom: 1.2rem;
+}
+
+.work-focus__item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.work-focus__item.is-active .work-focus__title {
+  color: var(--accent);
+}
+
+.work-focus__title {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.work-focus__detail {
+  border-left: 1px solid var(--line);
+  padding-left: 2rem;
+}
+
+.work-focus__detail h3 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0.6rem 0;
+}
+
+.horizontal-pin {
+  position: relative;
+  overflow: hidden;
+  padding-top: 2rem;
+}
+
+.horizontal-intro {
+  max-width: 32rem;
+  margin-bottom: 3rem;
+}
+
+.horizontal-track {
+  display: flex;
+  gap: clamp(3rem, 8vw, 8rem);
+  padding-bottom: 2rem;
+}
+
+.horizontal-panel {
+  min-width: min(70vw, 520px);
+  border-left: 1px solid var(--line);
+  padding-left: 1.5rem;
+}
+
+.horizontal-panel h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0.8rem 0;
+}
+
+.horizontal-panel p {
+  color: var(--muted);
+}
+
+.totem-grid {
+  display: grid;
+  gap: 3rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+}
+
+.totem-stage {
+  height: clamp(320px, 50vw, 460px);
+  border: 1px solid var(--line);
+}
+
+@media (max-width: 900px) {
+  .work-focus {
+    grid-template-columns: 1fr;
+  }
+
+  .work-focus__detail {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .totem-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .horizontal-panel {
+    min-width: 80vw;
   }
 }

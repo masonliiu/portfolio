@@ -2,9 +2,12 @@
 
 import { Link } from "next-view-transitions";
 import ImmersiveLaunchButton from "@/components/portfolio/ImmersiveLaunchButton";
-import { projects } from "@/lib/projects";
 import GitHubActivity from "@/components/portfolio/GitHubActivity";
 import ContributionGraph from "@/components/portfolio/ContributionGraph";
+import RevealBlob from "@/components/portfolio/RevealBlob";
+import WorkFocus from "@/components/portfolio/WorkFocus";
+import HorizontalRail from "@/components/portfolio/HorizontalRail";
+import ScrollTotem from "@/components/portfolio/ScrollTotem";
 
 const heroLinks = [
   { label: "GitHub", href: "https://github.com/masonliiu" },
@@ -31,8 +34,6 @@ const photoPlaceholders = [
 ];
 
 export default function HomePage() {
-  const featured = projects.slice(0, 4);
-
   return (
     <main className="page-shell">
       <section className="section-block" data-reveal>
@@ -40,13 +41,13 @@ export default function HomePage() {
           <div className="space-y-6">
             <p className="section-kicker">Mason Liu · Portfolio</p>
             <h1 className="hero-title" data-hero>
-              Building expressive software that feels alive{" "}
-              <span>and intentional.</span>
+              Expressive software, built with{" "}
+              <span>precision and intent.</span>
             </h1>
             <p className="hero-lead">
-              I am a Computer Science student at UTD focused on full-stack
-              engineering and interactive systems. My work blends product polish,
-              game-inspired motion, and performance-conscious architecture.
+              Computer Science @ UTD. Full-stack builder with a taste for
+              cinematic interfaces, interactive 3D, and systems that stay fast
+              under pressure.
             </p>
             <div className="hero-cta">
               {heroLinks.map((link) => (
@@ -65,59 +66,20 @@ export default function HomePage() {
           <div className="hero-rail space-y-6">
             <div>
               <p className="section-kicker">Now</p>
-              <p>
-                Building a sharper portfolio experience and experimenting with
-                immersive storytelling for recruiters and hiring managers.
-              </p>
+              <p>Designing immersive storytelling for recruiters and teams.</p>
             </div>
             <div>
               <p className="section-kicker">Focus</p>
-              <p>
-                Full-stack systems, 3D interaction, and interfaces that reward
-                curiosity without sacrificing clarity.
-              </p>
+              <p>Full-stack systems, 3D interaction, and tactile UI.</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section-block" data-reveal>
-        <div className="space-y-6">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="section-kicker">Selected work</p>
-              <h2 className="section-title">Projects with depth.</h2>
-            </div>
-            <Link className="work-meta" href="/projects">
-              Full archive →
-            </Link>
-          </div>
-          <div className="work-list">
-            {featured.map((project) => (
-              <Link
-                key={project.slug}
-                href={`/projects/${project.slug}`}
-                className="work-row"
-                data-reveal
-              >
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div>
-                    <div className="work-meta">{project.createdAt}</div>
-                    <h3>{project.title}</h3>
-                    <p>{project.summary}</p>
-                  </div>
-                  <div className="work-meta">{project.repo}</div>
-                </div>
-                <div className="work-tags">
-                  {project.tags.slice(0, 6).map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <RevealBlob />
+      <WorkFocus />
+      <HorizontalRail />
+      <ScrollTotem />
 
       <section className="section-block immersive-strip" data-reveal>
         <div className="space-y-6">
@@ -137,10 +99,10 @@ export default function HomePage() {
       <section className="section-block" data-reveal>
         <div className="space-y-6">
           <p className="section-kicker">Capabilities</p>
-          <h2 className="section-title">A studio mindset.</h2>
+          <h2 className="section-title">Studio-grade execution.</h2>
           <p className="section-subtitle">
-            I build end-to-end products with an obsession for detail, clarity,
-            and the feeling that every interaction has purpose.
+            End-to-end builds with intentional motion, reliable systems, and
+            experiences that feel alive.
           </p>
           <div className="marquee" aria-hidden="true">
             <div className="marquee-track">
