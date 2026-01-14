@@ -12,7 +12,12 @@ export default function ProjectsList() {
     <section className="section-block" data-reveal>
       <div className="section-center space-y-4">
         <p className="section-kicker">Projects archive</p>
-        <h1 className="section-title outline-fill" data-fill data-blob-target>
+        <h1
+          className="section-title outline-fill blob-text"
+          data-fill
+          data-blob-text="Projects."
+          data-blob-target
+        >
           Projects.
         </h1>
         <p className="section-subtitle">Full-stack products and systems work.</p>

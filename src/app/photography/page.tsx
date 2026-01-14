@@ -8,7 +8,12 @@ export default function PhotographyPage() {
         <section className="section-block" data-reveal>
           <div className="section-center space-y-6">
             <p className="section-kicker">Photography</p>
-            <h1 className="section-title outline-fill" data-fill data-blob-target>
+            <h1
+              className="section-title outline-fill blob-text"
+              data-fill
+              data-blob-text="Studies."
+              data-blob-target
+            >
               Studies.
             </h1>
             <p className="section-subtitle">

@@ -3,7 +3,12 @@ export default function AboutContent() {
     <section className="section-block" data-reveal>
       <div className="section-center space-y-6">
         <p className="section-kicker">About</p>
-        <h1 className="section-title outline-fill" data-fill data-blob-target>
+        <h1
+          className="section-title outline-fill blob-text"
+          data-fill
+          data-blob-text="Mason Liu."
+          data-blob-target
+        >
           Mason Liu.
         </h1>
         <p className="section-subtitle">

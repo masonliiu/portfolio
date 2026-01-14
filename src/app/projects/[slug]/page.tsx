@@ -24,7 +24,12 @@ export default async function ProjectDetailPage({
       <section className="section-block" data-reveal>
         <div className="section-center space-y-6">
           <p className="section-kicker">Project</p>
-          <h1 className="section-title outline-fill" data-fill data-blob-target>
+          <h1
+            className="section-title outline-fill blob-text"
+            data-fill
+            data-blob-text={project.title}
+            data-blob-target
+          >
             {project.title}
           </h1>
           <p className="section-subtitle">{project.summary}</p>

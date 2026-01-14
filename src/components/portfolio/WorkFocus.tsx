@@ -18,7 +18,12 @@ export default function WorkFocus({ className, id }: WorkFocusProps) {
     <section id={id} className={className} data-reveal>
       <div className="work-focus">
         <p className="section-kicker">Work</p>
-        <h2 className="section-title outline-fill" data-fill data-blob-target>
+        <h2
+          className="section-title outline-fill blob-text"
+          data-fill
+          data-blob-text="Projects."
+          data-blob-target
+        >
           Projects.
         </h2>
         <div className="work-focus__grid">
@@ -36,7 +41,12 @@ export default function WorkFocus({ className, id }: WorkFocusProps) {
                 data-blob-target
               >
                 <span className="work-meta">{project.createdAt}</span>
-                <span className="work-focus__title">{project.title}</span>
+                <span
+                  className="work-focus__title blob-text"
+                  data-blob-text={project.title}
+                >
+                  {project.title}
+                </span>
               </button>
             ))}
           </div>
