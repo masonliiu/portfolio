@@ -9,35 +9,46 @@ import SplitType from "split-type";
 
 export default function MotionOrchestrator() {
   const pathname = usePathname();
+  const isHome = pathname === "/";
+  const isImmersive = pathname.startsWith("/immersive");
 
   useEffect(() => {
-    if (pathname.startsWith("/immersive")) return;
+    if (isImmersive) return;
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
     if (prefersReducedMotion) return;
 
+    gsap.registerPlugin(ScrollTrigger);
+
     const lenis = new Lenis({
-      lerp: 0.09,
+      lerp: 0.08,
+      duration: 1.15,
       smoothWheel: true,
       smoothTouch: true,
       syncTouch: true,
       syncTouchLerp: 0.08,
-      wheelMultiplier: 1.1,
       touchMultiplier: 1.2,
+      touchInertiaExponent: 32,
+      wheelMultiplier: 1.1,
+      normalizeWheel: true,
       easing: (t) => 1 - Math.pow(1 - t, 3),
+      orientation: isHome ? "horizontal" : "vertical",
+      gestureOrientation: isHome ? "both" : "vertical",
     });
 
     (window as Window & { __lenis?: Lenis }).__lenis = lenis;
 
     const root = document.documentElement;
-    lenis.on("scroll", ({ progress, velocity, direction }) => {
-      root.style.setProperty(
-        "--scroll-progress",
-        `${(progress * 30).toFixed(2)}%`
-      );
+    root.dataset.scrollAxis = isHome ? "horizontal" : "vertical";
+
+    lenis.on("scroll", ({ progress, velocity, direction, scroll, limit }) => {
+      const percent = limit === 0 ? 0 : progress * 100;
+      root.style.setProperty("--scroll-progress", `${percent.toFixed(2)}%`);
       root.style.setProperty("--scroll-velocity", velocity.toFixed(3));
-      root.dataset.scrollDir = direction > 0 ? "down" : "up";
+      root.style.setProperty("--scroll-offset", `${scroll.toFixed(2)}px`);
+      root.dataset.scrollDir =
+        direction > 0 ? (isHome ? "forward" : "down") : isHome ? "back" : "up";
       ScrollTrigger.update();
     });
 
@@ -51,7 +62,11 @@ export default function MotionOrchestrator() {
       const element = document.querySelector(hash);
       if (!element) return;
       event.preventDefault();
-      lenis.scrollTo(element, { offset: -80, duration: 1.2 });
+      lenis.scrollTo(element, {
+        offset: isHome ? -140 : -80,
+        duration: 1.15,
+        lerp: 0.08,
+      });
     };
 
     const anchorLinks = Array.from(
@@ -64,6 +79,10 @@ export default function MotionOrchestrator() {
     const ticker = (time: number) => {
       lenis.raf(time * 1000);
     };
+
+    const handleResize = () => lenis.resize();
+    window.addEventListener("resize", handleResize);
+
     gsap.ticker.add(ticker);
     gsap.ticker.lagSmoothing(0);
     ScrollTrigger.refresh();
@@ -72,17 +91,20 @@ export default function MotionOrchestrator() {
       anchorLinks.forEach((link) => {
         link.removeEventListener("click", handleAnchor);
       });
+      window.removeEventListener("resize", handleResize);
       gsap.ticker.remove(ticker);
       lenis.destroy();
       delete (window as Window & { __lenis?: Lenis }).__lenis;
       root.removeAttribute("data-scroll-dir");
+      root.removeAttribute("data-scroll-axis");
       root.style.removeProperty("--scroll-progress");
       root.style.removeProperty("--scroll-velocity");
+      root.style.removeProperty("--scroll-offset");
     };
-  }, [pathname]);
+  }, [isHome, isImmersive]);
 
   useEffect(() => {
-    if (pathname.startsWith("/immersive")) return;
+    if (isImmersive) return;
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -94,15 +116,17 @@ export default function MotionOrchestrator() {
     revealTargets.forEach((target) => {
       gsap.fromTo(
         target,
-        { opacity: 0, y: 40 },
+        { opacity: 0, x: isHome ? 60 : 0, y: isHome ? 0 : 40 },
         {
           opacity: 1,
+          x: 0,
           y: 0,
-          duration: 0.9,
+          duration: 0.8,
           ease: "power2.out",
           scrollTrigger: {
             trigger: target,
-            start: "top 80%",
+            start: isHome ? "left 75%" : "top 80%",
+            horizontal: isHome,
           },
         }
       );
@@ -111,10 +135,10 @@ export default function MotionOrchestrator() {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [pathname]);
+  }, [isHome, isImmersive]);
 
   useEffect(() => {
-    if (pathname.startsWith("/immersive")) return;
+    if (isImmersive) return;
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -130,86 +154,13 @@ export default function MotionOrchestrator() {
       duration: 0.9,
       stagger: 0.02,
       ease: "power3.out",
-      delay: 0.2,
+      delay: 0.15,
     });
 
     return () => {
       split.revert();
     };
-  }, [pathname]);
-
-  useEffect(() => {
-    if (pathname.startsWith("/immersive")) return;
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-    if (prefersReducedMotion) return;
-
-    const sections = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-horizontal]")
-    );
-
-    const refreshHandlers = new Map<HTMLElement, () => void>();
-
-    sections.forEach((section) => {
-      const track = section.querySelector<HTMLElement>("[data-horizontal-track]");
-      if (!track) return;
-      const refresh = () => {
-        const totalWidth = track.scrollWidth;
-        const viewportWidth = section.clientWidth;
-        const distance = Math.max(totalWidth - viewportWidth, 0);
-        if (distance <= 0) {
-          return;
-        }
-        const prevId = track.dataset.scrollId;
-        if (prevId) {
-          ScrollTrigger.getById(prevId)?.kill();
-        }
-        if (distance <= 0) {
-          gsap.set(track, { x: 0 });
-          return;
-        }
-        const id = `horizontal-${Math.random().toString(36).slice(2)}`;
-        track.dataset.scrollId = id;
-        gsap.to(track, {
-          x: -distance,
-          ease: "none",
-          scrollTrigger: {
-            id,
-            trigger: section,
-            start: "top top",
-            end: `+=${distance + viewportWidth}`,
-            scrub: true,
-            pin: true,
-            anticipatePin: 1,
-          },
-        });
-      };
-
-      refresh();
-      const handler = () => refresh();
-      refreshHandlers.set(section, handler);
-      ScrollTrigger.addEventListener("refreshInit", handler);
-    });
-
-    ScrollTrigger.refresh();
-
-    return () => {
-      refreshHandlers.forEach((handler) => {
-        ScrollTrigger.removeEventListener("refreshInit", handler);
-      });
-      sections.forEach((section) => {
-        const track = section.querySelector<HTMLElement>("[data-horizontal-track]");
-        if (!track) return;
-        const prevId = track.dataset.scrollId;
-        if (prevId) {
-          ScrollTrigger.getById(prevId)?.kill();
-          delete track.dataset.scrollId;
-        }
-      });
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, [pathname]);
+  }, [isImmersive, pathname]);
 
   return null;
 }

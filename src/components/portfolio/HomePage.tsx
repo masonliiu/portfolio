@@ -1,28 +1,40 @@
 "use client";
 
+import { useEffect } from "react";
 import { Link } from "next-view-transitions";
 import ImmersiveLaunchButton from "@/components/portfolio/ImmersiveLaunchButton";
 import GitHubActivity from "@/components/portfolio/GitHubActivity";
 import ContributionGraph from "@/components/portfolio/ContributionGraph";
-import RevealBlob from "@/components/portfolio/RevealBlob";
 import WorkFocus from "@/components/portfolio/WorkFocus";
-import HorizontalRail from "@/components/portfolio/HorizontalRail";
-import ScrollTotem from "@/components/portfolio/ScrollTotem";
 
 const heroLinks = [
-  { label: "GitHub", href: "https://github.com/masonliiu" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/masonliiu/" },
-  { label: "Email", href: "mailto:liumasn@gmail.com" },
-  { label: "Resume", href: "/resume.pdf" },
+  { label: "GitHub", href: "https://github.com/masonliiu", cursor: "GitHub" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/masonliiu/",
+    cursor: "LinkedIn",
+  },
+  { label: "Email", href: "mailto:liumasn@gmail.com", cursor: "Email" },
+  { label: "Resume", href: "/resume.pdf", cursor: "Resume" },
 ];
 
-const capabilityLoop = [
-  "Full-stack product engineering",
-  "Cinematic interaction design",
-  "Performance-first systems",
-  "3D experiences + spatial UI",
-  "Design systems with personality",
-  "Rapid prototyping",
+const beats = [
+  {
+    title: "Signal",
+    detail: "Short, high-impact summaries that show what the work actually does.",
+  },
+  {
+    title: "System",
+    detail: "Architecture decisions, performance trade-offs, and scaling notes.",
+  },
+  {
+    title: "Surface",
+    detail: "Motion, interaction, and deliberate visual rhythm that guides focus.",
+  },
+  {
+    title: "Story",
+    detail: "A narrative arc that takes recruiters from context to outcomes.",
+  },
 ];
 
 const photoPlaceholders = [
@@ -33,137 +45,162 @@ const photoPlaceholders = [
   "Golden hour frames",
 ];
 
+const immersiveHotspots = [
+  "Projects",
+  "Skills",
+  "Experience",
+  "Resume",
+  "Contact",
+];
+
 export default function HomePage() {
+  useEffect(() => {
+    document.body.classList.add("horizontal-scroll");
+    return () => {
+      document.body.classList.remove("horizontal-scroll");
+    };
+  }, []);
+
   return (
-    <main className="page-shell">
-      <section className="section-block" data-reveal>
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-          <div className="space-y-6">
-            <p className="section-kicker">Mason Liu · Portfolio</p>
-            <h1 className="hero-title" data-hero>
-              Expressive software, built with{" "}
-              <span>precision and intent.</span>
-            </h1>
-            <p className="hero-lead">
-              Computer Science @ UTD. Full-stack builder with a taste for
-              cinematic interfaces, interactive 3D, and systems that stay fast
-              under pressure.
-            </p>
-            <div className="hero-cta">
-              {heroLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  rel={link.href.startsWith("http") ? "noreferrer" : undefined}
-                >
-                  {link.label}
-                </a>
-              ))}
-              <Link href="/about">Story</Link>
-            </div>
-          </div>
-          <div className="hero-rail space-y-6">
-            <div>
-              <p className="section-kicker">Now</p>
-              <p>Designing immersive storytelling for recruiters and teams.</p>
-            </div>
-            <div>
-              <p className="section-kicker">Focus</p>
-              <p>Full-stack systems, 3D interaction, and tactile UI.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <RevealBlob />
-      <WorkFocus />
-      <HorizontalRail />
-      <ScrollTotem />
-
-      <section className="section-block immersive-strip" data-reveal>
-        <div className="space-y-6">
-          <p className="section-kicker">Immersive mode</p>
-          <h2 className="section-title">Step into the room.</h2>
-          <p className="section-subtitle">
-            A cinematic 3D studio that unlocks projects, skills, and experience
-            through interactive hotspots. It is optional, but it is where the
-            personality shows up loudest.
+    <main className="horizontal-shell">
+      <div className="horizontal-track">
+        <section className="horizontal-section hero-panel" id="intro" data-reveal>
+          <p className="section-kicker">Mason Liu · Portfolio</p>
+          <h1 className="hero-title" data-hero>
+            Building cinematic software with <span>signal</span> and precision.
+          </h1>
+          <p className="hero-lead">
+            Computer Science @ UTD. Full-stack builder focused on tactile UI,
+            resilient systems, and playful interaction design.
           </p>
-          <ImmersiveLaunchButton className="immersive-link">
+          <div className="hero-cta">
+            {heroLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={link.href.startsWith("http") ? "noreferrer" : undefined}
+                data-magnet
+                data-cursor={link.cursor}
+              >
+                {link.label}
+              </a>
+            ))}
+            <Link href="/about" data-magnet data-cursor="Story">
+              Story
+            </Link>
+          </div>
+          <div className="hero-meta">
+            <div>
+              <p className="work-meta">Focus</p>
+              <p>Full-stack systems · Interactive UI · 3D rooms</p>
+            </div>
+            <div>
+              <p className="work-meta">Based</p>
+              <p>Dallas, TX · UTD</p>
+            </div>
+          </div>
+          <div className="scroll-hint" aria-hidden="true">
+            Scroll →
+          </div>
+        </section>
+
+        {beats.map((beat, index) => (
+          <section
+            key={beat.title}
+            className="horizontal-section beat-panel"
+            data-reveal
+          >
+            <span className="work-meta">0{index + 1}</span>
+            <h2 className="section-title">{beat.title}</h2>
+            <p className="section-subtitle">{beat.detail}</p>
+          </section>
+        ))}
+
+        <WorkFocus id="work" className="horizontal-section work-panel" />
+
+        <section
+          className="horizontal-section immersive-panel"
+          id="immersive"
+          data-reveal
+        >
+          <p className="section-kicker">Immersive room</p>
+          <h2 className="section-title">A 3D studio you can walk through.</h2>
+          <p className="section-subtitle">
+            Optional, but unforgettable. Tap hotspots to open projects, skills,
+            and experience inside a cinematic room.
+          </p>
+          <div className="immersive-hotspots">
+            {immersiveHotspots.map((item) => (
+              <span key={item}>{item}</span>
+            ))}
+          </div>
+          <ImmersiveLaunchButton className="immersive-link" data-magnet data-cursor="Enter">
             Enter immersive →
           </ImmersiveLaunchButton>
-        </div>
-      </section>
+        </section>
 
-      <section className="section-block" data-reveal>
-        <div className="space-y-6">
-          <p className="section-kicker">Capabilities</p>
-          <h2 className="section-title">Studio-grade execution.</h2>
-          <p className="section-subtitle">
-            End-to-end builds with intentional motion, reliable systems, and
-            experiences that feel alive.
-          </p>
-          <div className="marquee" aria-hidden="true">
-            <div className="marquee-track">
-              {capabilityLoop.concat(capabilityLoop).map((item, index) => (
-                <span key={`${item}-${index}`}>{item}</span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-block" data-reveal>
-        <div className="space-y-6">
+        <section
+          className="horizontal-section photography-panel"
+          id="photography"
+          data-reveal
+        >
           <p className="section-kicker">Photography</p>
           <h2 className="section-title">Light, texture, rhythm.</h2>
           <p className="section-subtitle">
-            A curated selection of visual studies. Replace these placeholders
-            with your photography series when you are ready to publish.
+            A curated strip of visual studies. Replace these placeholders with
+            published work.
           </p>
           <div className="photo-strip">
             {photoPlaceholders.map((label) => (
-              <div key={label} className="photo-frame">
+              <div key={label} className="photo-frame" data-magnet data-cursor="View">
                 <span>{label}</span>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="section-block" data-reveal>
-        <div className="space-y-8">
-          <div>
-            <p className="section-kicker">Signal</p>
-            <h2 className="section-title">Shipping in public.</h2>
-            <p className="section-subtitle">
-              A quick look at recent commits and a year of contribution cadence.
-            </p>
+        <section
+          className="horizontal-section activity-panel"
+          id="signal"
+          data-reveal
+        >
+          <div className="space-y-6">
+            <div>
+              <p className="section-kicker">Signal</p>
+              <h2 className="section-title">Shipping in public.</h2>
+              <p className="section-subtitle">
+                Recent commits and a full year of contribution cadence.
+              </p>
+            </div>
+            <div className="signal-grid">
+              <GitHubActivity />
+              <ContributionGraph />
+            </div>
           </div>
-          <div className="signal-grid">
-            <GitHubActivity />
-            <ContributionGraph />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="section-block" id="contact" data-reveal>
-        <div className="contact-grid">
-          <div>
-            <p className="section-kicker">Contact</p>
-            <h2 className="section-title">Let&apos;s build something memorable.</h2>
-            <p className="section-subtitle">
-              Open to internships, full-time roles, and collaborations that
-              value craft. If you are hiring or want to collaborate, reach out.
-            </p>
-          </div>
+        <section
+          className="horizontal-section contact-panel"
+          id="contact"
+          data-reveal
+        >
+          <p className="section-kicker">Contact</p>
+          <h2 className="section-title">Let&apos;s build something memorable.</h2>
+          <p className="section-subtitle">
+            Open to internships, full-time roles, and collaborations that value
+            craft and clarity.
+          </p>
           <div className="contact-actions">
-            <a href="mailto:liumasn@gmail.com">Email</a>
+            <a href="mailto:liumasn@gmail.com" data-magnet data-cursor="Email">
+              Email
+            </a>
             <a
               href="https://www.linkedin.com/in/masonliiu/"
               target="_blank"
               rel="noreferrer"
+              data-magnet
+              data-cursor="LinkedIn"
             >
               LinkedIn
             </a>
@@ -171,12 +208,15 @@ export default function HomePage() {
               href="https://github.com/masonliiu"
               target="_blank"
               rel="noreferrer"
+              data-magnet
+              data-cursor="GitHub"
             >
               GitHub
             </a>
           </div>
-        </div>
-      </section>
+          <p className="footer-inline">© {new Date().getFullYear()} Mason Liu</p>
+        </section>
+      </div>
     </main>
   );
 }

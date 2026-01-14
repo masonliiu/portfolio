@@ -4,15 +4,25 @@ export default function Footer() {
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <span>© {new Date().getFullYear()} Mason Liu</span>
         <div className="flex flex-wrap items-center gap-4">
-          <a href="mailto:liumasn@gmail.com">Email</a>
+          <a href="mailto:liumasn@gmail.com" data-magnet data-cursor="Email">
+            Email
+          </a>
           <a
             href="https://www.linkedin.com/in/masonliiu/"
             target="_blank"
             rel="noreferrer"
+            data-magnet
+            data-cursor="LinkedIn"
           >
             LinkedIn
           </a>
-          <a href="https://github.com/masonliiu" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/masonliiu"
+            target="_blank"
+            rel="noreferrer"
+            data-magnet
+            data-cursor="GitHub"
+          >
             GitHub
           </a>
         </div>

@@ -5,6 +5,7 @@ import "./globals.css";
 import RouteHeader from "@/components/portfolio/RouteHeader";
 import ImmersiveSnapshotOverlay from "@/components/immersive/ImmersiveSnapshotOverlay";
 import MotionOrchestrator from "@/components/portfolio/MotionOrchestrator";
+import CursorController from "@/components/portfolio/CursorController";
 import { ViewTransitions } from "next-view-transitions";
 
 const instrumentSerif = Instrument_Serif({
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`${instrumentSerif.variable} ${spaceGrotesk.variable} antialiased`}
       >
         <MotionOrchestrator />
+        <CursorController />
         <ImmersiveSnapshotOverlay />
         <ViewTransitions>
           <RouteHeader />

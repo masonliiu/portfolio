@@ -2,7 +2,14 @@
 
 import { toPng } from "html-to-image";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useRef,
+  useState,
+  type ReactNode,
+  type ButtonHTMLAttributes,
+  type MouseEvent,
+} from "react";
 import {
   IMMERSIVE_SNAPSHOT_KEY,
   IMMERSIVE_SNAPSHOT_META_KEY,
@@ -10,14 +17,15 @@ import {
   IMMERSIVE_SNAPSHOT_LAST_META_KEY,
 } from "@/components/immersive/transition";
 
-type ImmersiveLaunchButtonProps = {
-  className?: string;
+type ImmersiveLaunchButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
 };
 
 export default function ImmersiveLaunchButton({
   className,
   children,
+  onClick,
+  ...rest
 }: ImmersiveLaunchButtonProps) {
   const router = useRouter();
   const [isCapturing, setIsCapturing] = useState(false);
@@ -102,7 +110,9 @@ export default function ImmersiveLaunchButton({
     };
   };
 
-  const handleClick = async () => {
+  const handleClick = async (event: MouseEvent<HTMLButtonElement>) => {
+    onClick?.(event);
+    if (event.defaultPrevented) return;
     if (isCapturing) return;
     setIsCapturing(true);
 
@@ -136,8 +146,9 @@ export default function ImmersiveLaunchButton({
       onClick={handleClick}
       onPointerEnter={schedulePreload}
       onFocus={schedulePreload}
+      {...rest}
       className={className}
-      disabled={isCapturing}
+      disabled={isCapturing || rest.disabled}
     >
       {children}
     </button>
